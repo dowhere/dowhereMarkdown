@@ -1,0 +1,20 @@
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Tauri / Rust
+src-tauri/target
+src-tauri/gen
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+
+update_log.md
