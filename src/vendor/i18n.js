@@ -18,40 +18,16 @@ const i18n = {
     viewOutline: '大纲面板',
     collapseOutline: '收起大纲',
     expandOutline: '展开大纲',
-    helpHtml: `<p>这是一个即开即用的浏览器 Markdown 编辑器：左侧写作，右侧实时预览。内容会自动保存在浏览器本地，下次打开自动恢复。</p>
-<p><b>开始写作</b></p>
-<ul>
-  <li>在左侧输入 Markdown，右侧会同步渲染。</li>
-  <li>使用工具栏按钮快速插入标题、加粗、列表、引用、代码、链接、图片、表格等。</li>
-  <li>选中文字再点格式按钮，可自动包裹或替换选区。</li>
-</ul>
-<p><b>调整视图</b></p>
-<ul>
-  <li>拖动中间分隔线调整左右宽度；点击标题栏的折叠按钮收起或展开区域。</li>
-  <li>工具栏「视图」可切换“编辑 + 预览 / 仅编辑 / 仅预览”。</li>
-  <li>右侧顶部的「源码」标签可直接改源码，切回「预览」看效果。</li>
-</ul>
-<p><b>保存、导入与导出</b></p>
-<ul>
-  <li>按 <code>Ctrl+S</code> 或点「保存」按钮；编辑器每 500ms 自动保存一次。</li>
-  <li>点「导入」导入本地 .md / .txt，或直接把文件拖进窗口。</li>
-  <li>点「导出」导出 Markdown、HTML、Word、PDF（打印另存为）或图片。</li>
-</ul>
-<p><b>图片与公式</b></p>
-<ul>
-  <li>工具栏「图片」支持链接插入或本地上传；本地图片会转为 Base64 嵌入文档，方便离线使用。</li>
-  <li>支持 <code>$...$</code> 行内公式和 <code>$$...$$</code> 块级公式。</li>
-</ul>
-<p><b>网页转 Markdown</b></p>
-<ul>
-  <li>点「网页转 MD」输入网页链接，可自动提取正文。</li>
-  <li>桌面版直接输入链接即可抓取，无需代理；浏览器版遇到知乎、微信公众号等可勾选「使用本地代理」并运行同目录的 <code>web-to-md-proxy.py</code>。</li>
-  <li>需要登录的页面，可运行 <code>python web-to-md-proxy.py --bookmark</code> 生成书签小工具提取。</li>
-</ul>
-<p><b>常用快捷键</b>：<code>Ctrl+S</code> 保存，<code>Ctrl+Z</code> 撤销，<code>Ctrl+Y / Ctrl+Shift+Z</code> 重做，<code>Ctrl+B</code> 加粗，<code>Ctrl+I</code> 斜体，<code>Ctrl+U</code> 下划线，<code>Ctrl+K</code> 链接，<code>Ctrl+Shift+K</code> 图片，<code>Ctrl+F</code> 查找，<code>Ctrl+H</code> 替换，<code>Tab</code> 插入 4 空格缩进。</p>
-<p style="color:var(--text-muted);font-size:12px;">本编辑器由「沃垠AI」主理人冷逸开发，功能建议请联系微信：lengcp2013</p>`,
-    welcomeDoc: '# 欢迎使用 Markdown 编辑器\n\n在左侧输入 Markdown，右侧即可**实时预览**。\n\n## 功能\n\n- 自动保存到浏览器本地\n- 支持导入 / 导出 `.md` 文件\n- 右侧「源码」模式可直接编辑\n- 可将网页链接转换为 Markdown\n- 快捷键：Ctrl+S 保存\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Markdown编辑器',
+    helpHtml: `<p>DoWhereMarkdown 是一款 Markdown 编辑器：左侧写作，右侧实时预览，内容自动保存。</p><section class="help-section"><h4>快速上手</h4><ul><li>在左侧编辑区输入 Markdown，右侧预览区同步渲染。</li><li>选中文字后点击工具栏按钮，可自动包裹格式；未选文字时插入模板。</li><li>拖动面板间的分隔线调整宽度，点击面板标题旁的箭头收起面板。</li></ul></section><section class="help-section"><h4>格式与插入</h4><ul><li>支持标题、加粗、斜体、下划线、删除线、上下标、引用、列表、任务列表、行内代码与代码块。</li><li>支持链接、图片、表格，以及 Mermaid 图表（流程图、时序图、甘特图等 12 种）。</li><li>代码块自动语法高亮，支持数学公式（<code>$...$</code> 行内、<code>$$...$$</code> 块级）。</li></ul></section><section class="help-section"><h4>大纲导航</h4><ul><li>文档标题按层级自动显示在左侧大纲中，点击即可跳转到对应位置。</li><li>点击标题前的三角箭头可折叠或展开其子标题。</li></ul></section><section class="help-section"><h4>文件、导入与导出</h4><ul><li>可新建、打开、保存、另存为文件；支持 UTF-8、GBK、GB18030、Big5 编码。</li><li>「导入」支持 Markdown、TXT、HTML、DOCX（DOCX 自动转换为 Markdown）。</li><li>「导出为」支持 Markdown、Word、PDF、HTML、PNG 图片。</li><li>也可以直接把文件拖入窗口打开。</li></ul></section><section class="help-section"><h4>网页转 Markdown</h4><ul><li>在「工具 → 网页转 MD」中输入网址，可自动抓取网页并提取正文为 Markdown。</li></ul></section><section class="help-section"><h4>快捷键</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>新建</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>打开</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>保存</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>另存为</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>撤销</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>重做</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>加粗</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>斜体</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>下划线</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>插入链接</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>查找</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>替换</span></div><div class="hk"><kbd>F11</kbd><span>切换全屏</span></div><div class="hk"><kbd>Tab</kbd><span>缩进</span></div></div></section>`,
+    welcomeDoc: '# 欢迎使用 DoWhereMarkdown\n\n在左侧输入 Markdown，右侧即可**实时预览**，内容自动保存。\n\n## 主要功能\n\n- 大纲导航与树形折叠\n- 导入 Markdown、TXT、HTML、DOCX\n- 导出 Markdown、Word、PDF、HTML、PNG\n- 网页链接一键转 Markdown\n- 快捷键：Ctrl+S 保存\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: '关于',
+    helpDoc: '使用帮助',
+    toggleFullscreen: '切换全屏',
+    aboutVersion: '版本',
+    aboutDesc: '一款简洁高效的 Markdown 编辑器，支持实时预览、大纲导航、格式转换与多格式导入导出。',
+    aboutBlog: '作者技术博客',
+    aboutOk: '确定',
     filenameTitle: '文件名',
     filenameDefault: '未命名文档.md',
     save: '保存',
@@ -157,7 +133,7 @@ const i18n = {
     imageHint: '本地图片将以 Base64 嵌入文档，文件过大可能影响性能和保存。',
     insert: '插入',
     dropMessage: '释放以打开文件或插入图片',
-    toastSaved: '已保存到浏览器本地',
+    toastSaved: '已保存',
     toastExported: '文件已导出',
     toastWordExported: 'Word 已导出',
     toastHtmlExported: 'HTML 已导出',
@@ -165,11 +141,11 @@ const i18n = {
     toastPdfExported: 'PDF 已导出',
     toastPdfFailed: 'PDF 导出失败：{0}',
     toastPdfFallbackPrint: '未找到 Edge，改用打印方式，请选择「另存为 PDF」',
-    toastImageLibMissing: '图片导出库未加载，请检查网络',
+    toastImageLibMissing: '图片导出组件未加载',
     toastPreviewGenerated: '预览已生成',
     toastImageGenFailed: '图片生成失败：{0}',
     toastGeneratePreviewFirst: '请先生成预览',
-    toastImageDownloaded: '图片已下载',
+    toastImageDownloaded: '图片已导出',
     toastSaveFailed: '保存失败：{0}',
     toastFileImported: '文件已导入',
     toastImageInserted: '图片已插入',
@@ -280,46 +256,16 @@ const i18n = {
     viewOutline: '大綱面板',
     collapseOutline: '收起大綱',
     expandOutline: '展開大綱',
-    helpHtml: `<p>這是一款即開即用的瀏覽器 Markdown 編輯器：左側寫作，右側即時預覽。內容會自動儲存在瀏覽器本地，下次開啟自動恢復。</p>
-<p><b>開始寫作</b></p>
-<ul>
-  <li>在左側輸入 Markdown，右側同步渲染。</li>
-  <li>使用工具列按鈕快速插入標題、粗體、清單、引用、程式碼、連結、圖片、表格等。</li>
-  <li>選取文字後再點格式按鈕，可自動包裹或取代選區。</li>
-</ul>
-<p><b>調整檢視</b></p>
-<ul>
-  <li>拖曳中間分隔線調整左右寬度；點擊標題列的折疊按鈕收起或展開區域。</li>
-  <li>工具列「檢視」可切換「編輯 + 預覽 / 僅編輯 / 僅預覽」。</li>
-  <li>右側頂部的「原始碼」標籤可直接修改原始碼，切回「預覽」看效果。</li>
-</ul>
-<p><b>儲存、匯入與匯出</b></p>
-<ul>
-  <li>按 <code>Ctrl+S</code> 或點「儲存」按鈕；編輯器每 500ms 自動儲存一次。</li>
-  <li>點「匯入」匯入本地 .md / .txt，或直接把檔案拖進視窗。</li>
-  <li>點「匯出」匯出 Markdown、HTML、Word、PDF（列印另存為 PDF）或圖片。</li>
-</ul>
-<p><b>圖片與公式</b></p>
-<ul>
-  <li>工具列「圖片」支援連結插入或本機上傳；本機圖片會轉為 Base64 嵌入文件，方便離線使用。</li>
-  <li>支援 <code>$...$</code> 行內公式和 <code>$$...$$</code> 區塊公式。</li>
-</ul>
-<p><b>程式碼高亮</b></p>
-<ul>
-  <li>使用三個反引號包圍的程式碼區塊會自動依語言進行語法高亮（基於 highlight.js，支援 190+ 種語言）。</li>
-  <li>每個程式碼區塊頂部會顯示語言標籤和行數，右上角「複製」按鈕可一鍵複製原始程式碼。</li>
-  <li>未指定語言時不進行高亮，保持純文字樣式。</li>
-</ul>
-<p><b>網頁轉 Markdown</b></p>
-<ul>
-  <li>點「網頁轉 MD」輸入網頁連結，可自動提取正文。</li>
-  <li>桌面版直接輸入連結即可抓取，無需代理；瀏覽器版遇到知乎、微信公眾號等可勾選「使用本機代理」並執行同目錄的 <code>web-to-md-proxy.py</code>。</li>
-  <li>需要登入的頁面，可執行 <code>python web-to-md-proxy.py --bookmark</code> 生成書籤小工具提取。</li>
-</ul>
-<p><b>常用快捷鍵</b>：<code>Ctrl+S</code> 儲存，<code>Ctrl+Z</code> 復原，<code>Ctrl+Y / Ctrl+Shift+Z</code> 重做，<code>Ctrl+B</code> 粗體，<code>Ctrl+I</code> 斜體，<code>Ctrl+U</code> 底線，<code>Ctrl+K</code> 連結，<code>Ctrl+Shift+K</code> 圖片，<code>Ctrl+F</code> 尋找，<code>Ctrl+H</code> 取代，<code>Tab</code> 插入 4 空格縮排。</p>
-<p style="color:var(--text-muted);font-size:12px;">本編輯器由「沃垠AI」主理人冷逸開發，功能建議請聯繫微信：lengcp2013</p>`,
-    welcomeDoc: '# 歡迎使用 Markdown 編輯器\n\n在左側輸入 Markdown，右側即可**即時預覽**。\n\n## 功能\n\n- 自動儲存到瀏覽器本地\n- 支援匯入 / 匯出 `.md` 檔案\n- 右側「原始碼」模式可直接編輯\n- 可將網頁連結轉換為 Markdown\n- 快捷鍵：Ctrl+S 儲存\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Markdown編輯器',
+    helpHtml: `<p>DoWhereMarkdown 是一款 Markdown 編輯器：左側寫作，右側即時預覽，內容自動儲存。</p><section class="help-section"><h4>快速上手</h4><ul><li>在左側編輯區輸入 Markdown，右側預覽區同步渲染。</li><li>選取文字後點擊工具列按鈕，可自動包覆格式；未選文字時插入範本。</li><li>拖曳面板間的分隔線調整寬度，點擊面板標題旁的箭頭收起面板。</li></ul></section><section class="help-section"><h4>格式與插入</h4><ul><li>支援標題、加粗、斜體、底線、刪除線、上下標、引用、清單、任務清單、行內程式碼與程式碼區塊。</li><li>支援連結、圖片、表格，以及 Mermaid 圖表（流程圖、時序圖、甘特圖等 12 種）。</li><li>程式碼區塊自動語法高亮，支援數學公式（<code>$...$</code> 行內、<code>$$...$$</code> 區塊）。</li></ul></section><section class="help-section"><h4>大綱導覽</h4><ul><li>文件標題按層級自動顯示在左側大綱中，點擊即可跳轉到對應位置。</li><li>點擊標題前的三角箭頭可摺疊或展開其子標題。</li></ul></section><section class="help-section"><h4>檔案、匯入與匯出</h4><ul><li>可新建、開啟、儲存、另存新檔；支援 UTF-8、GBK、GB18030、Big5 編碼。</li><li>「匯入」支援 Markdown、TXT、HTML、DOCX（DOCX 自動轉換為 Markdown）。</li><li>「匯出為」支援 Markdown、Word、PDF、HTML、PNG 圖片。</li><li>也可以直接把檔案拖入視窗開啟。</li></ul></section><section class="help-section"><h4>網頁轉 Markdown</h4><ul><li>在「工具 → 網頁轉 MD」中輸入網址，可自動擷取網頁並提取正文為 Markdown。</li></ul></section><section class="help-section"><h4>快捷鍵</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>新建</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>開啟</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>儲存</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>另存新檔</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>復原</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>重做</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>加粗</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>斜體</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>底線</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>插入連結</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>尋找</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>取代</span></div><div class="hk"><kbd>F11</kbd><span>切換全螢幕</span></div><div class="hk"><kbd>Tab</kbd><span>縮排</span></div></div></section>`,
+    welcomeDoc: '# 歡迎使用 DoWhereMarkdown\n\n在左側輸入 Markdown，右側即可**即時預覽**，內容自動儲存。\n\n## 主要功能\n\n- 大綱導覽與樹狀摺疊\n- 匯入 Markdown、TXT、HTML、DOCX\n- 匯出 Markdown、Word、PDF、HTML、PNG\n- 網頁連結一鍵轉 Markdown\n- 快捷鍵：Ctrl+S 儲存\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: '關於',
+    helpDoc: '使用說明',
+    toggleFullscreen: '切換全螢幕',
+    aboutVersion: '版本',
+    aboutDesc: '一款簡潔高效的 Markdown 編輯器，支援即時預覽、大綱導覽、格式轉換與多格式匯入匯出。',
+    aboutBlog: '作者技術部落格',
+    aboutOk: '確定',
     filenameTitle: '檔案名稱',
     filenameDefault: '未命名文件.md',
     save: '儲存',
@@ -425,7 +371,7 @@ const i18n = {
     imageHint: '本機圖片將以 Base64 嵌入文件，檔案過大可能影響效能和儲存。',
     insert: '插入',
     dropMessage: '釋放以開啟檔案或插入圖片',
-    toastSaved: '已儲存到瀏覽器本地',
+    toastSaved: '已儲存',
     toastExported: '檔案已匯出',
     toastWordExported: 'Word 已匯出',
     toastHtmlExported: 'HTML 已匯出',
@@ -433,11 +379,11 @@ const i18n = {
     toastPdfExported: 'PDF 已匯出',
     toastPdfFailed: 'PDF 匯出失敗：{0}',
     toastPdfFallbackPrint: '未找到 Edge，改用列印方式，請選擇「另存為 PDF」',
-    toastImageLibMissing: '圖片匯出庫未載入，請檢查網路',
+    toastImageLibMissing: '圖片匯出元件未載入',
     toastPreviewGenerated: '預覽已生成',
     toastImageGenFailed: '圖片生成失敗：{0}',
     toastGeneratePreviewFirst: '請先生成預覽',
-    toastImageDownloaded: '圖片已下載',
+    toastImageDownloaded: '圖片已匯出',
     toastSaveFailed: '儲存失敗：{0}',
     toastFileImported: '檔案已匯入',
     toastImageInserted: '圖片已插入',
@@ -548,46 +494,16 @@ const i18n = {
     viewOutline: 'Outline panel',
     collapseOutline: 'Collapse outline',
     expandOutline: 'Expand outline',
-    helpHtml: `<p>This is a ready-to-use browser Markdown editor: write on the left, preview live on the right. Your content is auto-saved in the browser and restored next time.</p>
-<p><b>Start writing</b></p>
-<ul>
-  <li>Type Markdown on the left; it renders on the right in real time.</li>
-  <li>Use the toolbar to quickly insert headings, bold, lists, quotes, code, links, images, tables, etc.</li>
-  <li>Select text before clicking a format button to wrap or replace the selection.</li>
-</ul>
-<p><b>Adjust the view</b></p>
-<ul>
-  <li>Drag the divider to resize panes; click the collapse buttons on the headers to collapse or expand a pane.</li>
-  <li>The toolbar “View” menu switches between Edit + Preview / Edit only / Preview only.</li>
-  <li>The “Source” tab on the right lets you edit Markdown source directly; switch back to “Preview” to see the result.</li>
-</ul>
-<p><b>Save, import & export</b></p>
-<ul>
-  <li>Press <code>Ctrl+S</code> or click the Save button; auto-save runs every 500 ms.</li>
-  <li>Click Import to open a local .md / .txt file, or drag a file into the window.</li>
-  <li>Click Export to Markdown, HTML, Word, PDF (print to PDF), or image.</li>
-</ul>
-<p><b>Images & math</b></p>
-<ul>
-  <li>The toolbar “Image” button supports URL insertion or local upload; local images are embedded as Base64 for offline use.</li>
-  <li>Supports inline <code>$...$</code> and block <code>$$...$$</code> LaTeX math.</li>
-</ul>
-<p><b>Code highlighting</b></p>
-<ul>
-  <li>Fenced code blocks (three backticks) are automatically highlighted by language (powered by highlight.js, 190+ languages supported).</li>
-  <li>Each code block shows a language label and line count on top; the “Copy” button copies the original code with one click.</li>
-  <li>Blocks without a language stay as plain text — no awkward auto-detection guesses.</li>
-</ul>
-<p><b>Web to Markdown</b></p>
-<ul>
-  <li>Click “Web → MD” and enter a URL to extract the article body.</li>
-  <li>On desktop, just paste the link to fetch directly — no proxy needed. In a browser, enable “Use local proxy” and run <code>web-to-md-proxy.py</code> for Zhihu/WeChat articles.</li>
-  <li>For pages that require login, run <code>python web-to-md-proxy.py --bookmark</code> to generate a bookmarklet.</li>
-</ul>
-<p><b>Common shortcuts</b>: <code>Ctrl+S</code> Save, <code>Ctrl+Z</code> Undo, <code>Ctrl+Y / Ctrl+Shift+Z</code> Redo, <code>Ctrl+B</code> Bold, <code>Ctrl+I</code> Italic, <code>Ctrl+U</code> Underline, <code>Ctrl+K</code> Link, <code>Ctrl+Shift+K</code> Image, <code>Ctrl+F</code> Find, <code>Ctrl+H</code> Replace, <code>Tab</code> insert 4-space indent.</p>
-<p style="color:var(--text-muted);font-size:12px;">Developed by Leng Yi of Woyin AI. Feedback via WeChat: lengcp2013</p>`,
-    welcomeDoc: '# Welcome to the Markdown Editor\n\nType Markdown on the left and see the **live preview** on the right.\n\n## Features\n\n- Auto-saved to browser local storage\n- Import / export `.md` files\n- "Source" mode on the right for direct editing\n- Convert web links to Markdown\n- Shortcut: Ctrl+S to save\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Markdown Editor',
+    helpHtml: `<p>DoWhereMarkdown is a Markdown editor: write on the left, preview live on the right. Your content is saved automatically.</p><section class="help-section"><h4>Getting Started</h4><ul><li>Type Markdown in the editor on the left; the preview on the right renders in sync.</li><li>Select text and click a toolbar button to wrap it with formatting; with no selection, a template is inserted.</li><li>Drag the dividers between panes to resize them; click the arrow next to a pane title to collapse it.</li></ul></section><section class="help-section"><h4>Formatting &amp; Insertion</h4><ul><li>Headings, bold, italic, underline, strikethrough, sub/superscript, quotes, lists, task lists, inline code and code blocks.</li><li>Links, images, tables, and Mermaid diagrams (12 types: flowcharts, sequence diagrams, Gantt charts, and more).</li><li>Code blocks feature automatic syntax highlighting; math expressions are supported (<code>$...$</code> inline, <code>$$...$$</code> block).</li></ul></section><section class="help-section"><h4>Outline</h4><ul><li>Document headings appear by level in the left outline; click one to jump to it.</li><li>Click the triangle before a heading to collapse or expand its sub-headings.</li></ul></section><section class="help-section"><h4>Files, Import &amp; Export</h4><ul><li>Create, open, save, and save as; supports UTF-8, GBK, GB18030, and Big5 encodings.</li><li>Import supports Markdown, TXT, HTML, and DOCX (DOCX is converted to Markdown automatically).</li><li>Export as Markdown, Word, PDF, HTML, or PNG image.</li><li>You can also drag files into the window to open them.</li></ul></section><section class="help-section"><h4>Web to Markdown</h4><ul><li>Enter a URL in &quot;Tools &rarr; Web to MD&quot; to fetch the page and extract its content as Markdown.</li></ul></section><section class="help-section"><h4>Keyboard Shortcuts</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>New</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>Open</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>Save</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>Save As</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>Undo</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>Redo</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>Bold</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>Italic</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>Underline</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>Insert Link</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>Find</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>Replace</span></div><div class="hk"><kbd>F11</kbd><span>Toggle Fullscreen</span></div><div class="hk"><kbd>Tab</kbd><span>Indent</span></div></div></section>`,
+    welcomeDoc: '# Welcome to DoWhereMarkdown\n\nType Markdown on the left and see the **live preview** on the right. Your work is saved automatically.\n\n## Features\n\n- Outline navigation with tree collapse\n- Import Markdown, TXT, HTML, DOCX\n- Export Markdown, Word, PDF, HTML, PNG\n- Convert web pages to Markdown\n- Shortcut: Ctrl+S to save\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: 'About',
+    helpDoc: 'Help',
+    toggleFullscreen: 'Toggle Fullscreen',
+    aboutVersion: 'Version',
+    aboutDesc: 'A clean and efficient Markdown editor with live preview, outline navigation, conversion tools and multi-format import/export.',
+    aboutBlog: 'Author Blog',
+    aboutOk: 'OK',
     filenameTitle: 'Filename',
     filenameDefault: 'Untitled.md',
     save: 'Save',
@@ -693,7 +609,7 @@ const i18n = {
     imageHint: 'Local images will be embedded as Base64; large files may affect performance.',
     insert: 'Insert',
     dropMessage: 'Drop to open file or insert image',
-    toastSaved: 'Saved to browser local storage',
+    toastSaved: 'Saved',
     toastExported: 'File exported',
     toastWordExported: 'Word exported',
     toastHtmlExported: 'HTML exported',
@@ -701,11 +617,11 @@ const i18n = {
     toastPdfExported: 'PDF exported',
     toastPdfFailed: 'PDF export failed: {0}',
     toastPdfFallbackPrint: 'Edge not found, falling back to print — choose “Save as PDF”',
-    toastImageLibMissing: 'Image export library not loaded, please check network',
+    toastImageLibMissing: 'Image export component not loaded',
     toastPreviewGenerated: 'Preview generated',
     toastImageGenFailed: 'Image generation failed: {0}',
     toastGeneratePreviewFirst: 'Please generate a preview first',
-    toastImageDownloaded: 'Image downloaded',
+    toastImageDownloaded: 'Image exported',
     toastSaveFailed: 'Save failed: {0}',
     toastFileImported: 'File imported',
     toastImageInserted: 'Image inserted',
@@ -816,46 +732,16 @@ const i18n = {
     viewOutline: 'アウトラインパネル',
     collapseOutline: 'アウトラインを折りたたむ',
     expandOutline: 'アウトラインを展開',
-    helpHtml: `<p>これは、すぐに使えるブラウザ Markdown エディタです。左側で書くと、右側にリアルタイムでプレビューが表示されます。内容はブラウザのローカルに自動保存され、次回開いたときに復元されます。</p>
-<p><b>書き始める</b></p>
-<ul>
-  <li>左側に Markdown を入力すると、右側に即時レンダリングされます。</li>
-  <li>ツールバーのボタンで、見出し、太字、リスト、引用、コード、リンク、画像、表などを素早く挿入できます。</li>
-  <li>文字を選択してから書式ボタンをクリックすると、選択範囲を自動で囲んだり置換したりできます。</li>
-</ul>
-<p><b>表示を調整する</b></p>
-<ul>
-  <li>中央の区切り線をドラッグして左右の幅を調整；ヘッダーの「⟨」/「⟩」でエリアを折りたたみ/展開。</li>
-  <li>ツールバーの「表示」で「編集 + プレビュー / 編集のみ / プレビューのみ」を切り替え。</li>
-  <li>右側上部の「ソース」タブで Markdown ソースを直接編集し、「プレビュー」に戻して確認。</li>
-</ul>
-<p><b>保存、インポート、エクスポート</b></p>
-<ul>
-  <li><code>Ctrl+S</code> または 💾 保存をクリック；500ms ごとに自動保存されます。</li>
-  <li>⬆ インポートでローカルの .md / .txt を開くか、ファイルをウィンドウにドラッグ。</li>
-  <li>⬇ エクスポートで Markdown、HTML、Word、PDF（PDF として保存）、画像を出力。</li>
-</ul>
-<p><b>画像と数式</b></p>
-<ul>
-  <li>ツールバーの「画像」は URL 挿入とローカルアップロードに対応；ローカル画像は Base64 で埋め込まれ、オフラインでも使えます。</li>
-  <li><code>$...$</code> のインライン数式と <code>$$...$$</code> のブロック数式に対応。</li>
-</ul>
-<p><b>コードハイライト</b></p>
-<ul>
-  <li>3 つのバッククォートで囲んだコードブロックは言語ごとに自動でハイライトされます（highlight.js ベース、190+ 言語対応）。</li>
-  <li>各コードブロックの上部に言語ラベルと行数が表示され、右上の「コピー」ボタンで元のコードを 1 クリックでコピーできます。</li>
-  <li>言語が指定されていないブロックはハイライトされず、プレーンなテキストとして表示されます。</li>
-</ul>
-<p><b>Web を Markdown に</b></p>
-<ul>
-  <li>🌐 をクリックして Web ページのリンクを入力すると、本文を自動抽出します。</li>
-  <li>デスクトップ版はリンクを入力するだけで直接取得でき、プロキシは不要です。ブラウザ版で知乎・微信公众号などを取得する場合は「ローカルプロキシを使用」にチェックし、同じフォルダの <code>web-to-md-proxy.py</code> を実行してください。</li>
-  <li>ログインが必要なページは、<code>python web-to-md-proxy.py --bookmark</code> を実行してブックマークレットを生成して抽出します。</li>
-</ul>
-<p><b>よく使うショートカット</b>：<code>Ctrl+S</code> 保存、<code>Ctrl+Z</code> 元に戻す、<code>Ctrl+Y / Ctrl+Shift+Z</code> やり直す、<code>Ctrl+B</code> 太字、<code>Ctrl+I</code> 斜体、<code>Ctrl+U</code> 下線、<code>Ctrl+K</code> リンク、<code>Ctrl+Shift+K</code> 画像、<code>Ctrl+F</code> 検索、<code>Ctrl+H</code> 置換、<code>Tab</code> 4 スペース字下げ。</p>
-<p style="color:var(--text-muted);font-size:12px;">本エディタは「沃垠AI」の主理人である冷逸（Leng Yi）によって開発されました。機能提案は WeChat: lengcp2013 まで</p>`,
-    welcomeDoc: '# Markdown エディタへようこそ\n\n左側に Markdown を入力すると、右側に**リアルタイムプレビュー**が表示されます。\n\n## 機能\n\n- ブラウザのローカルに自動保存\n- `.md` ファイルのインポート / エクスポート\n- 右側の「ソース」モードで直接編集\n- Web リンクを Markdown に変換\n- ショートカット：Ctrl+S で保存\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Markdownエディタ',
+    helpHtml: `<p>DoWhereMarkdown は Markdown エディタです。左側で書き、右側でリアルタイムプレビューを確認でき、内容は自動的に保存されます。</p><section class="help-section"><h4>基本操作</h4><ul><li>左側の編集エリアに Markdown を入力すると、右側のプレビューに同期して表示されます。</li><li>テキストを選択してツールバーのボタンをクリックすると書式を適用できます。未選択の場合はテンプレートが挿入されます。</li><li>ペイン間の仕切りをドラッグして幅を調整し、ペインタイトル横の矢印をクリックしてペインを折りたためます。</li></ul></section><section class="help-section"><h4>書式と挿入</h4><ul><li>見出し、太字、斜体、下線、取り消し線、上下付き文字、引用、リスト、タスクリスト、インラインコード、コードブロックに対応。</li><li>リンク、画像、表、Mermaid 図（フローチャート、シーケンス図、ガントチャートなど 12 種）に対応。</li><li>コードブロックは自動でシンタックスハイライトされ、数式（<code>$...$</code> インライン、<code>$$...$$</code> ブロック）も利用できます。</li></ul></section><section class="help-section"><h4>アウトライン</h4><ul><li>文書の見出しが階層順に左側のアウトラインに表示され、クリックするとその位置へ移動します。</li><li>見出しの前の三角矢印をクリックすると、子見出しを折りたたんだり展開したりできます。</li></ul></section><section class="help-section"><h4>ファイル、インポート、エクスポート</h4><ul><li>新規、開く、保存、名前を付けて保存が可能。UTF-8、GBK、GB18030、Big5 エンコーディングに対応。</li><li>インポートは Markdown、TXT、HTML、DOCX（DOCX は自動で Markdown に変換）に対応。</li><li>Markdown、Word、PDF、HTML、PNG 画像としてエクスポートできます。</li><li>ファイルをウィンドウにドラッグして開くこともできます。</li></ul></section><section class="help-section"><h4>Web ページの Markdown 変換</h4><ul><li>「ツール &rarr; Web to MD」で URL を入力すると、ページを取得して本文を Markdown として抽出できます。</li></ul></section><section class="help-section"><h4>ショートカット</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>新規</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>開く</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>保存</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>名前を付けて保存</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>元に戻す</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>やり直し</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>太字</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>斜体</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>下線</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>リンクの挿入</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>検索</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>置換</span></div><div class="hk"><kbd>F11</kbd><span>全画面切り替え</span></div><div class="hk"><kbd>Tab</kbd><span>インデント</span></div></div></section>`,
+    welcomeDoc: '# DoWhereMarkdownへようこそ\n\n左側に Markdown を入力すると、右側に**リアルタイムプレビュー**が表示され、内容は自動保存されます。\n\n## 主な機能\n\n- アウトラインナビゲーションとツリーの折りたたみ\n- Markdown、TXT、HTML、DOCX のインポート\n- Markdown、Word、PDF、HTML、PNG へのエクスポート\n- Web ページの Markdown 変換\n- ショートカット：Ctrl+S で保存\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: 'このアプリについて',
+    helpDoc: 'ヘルプ',
+    toggleFullscreen: '全画面切り替え',
+    aboutVersion: 'バージョン',
+    aboutDesc: 'シンプルで高機能な Markdown エディタ。リアルタイムプレビュー、アウトライン、変換機能、複数形式のインポート・エクスポートに対応。',
+    aboutBlog: '作者ブログ',
+    aboutOk: 'OK',
     filenameTitle: 'ファイル名',
     filenameDefault: '無題.md',
     save: '保存',
@@ -961,7 +847,7 @@ const i18n = {
     imageHint: 'ローカル画像は Base64 で埋め込まれます。ファイルが大きいとパフォーマンスに影響します。',
     insert: '挿入',
     dropMessage: '放してファイルを開くか画像を挿入',
-    toastSaved: 'ブラウザのローカルに保存しました',
+    toastSaved: '保存しました',
     toastExported: 'ファイルをエクスポートしました',
     toastWordExported: 'Word をエクスポートしました',
     toastHtmlExported: 'HTML をエクスポートしました',
@@ -969,11 +855,11 @@ const i18n = {
     toastPdfExported: 'PDF をエクスポートしました',
     toastPdfFailed: 'PDF のエクスポートに失敗しました：{0}',
     toastPdfFallbackPrint: 'Edge が見つからないため印刷に切り替えます。「PDF として保存」を選択してください',
-    toastImageLibMissing: '画像エクスポートライブラリが読み込まれていません。ネットワークを確認してください',
+    toastImageLibMissing: '画像エクスポートコンポーネントが読み込まれていません',
     toastPreviewGenerated: 'プレビューを生成しました',
     toastImageGenFailed: '画像生成に失敗しました：{0}',
     toastGeneratePreviewFirst: '先にプレビューを生成してください',
-    toastImageDownloaded: '画像をダウンロードしました',
+    toastImageDownloaded: '画像をエクスポートしました',
     toastSaveFailed: '保存に失敗しました：{0}',
     toastFileImported: 'ファイルをインポートしました',
     toastImageInserted: '画像を挿入しました',
@@ -1084,46 +970,16 @@ const i18n = {
     viewOutline: '개요 패널',
     collapseOutline: '개요 접기',
     expandOutline: '개요 펼치기',
-    helpHtml: `<p>이것은 바로 사용할 수 있는 브라우저 Markdown 편집기입니다. 왼쪽에서 작성하면 오른쪽에 실시간으로 미리보기가 표시됩니다. 내용은 브라우저 로컬에 자동 저장되며 다음에 열 때 복원됩니다.</p>
-<p><b>작성 시작</b></p>
-<ul>
-  <li>왼쪽에 Markdown을 입력하면 오른쪽에 실시간으로 렌더링됩니다.</li>
-  <li>도구 모음 버튼으로 제목, 굵게, 목록, 인용, 코드, 링크, 이미지, 표 등을 빠르게 삽입할 수 있습니다.</li>
-  <li>텍스트를 선택한 뒤 서식 버튼을 클릭하면 선택 영역을 자동으로 감싸거나 바꿉니다.</li>
-</ul>
-<p><b>보기 조정</b></p>
-<ul>
-  <li>가운데 구분선을 드래그하여 좌우 너비 조절; 헤더의「⟨」/「⟩」버튼으로 영역 접기/펼치기.</li>
-  <li>도구 모음「보기」에서「편집 + 미리보기 / 편집만 / 미리보기만」전환.</li>
-  <li>오른쪽 상단의「소스」탭에서 Markdown 소스를 직접 수정하고「미리보기」로 돌아가 확인.</li>
-</ul>
-<p><b>저장, 가져오기 및 내보내기</b></p>
-<ul>
-  <li><code>Ctrl+S</code> 또는 💾 저장 클릭; 500ms마다 자동 저장됩니다.</li>
-  <li>⬆ 가져오기로 로컬 .md / .txt를 열거나 파일을 창으로 드래그하세요.</li>
-  <li>⬇ 내보내기로 Markdown, HTML, Word, PDF(PDF로 저장), 이미지 출력.</li>
-</ul>
-<p><b>이미지와 수식</b></p>
-<ul>
-  <li>도구 모음「이미지」는 링크 삽입과 로컬 업로드를 지원; 로컬 이미지는 Base64로 문서에 포함되어 오프라인에서도 사용됩니다.</li>
-  <li><code>$...$</code> 인라인 수식과 <code>$$...$$</code> 블록 수식 지원.</li>
-</ul>
-<p><b>코드 하이라이트</b></p>
-<ul>
-  <li>세 개의 백틱으로 감싼 코드 블록은 언어별로 자동 하이라이트됩니다(highlight.js 기반, 190개 이상 언어 지원).</li>
-  <li>각 코드 블록 상단에 언어 라벨과 줄 수가 표시되고, 우상단 「복사」 버튼으로 원본 코드를 한 번에 복사할 수 있습니다.</li>
-  <li>언어가 지정되지 않은 블록은 하이라이트되지 않고 평문으로 표시됩니다.</li>
-</ul>
-<p><b>Web을 Markdown으로</b></p>
-<ul>
-  <li>🌐을 클릭하고 웹 페이지 링크를 입력하면 본문을 자동으로 추출합니다.</li>
-  <li>데스크톱 버전은 링크만 입력하면 바로 가져올 수 있어 프록시가 필요 없습니다. 브라우저 버전에서 지후·위채 공중계정 등을 가져올 때는「로컬 프록시 사용」을 체크하고 같은 폴더의 <code>web-to-md-proxy.py</code>를 실행하세요.</li>
-  <li>로그인이 필요한 페이지는 <code>python web-to-md-proxy.py --bookmark</code>를 실행해 북마크릿을 생성해 추출하세요.</li>
-</ul>
-<p><b>자주 사용하는 단축키</b>: <code>Ctrl+S</code> 저장, <code>Ctrl+Z</code> 실행 취소, <code>Ctrl+Y / Ctrl+Shift+Z</code> 다시 실행, <code>Ctrl+B</code> 굵게, <code>Ctrl+I</code> 기울임, <code>Ctrl+U</code> 밑줄, <code>Ctrl+K</code> 링크, <code>Ctrl+Shift+K</code> 이미지, <code>Ctrl+F</code> 찾기, <code>Ctrl+H</code> 바꾸기, <code>Tab</code> 4칸 들여쓰기.</p>
-<p style="color:var(--text-muted);font-size:12px;">본 편집기는 「沃垠AI」대표 랭이(Leng Yi)가 개발했습니다. 기능 제안은 WeChat: lengcp2013</p>`,
-    welcomeDoc: '# Markdown 편집기에 오신 것을 환영합니다\n\n왼쪽에 Markdown을 입력하면 오른쪽에 **실시간 미리보기**가 표시됩니다.\n\n## 기능\n\n- 브라우저 로컬에 자동 저장\n- `.md` 파일 가져오기 / 내보내기\n- 오른쪽「소스」모드에서 직접 편집\n- 웹 링크를 Markdown으로 변환\n- 단축키: Ctrl+S 저장\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Markdown 편집기',
+    helpHtml: `<p>DoWhereMarkdown은 Markdown 편집기입니다. 왼쪽에서 작성하면 오른쪽에 실시간으로 미리보기가 표시되며, 내용은 자동으로 저장됩니다.</p><section class="help-section"><h4>시작하기</h4><ul><li>왼쪽 편집 영역에 Markdown을 입력하면 오른쪽 미리보기에 동기화되어 렌더링됩니다.</li><li>텍스트를 선택한 뒤 도구 모음 버튼을 클릭하면 서식이 적용됩니다. 선택하지 않은 경우 템플릿이 삽입됩니다.</li><li>패널 사이의 구분선을 드래그하여 너비를 조정하고, 패널 제목 옆 화살표를 클릭하여 패널을 접을 수 있습니다.</li></ul></section><section class="help-section"><h4>서식 및 삽입</h4><ul><li>제목, 굵게, 기울임, 밑줄, 취소선, 위/아래 첨자, 인용, 목록, 작업 목록, 인라인 코드, 코드 블록을 지원합니다.</li><li>링크, 이미지, 표, Mermaid 다이어그램(순서도, 시퀀스 다이어그램, 간트 차트 등 12종)을 지원합니다.</li><li>코드 블록은 자동 문법 강조가 적용되며, 수식(<code>$...$</code> 인라인, <code>$$...$$</code> 블록)도 지원합니다.</li></ul></section><section class="help-section"><h4>개요</h4><ul><li>문서 제목이 계층 순서로 왼쪽 개요에 표시되며, 클릭하면 해당 위치로 이동합니다.</li><li>제목 앞 삼각형 화살표를 클릭하여 하위 제목을 접거나 펼칠 수 있습니다.</li></ul></section><section class="help-section"><h4>파일, 가져오기 및 내보내기</h4><ul><li>새로 만들기, 열기, 저장, 다른 이름으로 저장이 가능하며 UTF-8, GBK, GB18030, Big5 인코딩을 지원합니다.</li><li>가져오기는 Markdown, TXT, HTML, DOCX(DOCX는 자동으로 Markdown으로 변환)를 지원합니다.</li><li>Markdown, Word, PDF, HTML, PNG 이미지로 내보낼 수 있습니다.</li><li>파일을 창으로 드래그하여 열 수도 있습니다.</li></ul></section><section class="help-section"><h4>웹페이지 Markdown 변환</h4><ul><li>「도구 &rarr; Web to MD」에서 URL을 입력하면 페이지를 가져와 본문을 Markdown으로 추출합니다.</li></ul></section><section class="help-section"><h4>단축키</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>새로 만들기</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>열기</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>저장</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>다른 이름으로 저장</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>실행 취소</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>다시 실행</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>굵게</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>기울임</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>밑줄</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>링크 삽입</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>찾기</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>바꾸기</span></div><div class="hk"><kbd>F11</kbd><span>전체 화면 전환</span></div><div class="hk"><kbd>Tab</kbd><span>들여쓰기</span></div></div></section>`,
+    welcomeDoc: '# DoWhereMarkdown에 오신 것을 환영합니다\n\n왼쪽에 Markdown을 입력하면 오른쪽에 **실시간 미리보기**가 표시되며, 내용은 자동 저장됩니다.\n\n## 주요 기능\n\n- 개요 탐색 및 트리 접기\n- Markdown, TXT, HTML, DOCX 가져오기\n- Markdown, Word, PDF, HTML, PNG로 내보내기\n- 웹페이지 Markdown 변환\n- 단축키: Ctrl+S 저장\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: '정보',
+    helpDoc: '도움말',
+    toggleFullscreen: '전체 화면 전환',
+    aboutVersion: '버전',
+    aboutDesc: '실시간 미리보기, 개요 탐색, 변환 도구와 다중 형식 가져오기/내보내기를 지원하는 간결하고 효율적인 Markdown 편집기.',
+    aboutBlog: '기술 블로그',
+    aboutOk: '확인',
     filenameTitle: '파일 이름',
     filenameDefault: '제목 없음.md',
     save: '저장',
@@ -1229,7 +1085,7 @@ const i18n = {
     imageHint: '로컬 이미지는 Base64로 문서에 포함되며, 파일이 크면 성능과 저장에 영향을 줄 수 있습니다.',
     insert: '삽입',
     dropMessage: '놓아서 파일을 열거나 이미지를 삽입',
-    toastSaved: '브라우저 로컬에 저장되었습니다',
+    toastSaved: '저장되었습니다',
     toastExported: '파일이 내보내졌습니다',
     toastWordExported: 'Word가 내보내졌습니다',
     toastHtmlExported: 'HTML이 내보내졌습니다',
@@ -1237,11 +1093,11 @@ const i18n = {
     toastPdfExported: 'PDF를 내보냈습니다',
     toastPdfFailed: 'PDF 내보내기 실패: {0}',
     toastPdfFallbackPrint: 'Edge가 없어 인쇄로 전환합니다. "PDF로 저장"을 선택하세요',
-    toastImageLibMissing: '이미지 내보내기 라이브러리가 로드되지 않았습니다. 네트워크를 확인하세요',
+    toastImageLibMissing: '이미지 내보내기 컴포넌트가 로드되지 않았습니다',
     toastPreviewGenerated: '미리보기가 생성되었습니다',
     toastImageGenFailed: '이미지 생성 실패: {0}',
     toastGeneratePreviewFirst: '먼저 미리보기를 생성하세요',
-    toastImageDownloaded: '이미지가 다운로드되었습니다',
+    toastImageDownloaded: '이미지가 내보내졌습니다',
     toastSaveFailed: '저장 실패: {0}',
     toastFileImported: '파일을 가져왔습니다',
     toastImageInserted: '이미지가 삽입되었습니다',
@@ -1352,46 +1208,16 @@ const i18n = {
     viewOutline: 'Panel de esquema',
     collapseOutline: 'Contraer esquema',
     expandOutline: 'Expandir esquema',
-    helpHtml: `<p>Este es un editor Markdown listo para usar en el navegador: escribe a la izquierda y previsualiza en tiempo real a la derecha. El contenido se guarda automáticamente en el navegador y se restaura la próxima vez.</p>
-<p><b>Empezar a escribir</b></p>
-<ul>
-  <li>Escribe Markdown a la izquierda; se renderiza a la derecha en tiempo real.</li>
-  <li>Usa los botones de la barra de herramientas para insertar rápidamente títulos, negrita, listas, citas, código, enlaces, imágenes, tablas, etc.</li>
-  <li>Selecciona texto antes de pulsar un botón de formato para envolver o reemplazar la selección.</li>
-</ul>
-<p><b>Ajustar la vista</b></p>
-<ul>
-  <li>Arrastra la barra divisoria para cambiar el tamaño; pulsa los botones “⟨” / “⟩” en los encabezados para contraer o expandir.</li>
-  <li>El menú “Vista” de la barra cambia entre Editar + Previsualizar / Solo editar / Solo previsualizar.</li>
-  <li>La pestaña “Fuente” de la derecha permite editar el Markdown directamente; vuelve a “Vista previa” para ver el resultado.</li>
-</ul>
-<p><b>Guardar, importar y exportar</b></p>
-<ul>
-  <li>Pulsa <code>Ctrl+S</code> o haz clic en 💾 Guardar; el guardado automático se ejecuta cada 500 ms.</li>
-  <li>Haz clic en ⬆ Importar para abrir un archivo .md / .txt local, o arrastra un archivo a la ventana.</li>
-  <li>Haz clic en ⬇ Exportar a Markdown, HTML, Word, PDF (imprimir como PDF) o imagen.</li>
-</ul>
-<p><b>Imágenes y matemáticas</b></p>
-<ul>
-  <li>El botón “Imagen” admite inserción por URL o subida local; las imágenes locales se incrustan como Base64 para uso sin conexión.</li>
-  <li>Admite matemáticas LaTeX en línea <code>$...$</code> y en bloque <code>$$...$$</code>.</li>
-</ul>
-<p><b>Resaltado de código</b></p>
-<ul>
-  <li>Los bloques de código entre tres comillas invertidas se resaltan automáticamente según el lenguaje (basado en highlight.js, más de 190 lenguajes).</li>
-  <li>Cada bloque muestra arriba la etiqueta del lenguaje y el número de líneas; el botón “Copiar” en la esquina superior derecha copia el código original con un clic.</li>
-  <li>Los bloques sin lenguaje permanecen como texto plano, sin adivinanzas de detección automática.</li>
-</ul>
-<p><b>Web a Markdown</b></p>
-<ul>
-  <li>Haz clic en 🌐 e introduce una URL para extraer el cuerpo del artículo.</li>
-  <li>En el escritorio basta con pegar el enlace para obtener la página directamente, sin proxy. En el navegador, activa «Usar proxy local» y ejecuta <code>web-to-md-proxy.py</code> para artículos de Zhihu/WeChat.</li>
-  <li>Para páginas que requieren inicio de sesión, ejecuta <code>python web-to-md-proxy.py --bookmark</code> para generar un bookmarklet.</li>
-</ul>
-<p><b>Atajos comunes</b>: <code>Ctrl+S</code> Guardar, <code>Ctrl+Z</code> Deshacer, <code>Ctrl+Y / Ctrl+Shift+Z</code> Rehacer, <code>Ctrl+B</code> Negrita, <code>Ctrl+I</code> Cursiva, <code>Ctrl+U</code> Subrayado, <code>Ctrl+K</code> Enlace, <code>Ctrl+Shift+K</code> Imagen, <code>Ctrl+F</code> Buscar, <code>Ctrl+H</code> Reemplazar, <code>Tab</code> insertar sangría de 4 espacios.</p>
-<p style="color:var(--text-muted);font-size:12px;">Desarrollado por Leng Yi de Woyin AI. Sugerencias por WeChat: lengcp2013</p>`,
-    welcomeDoc: '# Bienvenido al Editor Markdown\n\nEscribe Markdown a la izquierda y ve la **vista previa en tiempo real** a la derecha.\n\n## Características\n\n- Guardado automático en el almacenamiento local del navegador\n- Importar / exportar archivos `.md`\n- Modo "Fuente" a la derecha para edición directa\n- Convertir enlaces web a Markdown\n- Atajo: Ctrl+S para guardar\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Editor Markdown',
+    helpHtml: `<p>DoWhereMarkdown es un editor de Markdown: escribe a la izquierda y previsualiza en tiempo real a la derecha. El contenido se guarda automáticamente.</p><section class="help-section"><h4>Primeros pasos</h4><ul><li>Escribe Markdown en el editor izquierdo; la vista previa derecha se renderiza en sincronía.</li><li>Selecciona texto y pulsa un botón de la barra de herramientas para aplicarle formato; sin selección, se inserta una plantilla.</li><li>Arrastra los separadores entre paneles para ajustar el ancho; pulsa la flecha junto al título de un panel para contraerlo.</li></ul></section><section class="help-section"><h4>Formato e inserción</h4><ul><li>Admite títulos, negrita, cursiva, subrayado, tachado, super/subíndices, citas, listas, listas de tareas, código en línea y bloques de código.</li><li>Admite enlaces, imágenes, tablas y diagramas Mermaid (12 tipos: flujogramas, diagramas de secuencia, diagramas de Gantt, etc.).</li><li>Los bloques de código incluyen resaltado de sintaxis automático; admite fórmulas matemáticas (<code>$...$</code> en línea, <code>$$...$$</code> en bloque).</li></ul></section><section class="help-section"><h4>Esquema</h4><ul><li>Los títulos del documento aparecen por niveles en el esquema izquierdo; pulsa uno para saltar a él.</li><li>Pulsa el triángulo antes de un título para contraer o expandir sus subtítulos.</li></ul></section><section class="help-section"><h4>Archivos, importación y exportación</h4><ul><li>Puedes crear, abrir, guardar y guardar como; admite las codificaciones UTF-8, GBK, GB18030 y Big5.</li><li>La importación admite Markdown, TXT, HTML y DOCX (DOCX se convierte automáticamente a Markdown).</li><li>Exporta como Markdown, Word, PDF, HTML o imagen PNG.</li><li>También puedes arrastrar archivos a la ventana para abrirlos.</li></ul></section><section class="help-section"><h4>Web a Markdown</h4><ul><li>Introduce una URL en &quot;Herramientas &rarr; Web a MD&quot; para obtener la página y extraer su contenido como Markdown.</li></ul></section><section class="help-section"><h4>Atajos de teclado</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>Nuevo</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>Abrir</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>Guardar</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>Guardar como</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>Deshacer</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>Rehacer</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>Negrita</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>Cursiva</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>Subrayado</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>Insertar enlace</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>Buscar</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>Reemplazar</span></div><div class="hk"><kbd>F11</kbd><span>Pantalla completa</span></div><div class="hk"><kbd>Tab</kbd><span>Sangría</span></div></div></section>`,
+    welcomeDoc: '# Bienvenido a DoWhereMarkdown\n\nEscribe Markdown a la izquierda y ve la **vista previa en tiempo real** a la derecha. El contenido se guarda automáticamente.\n\n## Características\n\n- Navegación por esquema con árbol plegable\n- Importar Markdown, TXT, HTML, DOCX\n- Exportar a Markdown, Word, PDF, HTML, PNG\n- Convertir páginas web a Markdown\n- Atajo: Ctrl+S para guardar\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: 'Acerca de',
+    helpDoc: 'Ayuda',
+    toggleFullscreen: 'Pantalla completa',
+    aboutVersion: 'Versión',
+    aboutDesc: 'Un editor Markdown sencillo y eficiente con vista previa en vivo, navegación por esquema, conversión e importación/exportación en varios formatos.',
+    aboutBlog: 'Blog del autor',
+    aboutOk: 'Aceptar',
     filenameTitle: 'Nombre de archivo',
     filenameDefault: 'Sin título.md',
     save: 'Guardar',
@@ -1497,7 +1323,7 @@ const i18n = {
     imageHint: 'Las imágenes locales se incrustarán como Base64; archivos grandes pueden afectar el rendimiento.',
     insert: 'Insertar',
     dropMessage: 'Suelta para abrir archivo o insertar imagen',
-    toastSaved: 'Guardado en el almacenamiento local del navegador',
+    toastSaved: 'Guardado',
     toastExported: 'Archivo exportado',
     toastWordExported: 'Word exportado',
     toastHtmlExported: 'HTML exportado',
@@ -1505,11 +1331,11 @@ const i18n = {
     toastPdfExported: 'PDF exportado',
     toastPdfFailed: 'Error al exportar el PDF: {0}',
     toastPdfFallbackPrint: 'Edge no encontrado, se recurre a impresión: elige «Guardar como PDF»',
-    toastImageLibMissing: 'La biblioteca de exportación de imágenes no se cargó, verifica la red',
+    toastImageLibMissing: 'No se cargó el componente de exportación de imágenes',
     toastPreviewGenerated: 'Vista previa generada',
     toastImageGenFailed: 'Error al generar la imagen: {0}',
     toastGeneratePreviewFirst: 'Genera una vista previa primero',
-    toastImageDownloaded: 'Imagen descargada',
+    toastImageDownloaded: 'Imagen exportada',
     toastSaveFailed: 'Error al guardar: {0}',
     toastFileImported: 'Archivo importado',
     toastImageInserted: 'Imagen insertada',
@@ -1620,46 +1446,16 @@ const i18n = {
     viewOutline: 'Panneau de plan',
     collapseOutline: 'Réduire le plan',
     expandOutline: 'Développer le plan',
-    helpHtml: `<p>Ceci est un éditeur Markdown prêt à l’emploi dans le navigateur : écrivez à gauche, prévisualisez en direct à droite. Le contenu est automatiquement sauvegardé dans le navigateur et restauré à la prochaine ouverture.</p>
-<p><b>Commencer à écrire</b></p>
-<ul>
-  <li>Saisissez du Markdown à gauche ; il est rendu en temps réel à droite.</li>
-  <li>Utilisez les boutons de la barre d’outils pour insérer rapidement titres, gras, listes, citations, code, liens, images, tableaux, etc.</li>
-  <li>Sélectionnez du texte avant de cliquer sur un bouton de mise en forme pour l’entourer ou le remplacer.</li>
-</ul>
-<p><b>Ajuster l’affichage</b></p>
-<ul>
-  <li>Faites glisser le séparateur pour redimensionner ; cliquez sur les boutons « ⟨ » / « ⟩ » pour réduire ou développer un volet.</li>
-  <li>Le menu « Affichage » de la barre permet de passer entre Édition + Aperçu / Édition seule / Aperçu seul.</li>
-  <li>L’onglet « Source » à droite permet d’éditer directement le Markdown ; revenez à « Aperçu » pour voir le résultat.</li>
-</ul>
-<p><b>Enregistrer, importer et exporter</b></p>
-<ul>
-  <li>Appuyez sur <code>Ctrl+S</code> ou cliquez sur 💾 Enregistrer ; la sauvegarde automatique s’exécute toutes les 500 ms.</li>
-  <li>Cliquez sur ⬆ Importer pour ouvrir un fichier .md / .txt local, ou glissez-déposez un fichier dans la fenêtre.</li>
-  <li>Cliquez sur ⬇ Exporter vers Markdown, HTML, Word, PDF (enregistrer en PDF) ou image.</li>
-</ul>
-<p><b>Images et mathématiques</b></p>
-<ul>
-  <li>Le bouton « Image » prend en charge l’insertion par URL ou le téléversement local ; les images locales sont intégrées en Base64 pour une utilisation hors ligne.</li>
-  <li>Prend en charge les mathématiques LaTeX en ligne <code>$...$</code> et en bloc <code>$$...$$</code>.</li>
-</ul>
-<p><b>Coloration du code</b></p>
-<ul>
-  <li>Les blocs de code entre trois accents graves sont automatiquement colorés selon le langage (basé sur highlight.js, plus de 190 langages pris en charge).</li>
-  <li>Chaque bloc affiche en haut une étiquette de langage et le nombre de lignes ; le bouton « Copier » en haut à droite copie le code original en un clic.</li>
-  <li>Les blocs sans langage restent en texte brut, sans détection automatique hasardeuse.</li>
-</ul>
-<p><b>Web vers Markdown</b></p>
-<ul>
-  <li>Cliquez sur 🌐 et saisissez une URL pour extraire le corps de l’article.</li>
-  <li>Sur ordinateur, collez simplement le lien pour récupérer la page directement, sans proxy. Dans un navigateur, activez « Utiliser le proxy local » et exécutez <code>web-to-md-proxy.py</code> pour les articles Zhihu/WeChat.</li>
-  <li>Pour les pages nécessitant une connexion, exécutez <code>python web-to-md-proxy.py --bookmark</code> pour générer un bookmarklet.</li>
-</ul>
-<p><b>Raccourcis courants</b> : <code>Ctrl+S</code> Enregistrer, <code>Ctrl+Z</code> Annuler, <code>Ctrl+Y / Ctrl+Shift+Z</code> Rétablir, <code>Ctrl+B</code> Gras, <code>Ctrl+I</code> Italique, <code>Ctrl+U</code> Souligné, <code>Ctrl+K</code> Lien, <code>Ctrl+Shift+K</code> Image, <code>Ctrl+F</code> Rechercher, <code>Ctrl+H</code> Remplacer, <code>Tab</code> insérer une indentation de 4 espaces.</p>
-<p style="color:var(--text-muted);font-size:12px;">Développé par Leng Yi de Woyin AI. Suggestions via WeChat : lengcp2013</p>`,
-    welcomeDoc: '# Bienvenue dans l’éditeur Markdown\n\nSaisissez du Markdown à gauche et voyez l’**aperçu en direct** à droite.\n\n## Fonctionnalités\n\n- Sauvegarde automatique dans le stockage local du navigateur\n- Importer / exporter des fichiers `.md`\n- Mode « Source » à droite pour édition directe\n- Convertir des liens Web en Markdown\n- Raccourci : Ctrl+S pour enregistrer\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Éditeur Markdown',
+    helpHtml: `<p>DoWhereMarkdown est un éditeur Markdown : écrivez à gauche, prévisualisez en direct à droite. Le contenu est enregistré automatiquement.</p><section class="help-section"><h4>Premiers pas</h4><ul><li>Saisissez du Markdown dans l’éditeur de gauche ; l’aperçu de droite s’affiche en synchronisation.</li><li>Sélectionnez du texte puis cliquez sur un bouton de la barre d’outils pour le mettre en forme ; sans sélection, un modèle est inséré.</li><li>Faites glisser les séparateurs entre les panneaux pour redimensionner ; cliquez sur la flèche à côté du titre d’un panneau pour le replier.</li></ul></section><section class="help-section"><h4>Mise en forme et insertion</h4><ul><li>Titres, gras, italique, souligné, barré, exposants/indices, citations, listes, listes de tâches, code en ligne et blocs de code.</li><li>Liens, images, tableaux et diagrammes Mermaid (12 types : organigrammes, diagrammes de séquence, diagrammes de Gantt, etc.).</li><li>Les blocs de code bénéficient de la coloration syntaxique automatique ; formules mathématiques prises en charge (<code>$...$</code> en ligne, <code>$$...$$</code> en bloc).</li></ul></section><section class="help-section"><h4>Plan</h4><ul><li>Les titres du document apparaissent par niveau dans le plan à gauche ; cliquez dessus pour y accéder.</li><li>Cliquez sur le triangle devant un titre pour replier ou déplier ses sous-titres.</li></ul></section><section class="help-section"><h4>Fichiers, import et export</h4><ul><li>Créez, ouvrez, enregistrez et enregistrez sous ; prend en charge les encodages UTF-8, GBK, GB18030 et Big5.</li><li>L’import prend en charge Markdown, TXT, HTML et DOCX (DOCX est converti automatiquement en Markdown).</li><li>Exportez en Markdown, Word, PDF, HTML ou image PNG.</li><li>Vous pouvez aussi glisser des fichiers dans la fenêtre pour les ouvrir.</li></ul></section><section class="help-section"><h4>Web vers Markdown</h4><ul><li>Saisissez une URL dans « Outils &rarr; Web vers MD » pour récupérer la page et extraire son contenu en Markdown.</li></ul></section><section class="help-section"><h4>Raccourcis clavier</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>Nouveau</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>Ouvrir</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>Enregistrer</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>Enregistrer sous</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>Annuler</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>Rétablir</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>Gras</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>Italique</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>Souligné</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>Insérer un lien</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>Rechercher</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>Remplacer</span></div><div class="hk"><kbd>F11</kbd><span>Plein écran</span></div><div class="hk"><kbd>Tab</kbd><span>Retrait</span></div></div></section>`,
+    welcomeDoc: '# Bienvenue dans DoWhereMarkdown\n\nSaisissez du Markdown à gauche et voyez l’**aperçu en direct** à droite. Le contenu est enregistré automatiquement.\n\n## Fonctionnalités\n\n- Navigation par plan avec arborescence pliable\n- Importer Markdown, TXT, HTML, DOCX\n- Exporter en Markdown, Word, PDF, HTML, PNG\n- Convertir des pages web en Markdown\n- Raccourci : Ctrl+S pour enregistrer\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: 'À propos',
+    helpDoc: 'Aide',
+    toggleFullscreen: 'Plein écran',
+    aboutVersion: 'Version',
+    aboutDesc: 'Un éditeur Markdown simple et efficace avec aperçu en direct, plan, conversion et import/export multi-formats.',
+    aboutBlog: 'Blog de l’auteur',
+    aboutOk: 'OK',
     filenameTitle: 'Nom du fichier',
     filenameDefault: 'Sans titre.md',
     save: 'Enregistrer',
@@ -1765,7 +1561,7 @@ const i18n = {
     imageHint: 'Les images locales seront intégrées en Base64 ; les fichiers lourds peuvent affecter les performances.',
     insert: 'Insérer',
     dropMessage: 'Déposer pour ouvrir le fichier ou insérer une image',
-    toastSaved: 'Enregistré dans le stockage local du navigateur',
+    toastSaved: 'Enregistré',
     toastExported: 'Fichier exporté',
     toastWordExported: 'Word exporté',
     toastHtmlExported: 'HTML exporté',
@@ -1773,11 +1569,11 @@ const i18n = {
     toastPdfExported: 'PDF exporté',
     toastPdfFailed: 'Échec de l’export PDF : {0}',
     toastPdfFallbackPrint: 'Edge introuvable, bascule vers l’impression : choisissez « Enregistrer au format PDF »',
-    toastImageLibMissing: 'La bibliothèque d’export d’images n’est pas chargée, vérifiez le réseau',
+    toastImageLibMissing: 'Composant d’export d’images non chargé',
     toastPreviewGenerated: 'Aperçu généré',
     toastImageGenFailed: 'Échec de la génération d’image : {0}',
     toastGeneratePreviewFirst: 'Générez d’abord un aperçu',
-    toastImageDownloaded: 'Image téléchargée',
+    toastImageDownloaded: 'Image exportée',
     toastSaveFailed: 'Échec de l’enregistrement : {0}',
     toastFileImported: 'Fichier importé',
     toastImageInserted: 'Image insérée',
@@ -1888,46 +1684,16 @@ const i18n = {
     viewOutline: 'Gliederungsfeld',
     collapseOutline: 'Gliederung einklappen',
     expandOutline: 'Gliederung aufklappen',
-    helpHtml: `<p>Dies ist ein sofort einsatzbereiter Markdown-Editor im Browser: links schreiben, rechts live in der Vorschau ansehen. Der Inhalt wird automatisch im Browser lokal gespeichert und beim nächsten Öffnen wiederhergestellt.</p>
-<p><b>Schreiben beginnen</b></p>
-<ul>
-  <li>Gib links Markdown ein; rechts wird es in Echtzeit gerendert.</li>
-  <li>Verwende die Toolbar-Buttons, um schnell Überschriften, Fett, Listen, Zitate, Code, Links, Bilder, Tabellen usw. einzufügen.</li>
-  <li>Markiere Text vor dem Klick auf einen Format-Button, um die Auswahl einzufassen oder zu ersetzen.</li>
-</ul>
-<p><b>Ansicht anpassen</b></p>
-<ul>
-  <li>Ziehe den Trennbalken, um die Bereiche zu skalieren; klicke auf die „⟨“ / „⟩“ Buttons in den Kopfzeilen, um einen Bereich ein- oder auszuklappen.</li>
-  <li>Das Menü „Ansicht“ in der Toolbar schaltet zwischen Bearbeiten + Vorschau / Nur bearbeiten / Nur Vorschau um.</li>
-  <li>Der Reiter „Quelle“ rechts ermöglicht die direkte Bearbeitung des Markdown; zurück zu „Vorschau“, um das Ergebnis zu sehen.</li>
-</ul>
-<p><b>Speichern, importieren und exportieren</b></p>
-<ul>
-  <li>Drücke <code>Ctrl+S</code> oder klicke auf 💾 Speichern; automatisches Speichern läuft alle 500 ms.</li>
-  <li>Klicke auf ⬆ Importieren, um eine lokale .md / .txt Datei zu öffnen, oder ziehe eine Datei ins Fenster.</li>
-  <li>Klicke auf ⬇ Exportieren nach Markdown, HTML, Word, PDF (als PDF speichern) oder Bild.</li>
-</ul>
-<p><b>Bilder und Mathe</b></p>
-<ul>
-  <li>Der „Bild“-Button unterstützt URL-Einfügung oder lokales Hochladen; lokale Bilder werden als Base64 eingebettet, um offline nutzbar zu sein.</li>
-  <li>Unterstützt LaTeX-Mathe inline <code>$...$</code> und als Block <code>$$...$$</code>.</li>
-</ul>
-<p><b>Code-Hervorhebung</b></p>
-<ul>
-  <li>Codeblöcke in drei Backticks werden automatisch nach Sprache hervorgehoben (basierend auf highlight.js, über 190 Sprachen).</li>
-  <li>Oben im Block werden Sprachlabel und Zeilenanzahl angezeigt; die Schaltfläche „Kopieren“ oben rechts kopiert den Originalcode mit einem Klick.</li>
-  <li>Blöcke ohne Sprache bleiben als reiner Text — keine unsichere Auto-Erkennung.</li>
-</ul>
-<p><b>Web zu Markdown</b></p>
-<ul>
-  <li>Klicke auf 🌐 und gib eine URL ein, um den Artikeltext zu extrahieren.</li>
-  <li>Auf dem Desktop reicht es, den Link einzufügen — die Seite wird direkt ohne Proxy abgerufen. Im Browser aktiviere „Lokalen Proxy verwenden“ und führe <code>web-to-md-proxy.py</code> für Zhihu-/WeChat-Artikel aus.</li>
-  <li>Für Seiten mit Anmeldung führe <code>python web-to-md-proxy.py --bookmark</code> aus, um ein Bookmarklet zu erzeugen.</li>
-</ul>
-<p><b>Häufige Tastenkürzel</b>: <code>Ctrl+S</code> Speichern, <code>Ctrl+Z</code> Rückgängig, <code>Ctrl+Y / Ctrl+Shift+Z</code> Wiederherstellen, <code>Ctrl+B</code> Fett, <code>Ctrl+I</code> Kursiv, <code>Ctrl+U</code> Unterstrichen, <code>Ctrl+K</code> Link, <code>Ctrl+Shift+K</code> Bild, <code>Ctrl+F</code> Suchen, <code>Ctrl+H</code> Ersetzen, <code>Tab</code> 4 Leerzeichen Einzug einfügen.</p>
-<p style="color:var(--text-muted);font-size:12px;">Entwickelt von Leng Yi von Woyin AI. Feedback über WeChat: lengcp2013</p>`,
-    welcomeDoc: '# Willkommen im Markdown-Editor\n\nGeben Sie links Markdown ein und sehen Sie rechts die **Live-Vorschau**.\n\n## Funktionen\n\n- Automatisches Speichern im lokalen Browser-Speicher\n- .md-Dateien importieren / exportieren\n- „Quelle“-Modus rechts für direkte Bearbeitung\n- Weblinks in Markdown umwandeln\n- Tastenkürzel: Ctrl+S zum Speichern\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Markdown-Editor',
+    helpHtml: `<p>DoWhereMarkdown ist ein Markdown-Editor: links schreiben, rechts live vorschauen. Der Inhalt wird automatisch gespeichert.</p><section class="help-section"><h4>Erste Schritte</h4><ul><li>Geben Sie Markdown im linken Editor ein; die rechte Vorschau wird synchron gerendert.</li><li>Text markieren und auf eine Schaltfläche der Symbolleiste klicken, um ihn zu formatieren; ohne Auswahl wird eine Vorlage eingefügt.</li><li>Ziehen Sie die Trennlinien zwischen den Bereichen, um ihre Breite anzupassen; klicken Sie auf den Pfeil neben einem Bereichstitel, um ihn einzuklappen.</li></ul></section><section class="help-section"><h4>Formatierung und Einfügen</h4><ul><li>Unterstützt Überschriften, Fett, Kursiv, Unterstrichen, Durchgestrichen, Hoch-/Tiefstellung, Zitate, Listen, Aufgabenlisten, Inline-Code und Codeblöcke.</li><li>Unterstützt Links, Bilder, Tabellen und Mermaid-Diagramme (12 Typen: Flussdiagramme, Sequenzdiagramme, Gantt-Diagramme usw.).</li><li>Codeblöcke werden automatisch hervorgehoben; mathematische Formeln werden unterstützt (<code>$...$</code> inline, <code>$$...$$</code> als Block).</li></ul></section><section class="help-section"><h4>Gliederung</h4><ul><li>Die Dokumentüberschriften erscheinen nach Ebenen in der linken Gliederung; ein Klick springt zur jeweiligen Stelle.</li><li>Klicken Sie auf das Dreieck vor einer Überschrift, um ihre Unterüberschriften ein- oder auszuklappen.</li></ul></section><section class="help-section"><h4>Dateien, Import und Export</h4><ul><li>Neu, öffnen, speichern, speichern unter; unterstützt die Kodierungen UTF-8, GBK, GB18030 und Big5.</li><li>Der Import unterstützt Markdown, TXT, HTML und DOCX (DOCX wird automatisch in Markdown konvertiert).</li><li>Export als Markdown, Word, PDF, HTML oder PNG-Bild.</li><li>Sie können Dateien auch per Drag & Drop in das Fenster ziehen.</li></ul></section><section class="help-section"><h4>Web zu Markdown</h4><ul><li>Geben Sie eine URL unter „Werkzeuge &rarr; Web to MD“ ein, um die Seite abzurufen und ihren Inhalt als Markdown zu extrahieren.</li></ul></section><section class="help-section"><h4>Tastenkombinationen</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>Neu</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>Öffnen</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>Speichern</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>Speichern unter</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>Rückgängig</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>Wiederherstellen</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>Fett</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>Kursiv</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>Unterstrichen</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>Link einfügen</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>Suchen</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>Ersetzen</span></div><div class="hk"><kbd>F11</kbd><span>Vollbild umschalten</span></div><div class="hk"><kbd>Tab</kbd><span>Einrücken</span></div></div></section>`,
+    welcomeDoc: '# Willkommen bei DoWhereMarkdown\n\nGeben Sie links Markdown ein und sehen Sie rechts die **Live-Vorschau**. Der Inhalt wird automatisch gespeichert.\n\n## Funktionen\n\n- Gliederungsnavigation mit Baum-Einklappfunktion\n- Markdown, TXT, HTML, DOCX importieren\n- Export als Markdown, Word, PDF, HTML, PNG\n- Webseiten in Markdown umwandeln\n- Tastenkürzel: Ctrl+S zum Speichern\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: 'Über',
+    helpDoc: 'Hilfe',
+    toggleFullscreen: 'Vollbild umschalten',
+    aboutVersion: 'Version',
+    aboutDesc: 'Ein übersichtlicher und leistungsfähiger Markdown-Editor mit Live-Vorschau, Gliederung, Konvertierung und Mehrformat-Import/Export.',
+    aboutBlog: 'Blog des Autors',
+    aboutOk: 'OK',
     filenameTitle: 'Dateiname',
     filenameDefault: 'Unbenannt.md',
     save: 'Speichern',
@@ -2033,7 +1799,7 @@ const i18n = {
     imageHint: 'Lokale Bilder werden als Base64 eingebettet; große Dateien können die Leistung beeinträchtigen.',
     insert: 'Einfügen',
     dropMessage: 'Ablegen, um Datei zu öffnen oder Bild einzufügen',
-    toastSaved: 'Im lokalen Browser-Speicher gespeichert',
+    toastSaved: 'Gespeichert',
     toastExported: 'Datei exportiert',
     toastWordExported: 'Word exportiert',
     toastHtmlExported: 'HTML exportiert',
@@ -2041,11 +1807,11 @@ const i18n = {
     toastPdfExported: 'PDF exportiert',
     toastPdfFailed: 'PDF-Export fehlgeschlagen: {0}',
     toastPdfFallbackPrint: 'Edge nicht gefunden, es wird gedruckt – „Als PDF speichern“ wählen',
-    toastImageLibMissing: 'Bildexport-Bibliothek nicht geladen, bitte Netzwerk prüfen',
+    toastImageLibMissing: 'Bildexport-Komponente nicht geladen',
     toastPreviewGenerated: 'Vorschau erstellt',
     toastImageGenFailed: 'Bilderstellung fehlgeschlagen: {0}',
     toastGeneratePreviewFirst: 'Bitte zuerst eine Vorschau erstellen',
-    toastImageDownloaded: 'Bild heruntergeladen',
+    toastImageDownloaded: 'Bild exportiert',
     toastSaveFailed: 'Speichern fehlgeschlagen: {0}',
     toastFileImported: 'Datei importiert',
     toastImageInserted: 'Bild eingefügt',
@@ -2156,46 +1922,16 @@ const i18n = {
     viewOutline: 'Панель структуры',
     collapseOutline: 'Свернуть структуру',
     expandOutline: 'Развернуть структуру',
-    helpHtml: `<p>Это готовый к использованию редактор Markdown в браузере: пишите слева, а справа видите предпросмотр в реальном времени. Содержимое автоматически сохраняется локально в браузере и восстанавливается при следующем открытии.</p>
-<p><b>Начать писать</b></p>
-<ul>
-  <li>Введите Markdown слева; он отобразится справа в реальном времени.</li>
-  <li>Используйте кнопки панели инструментов для быстрой вставки заголовков, жирного текста, списков, цитат, кода, ссылок, изображений, таблиц и т. д.</li>
-  <li>Выделите текст перед нажатием кнопки форматирования, чтобы обернуть или заменить выделение.</li>
-</ul>
-<p><b>Настройка вида</b></p>
-<ul>
-  <li>Перетаскивайте разделитель для изменения размеров; нажимайте кнопки «⟨» / «⟩» в заголовках, чтобы свернуть или развернуть область.</li>
-  <li>Меню «Вид» на панели переключает между Редактирование + Предпросмотр / Только редактирование / Только предпросмотр.</li>
-  <li>Вкладка «Исходный код» справа позволяет редактировать Markdown напрямую; вернитесь на «Предпросмотр», чтобы увидеть результат.</li>
-</ul>
-<p><b>Сохранение, импорт и экспорт</b></p>
-<ul>
-  <li>Нажмите <code>Ctrl+S</code> или кликните 💾 Сохранить; автосохранение работает каждые 500 мс.</li>
-  <li>Кликните ⬆ Импорт, чтобы открыть локальный файл .md / .txt, или перетащите файл в окно.</li>
-  <li>Кликните ⬇ Экспорт в Markdown, HTML, Word, PDF (сохранить как PDF) или изображение.</li>
-</ul>
-<p><b>Изображения и формулы</b></p>
-<ul>
-  <li>Кнопка «Изображение» поддерживает вставку по ссылке или локальную загрузку; локальные изображения встраиваются как Base64 для использования офлайн.</li>
-  <li>Поддерживаются встроенные <code>$...$</code> и блочные <code>$$...$$</code> LaTeX-формулы.</li>
-</ul>
-<p><b>Подсветка кода</b></p>
-<ul>
-  <li>Блоки кода в трёх обратных кавычках автоматически подсвечиваются по языку (на базе highlight.js, более 190 языков).</li>
-  <li>Сверху каждого блока отображаются метка языка и число строк; кнопка «Копировать» в правом верхнем углу копирует исходный код одним кликом.</li>
-  <li>Блоки без указанного языка остаются простым текстом — без непредсказуемого автоопределения.</li>
-</ul>
-<p><b>Web в Markdown</b></p>
-<ul>
-  <li>Кликните 🌐 и введите URL, чтобы извлечь тело статьи.</li>
-  <li>В настольной версии достаточно вставить ссылку — страница загружается напрямую, без прокси. В браузере для статей Zhihu/WeChat включите «Использовать локальный прокси» и запустите <code>web-to-md-proxy.py</code>.</li>
-  <li>Для страниц, требующих входа, запустите <code>python web-to-md-proxy.py --bookmark</code>, чтобы создать букмарклет.</li>
-</ul>
-<p><b>Частые горячие клавиши</b>: <code>Ctrl+S</code> Сохранить, <code>Ctrl+Z</code> Отменить, <code>Ctrl+Y / Ctrl+Shift+Z</code> Повторить, <code>Ctrl+B</code> Жирный, <code>Ctrl+I</code> Курсив, <code>Ctrl+U</code> Подчеркнутый, <code>Ctrl+K</code> Ссылка, <code>Ctrl+Shift+K</code> Изображение, <code>Ctrl+F</code> Найти, <code>Ctrl+H</code> Заменить, <code>Tab</code> вставить отступ в 4 пробела.</p>
-<p style="color:var(--text-muted);font-size:12px;">Разработано Лэн И (Leng Yi) из Woyin AI. Предложения по WeChat: lengcp2013</p>`,
-    welcomeDoc: '# Добро пожаловать в редактор Markdown\n\nВведите Markdown слева и увидите **предпросмотр в реальном времени** справа.\n\n## Возможности\n\n- Автоматическое сохранение в локальное хранилище браузера\n- Импорт / экспорт файлов `.md`\n- Режим «Исходный код» справа для прямого редактирования\n- Преобразование веб-ссылок в Markdown\n- Горячая клавиша: Ctrl+S для сохранения\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Редактор Markdown',
+    helpHtml: `<p>DoWhereMarkdown — это редактор Markdown: пишите слева, предпросмотр в реальном времени справа. Содержимое сохраняется автоматически.</p><section class="help-section"><h4>Начало работы</h4><ul><li>Вводите Markdown в редакторе слева; предпросмотр справа отображается синхронно.</li><li>Выделите текст и нажмите кнопку на панели инструментов, чтобы применить форматирование; без выделения вставляется шаблон.</li><li>Перетаскивайте разделители между панелями для изменения ширины; нажмите стрелку рядом с заголовком панели, чтобы свернуть её.</li></ul></section><section class="help-section"><h4>Форматирование и вставка</h4><ul><li>Поддерживаются заголовки, жирный, курсив, подчёркивание, зачёркивание, верхние/нижние индексы, цитаты, списки, списки задач, строчный код и блоки кода.</li><li>Поддерживаются ссылки, изображения, таблицы и диаграммы Mermaid (12 типов: блок-схемы, диаграммы последовательности, диаграммы Ганта и др.).</li><li>Блоки кода автоматически подсвечиваются; поддерживаются математические формулы (<code>$...$</code> в строке, <code>$$...$$</code> блок).</li></ul></section><section class="help-section"><h4>Структура</h4><ul><li>Заголовки документа по уровням отображаются в структуре слева; нажмите на заголовок, чтобы перейти к нему.</li><li>Нажмите треугольник перед заголовком, чтобы свернуть или развернуть его подзаголовки.</li></ul></section><section class="help-section"><h4>Файлы, импорт и экспорт</h4><ul><li>Можно создать, открыть, сохранить, сохранить как; поддерживаются кодировки UTF-8, GBK, GB18030, Big5.</li><li>Импорт поддерживает Markdown, TXT, HTML, DOCX (DOCX автоматически преобразуется в Markdown).</li><li>Экспорт в Markdown, Word, PDF, HTML или изображение PNG.</li><li>Файлы также можно перетаскивать в окно для открытия.</li></ul></section><section class="help-section"><h4>Веб-страница в Markdown</h4><ul><li>Введите URL в «Инструменты &rarr; Web to MD», чтобы получить страницу и извлечь её содержимое в Markdown.</li></ul></section><section class="help-section"><h4>Горячие клавиши</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>Создать</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>Открыть</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>Сохранить</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>Сохранить как</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>Отменить</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>Повторить</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>Жирный</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>Курсив</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>Подчёркивание</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>Вставить ссылку</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>Найти</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>Заменить</span></div><div class="hk"><kbd>F11</kbd><span>Полный экран</span></div><div class="hk"><kbd>Tab</kbd><span>Отступ</span></div></div></section>`,
+    welcomeDoc: '# Добро пожаловать в DoWhereMarkdown\n\nВведите Markdown слева и увидьте **предпросмотр в реальном времени** справа. Содержимое сохраняется автоматически.\n\n## Возможности\n\n- Навигация по структуре со сворачиванием дерева\n- Импорт Markdown, TXT, HTML, DOCX\n- Экспорт в Markdown, Word, PDF, HTML, PNG\n- Преобразование веб-страниц в Markdown\n- Горячая клавиша: Ctrl+S для сохранения\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: 'О программе',
+    helpDoc: 'Справка',
+    toggleFullscreen: 'Полный экран',
+    aboutVersion: 'Версия',
+    aboutDesc: 'Простой и удобный редактор Markdown с предпросмотром, структурой, преобразованием и импортом/экспортом в разных форматах.',
+    aboutBlog: 'Блог автора',
+    aboutOk: 'ОК',
     filenameTitle: 'Имя файла',
     filenameDefault: 'Без названия.md',
     save: 'Сохранить',
@@ -2301,7 +2037,7 @@ const i18n = {
     imageHint: 'Локальные изображения будут встроены как Base64; большие файлы могут снизить производительность.',
     insert: 'Вставить',
     dropMessage: 'Отпустите, чтобы открыть файл или вставить изображение',
-    toastSaved: 'Сохранено в локальное хранилище браузера',
+    toastSaved: 'Сохранено',
     toastExported: 'Файл экспортирован',
     toastWordExported: 'Word экспортирован',
     toastHtmlExported: 'HTML экспортирован',
@@ -2309,11 +2045,11 @@ const i18n = {
     toastPdfExported: 'PDF экспортирован',
     toastPdfFailed: 'Ошибка экспорта PDF: {0}',
     toastPdfFallbackPrint: 'Edge не найден, переход к печати — выберите «Сохранить как PDF»',
-    toastImageLibMissing: 'Библиотека экспорта изображений не загружена, проверьте сеть',
+    toastImageLibMissing: 'Компонент экспорта изображений не загружен',
     toastPreviewGenerated: 'Предпросмотр создан',
     toastImageGenFailed: 'Ошибка создания изображения: {0}',
     toastGeneratePreviewFirst: 'Сначала создайте предпросмотр',
-    toastImageDownloaded: 'Изображение скачано',
+    toastImageDownloaded: 'Изображение экспортировано',
     toastSaveFailed: 'Ошибка сохранения: {0}',
     toastFileImported: 'Файл импортирован',
     toastImageInserted: 'Изображение вставлено',
@@ -2424,46 +2160,16 @@ const i18n = {
     viewOutline: 'Painel de tópicos',
     collapseOutline: 'Recolher tópicos',
     expandOutline: 'Expandir tópicos',
-    helpHtml: `<p>Este é um editor Markdown pronto para uso no navegador: escreva à esquerda e visualize em tempo real à direita. O conteúdo é salvo automaticamente no navegador e restaurado na próxima vez.</p>
-<p><b>Começar a escrever</b></p>
-<ul>
-  <li>Digite Markdown à esquerda; ele será renderizado à direita em tempo real.</li>
-  <li>Use os botões da barra de ferramentas para inserir rapidamente títulos, negrito, listas, citações, código, links, imagens, tabelas etc.</li>
-  <li>Selecione o texto antes de clicar em um botão de formatação para envolver ou substituir a seleção.</li>
-</ul>
-<p><b>Ajustar a visualização</b></p>
-<ul>
-  <li>Arraste o divisor para redimensionar; clique nos botões “⟨” / “⟩” nos cabeçalhos para recolher ou expandir.</li>
-  <li>O menu “Visualização” da barra alterna entre Editar + Visualizar / Somente editar / Somente visualizar.</li>
-  <li>A aba “Fonte” à direita permite editar o Markdown diretamente; volte para “Pré-visualização” para ver o resultado.</li>
-</ul>
-<p><b>Salvar, importar e exportar</b></p>
-<ul>
-  <li>Pressione <code>Ctrl+S</code> ou clique em 💾 Salvar; o salvamento automático ocorre a cada 500 ms.</li>
-  <li>Clique em ⬆ Importar para abrir um arquivo .md / .txt local, ou arraste um arquivo para a janela.</li>
-  <li>Clique em ⬇ Exportar para Markdown, HTML, Word, PDF (salvar como PDF) ou imagem.</li>
-</ul>
-<p><b>Imagens e matemática</b></p>
-<ul>
-  <li>O botão “Imagem” suporta inserção por URL ou upload local; imagens locais são incorporadas como Base64 para uso offline.</li>
-  <li>Suporta matemática LaTeX inline <code>$...$</code> e em bloco <code>$$...$$</code>.</li>
-</ul>
-<p><b>Realce de código</b></p>
-<ul>
-  <li>Blocos de código entre três crases recebem realce automático por linguagem (com base no highlight.js, mais de 190 linguagens).</li>
-  <li>Cada bloco mostra no topo a etiqueta da linguagem e a contagem de linhas; o botão “Copiar” no canto superior direito copia o código original com um clique.</li>
-  <li>Blocos sem linguagem permanecem como texto puro, sem suposições de detecção automática.</li>
-</ul>
-<p><b>Web para Markdown</b></p>
-<ul>
-  <li>Clique em 🌐 e insira uma URL para extrair o corpo do artigo.</li>
-  <li>Na área de trabalho, basta colar o link para obter a página diretamente, sem proxy. No navegador, ative “Usar proxy local” e execute <code>web-to-md-proxy.py</code> para artigos de Zhihu/WeChat.</li>
-  <li>Para páginas que exigem login, execute <code>python web-to-md-proxy.py --bookmark</code> para gerar um bookmarklet.</li>
-</ul>
-<p><b>Atalhos comuns</b>: <code>Ctrl+S</code> Salvar, <code>Ctrl+Z</code> Desfazer, <code>Ctrl+Y / Ctrl+Shift+Z</code> Refazer, <code>Ctrl+B</code> Negrito, <code>Ctrl+I</code> Itálico, <code>Ctrl+U</code> Sublinhado, <code>Ctrl+K</code> Link, <code>Ctrl+Shift+K</code> Imagem, <code>Ctrl+F</code> Localizar, <code>Ctrl+H</code> Substituir, <code>Tab</code> inserir recuo de 4 espaços.</p>
-<p style="color:var(--text-muted);font-size:12px;">Desenvolvido por Leng Yi da Woyin AI. Sugestões pelo WeChat: lengcp2013</p>`,
-    welcomeDoc: '# Bem-vindo ao Editor Markdown\n\nDigite Markdown à esquerda e veja a **pré-visualização em tempo real** à direita.\n\n## Recursos\n\n- Salvamento automático no armazenamento local do navegador\n- Importar / exportar arquivos `.md`\n- Modo "Fonte" à direita para edição direta\n- Converter links da web para Markdown\n- Atalho: Ctrl+S para salvar\n\n```js\nconsole.log("Hello Markdown!");\n```',
-    brand: 'Editor Markdown',
+    helpHtml: `<p>DoWhereMarkdown é um editor Markdown: escreva à esquerda e visualize em tempo real à direita. O conteúdo é salvo automaticamente.</p><section class="help-section"><h4>Primeiros passos</h4><ul><li>Digite Markdown no editor à esquerda; a pré-visualização à direita é renderizada em sincronia.</li><li>Selecione o texto e clique num botão da barra de ferramentas para aplicar formatação; sem seleção, um modelo é inserido.</li><li>Arraste os separadores entre os painéis para ajustar a largura; clique na seta junto ao título de um painel para o recolher.</li></ul></section><section class="help-section"><h4>Formatação e inserção</h4><ul><li>Suporta títulos, negrito, itálico, sublinhado, tachado, super/subscritos, citações, listas, listas de tarefas, código em linha e blocos de código.</li><li>Suporta links, imagens, tabelas e diagramas Mermaid (12 tipos: fluxogramas, diagramas de sequência, diagramas de Gantt, etc.).</li><li>Os blocos de código têm destaque de sintaxe automático; suporta fórmulas matemáticas (<code>$...$</code> em linha, <code>$$...$$</code> em bloco).</li></ul></section><section class="help-section"><h4>Estrutura</h4><ul><li>Os títulos do documento aparecem por níveis na estrutura à esquerda; clique num deles para saltar para o mesmo.</li><li>Clique no triângulo antes de um título para recolher ou expandir os seus subtítulos.</li></ul></section><section class="help-section"><h4>Ficheiros, importar e exportar</h4><ul><li>Pode criar, abrir, guardar e guardar como; suporta as codificações UTF-8, GBK, GB18030 e Big5.</li><li>A importação suporta Markdown, TXT, HTML e DOCX (DOCX é convertido automaticamente para Markdown).</li><li>Exporte como Markdown, Word, PDF, HTML ou imagem PNG.</li><li>Também pode arrastar ficheiros para a janela para os abrir.</li></ul></section><section class="help-section"><h4>Página Web para Markdown</h4><ul><li>Introduza um URL em «Ferramentas &rarr; Web to MD» para obter a página e extrair o seu conteúdo como Markdown.</li></ul></section><section class="help-section"><h4>Atalhos de teclado</h4><div class="help-keys"><div class="hk"><kbd>Ctrl</kbd><kbd>N</kbd><span>Novo</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>O</kbd><span>Abrir</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>S</kbd><span>Guardar</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>S</kbd><span>Guardar como</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Z</kbd><span>Anular</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>Y</kbd><span>Refazer</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>B</kbd><span>Negrito</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>I</kbd><span>Itálico</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>U</kbd><span>Sublinhado</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>K</kbd><span>Inserir ligação</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>F</kbd><span>Localizar</span></div><div class="hk"><kbd>Ctrl</kbd><kbd>H</kbd><span>Substituir</span></div><div class="hk"><kbd>F11</kbd><span>Ecrã inteiro</span></div><div class="hk"><kbd>Tab</kbd><span>Avanço</span></div></div></section>`,
+    welcomeDoc: '# Bem-vindo ao DoWhereMarkdown\n\nDigite Markdown à esquerda e veja a **pré-visualização em tempo real** à direita. O conteúdo é salvo automaticamente.\n\n## Recursos\n\n- Navegação pela estrutura com árvore retrátil\n- Importar Markdown, TXT, HTML, DOCX\n- Exportar como Markdown, Word, PDF, HTML, PNG\n- Converter páginas web em Markdown\n- Atalho: Ctrl+S para salvar\n\n```js\nconsole.log("Hello Markdown!");\n```',
+    brand: 'DoWhereMarkdown',
+    menuAbout: 'Sobre',
+    helpDoc: 'Ajuda',
+    toggleFullscreen: 'Ecrã inteiro',
+    aboutVersion: 'Versão',
+    aboutDesc: 'Um editor Markdown simples e eficiente com pré-visualização em tempo real, estrutura, conversão e importação/exportação em vários formatos.',
+    aboutBlog: 'Blog do autor',
+    aboutOk: 'OK',
     filenameTitle: 'Nome do arquivo',
     filenameDefault: 'Sem título.md',
     save: 'Salvar',
@@ -2569,7 +2275,7 @@ const i18n = {
     imageHint: 'Imagens locais serão incorporadas como Base64; arquivos grandes podem afetar o desempenho.',
     insert: 'Inserir',
     dropMessage: 'Solte para abrir arquivo ou inserir imagem',
-    toastSaved: 'Salvo no armazenamento local do navegador',
+    toastSaved: 'Salvo',
     toastExported: 'Arquivo exportado',
     toastWordExported: 'Word exportado',
     toastHtmlExported: 'HTML exportado',
@@ -2577,11 +2283,11 @@ const i18n = {
     toastPdfExported: 'PDF exportado',
     toastPdfFailed: 'Falha ao exportar PDF: {0}',
     toastPdfFallbackPrint: 'Edge não encontrado, usando impressão — escolha “Salvar como PDF”',
-    toastImageLibMissing: 'Biblioteca de exportação de imagens não carregada, verifique a rede',
+    toastImageLibMissing: 'Componente de exportação de imagens não carregado',
     toastPreviewGenerated: 'Pré-visualização gerada',
     toastImageGenFailed: 'Falha ao gerar imagem: {0}',
     toastGeneratePreviewFirst: 'Gere uma pré-visualização primeiro',
-    toastImageDownloaded: 'Imagem baixada',
+    toastImageDownloaded: 'Imagem exportada',
     toastSaveFailed: 'Falha ao salvar: {0}',
     toastFileImported: 'Arquivo importado',
     toastImageInserted: 'Imagem inserida',

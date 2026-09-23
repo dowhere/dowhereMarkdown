@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown编辑器</title>
+  <title>DoWhereMarkdown</title>
   <style>
     :root {
       /* 色彩系统：低饱和靛蓝紫 + 中性灰 */
@@ -962,6 +962,47 @@
       transform: translateY(0) scale(1);
       opacity: 1;
     }
+    /* 帮助对话框加宽 */
+    .modal-help { max-width: 720px; }
+    .help-section { margin-bottom: 14px; }
+    .help-section h4 {
+      margin: 0 0 6px; font-size: 14px; font-weight: 600;
+      color: var(--text); display: flex; align-items: center; gap: 8px;
+    }
+    .help-section h4::before {
+      content: ''; width: 3px; height: 13px; border-radius: 2px; background: var(--accent);
+    }
+    .help-section ul { margin: 0; }
+    .help-keys {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px 20px; margin-top: 4px;
+    }
+    .help-keys .hk {
+      display: flex; align-items: center; gap: 3px;
+      padding: 4px 0; border-bottom: 1px solid var(--border);
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .help-keys .hk span { margin-left: auto; }
+    .help-keys kbd {
+      display: inline-block; min-width: 18px; padding: 1px 5px;
+      font-family: var(--font-mono); font-size: 11px; text-align: center;
+      color: var(--text); background: var(--surface);
+      border: 1px solid var(--border); border-bottom-width: 2px;
+      border-radius: 4px; line-height: 1.4;
+    }
+    /* 关于对话框 */
+    .modal-about { max-width: 420px; }
+    .about-body { text-align: center; }
+    .about-logo { width: 72px; height: 72px; border-radius: 16px; margin: 4px auto 12px; display: block; }
+    .about-name { font-size: 20px; font-weight: 700; color: var(--text); }
+    .about-version { font-size: 13px; color: var(--text-muted); margin: 4px 0 12px; }
+    .about-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+    .about-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .about-row a { color: var(--accent); text-decoration: none; }
+    .about-row a:hover { text-decoration: underline; }
     .modal-header {
       display: flex;
       justify-content: space-between;
@@ -1279,16 +1320,6 @@
       display: block;
       box-shadow: var(--shadow);
     }
-    /* 页面全屏 */
-    .app.page-fullscreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 1;
-    }
-    body.page-fullscreen-active { overflow: hidden; }
     /* KaTeX */
     .katex { font-size: 1.1em; }
     .preview-content .katex-display { margin: 16px 0; overflow-x: auto; }
@@ -1436,7 +1467,7 @@
   </svg>
   <div class="app">
     <div class="top-bar">
-      <span class="brand" data-i18n="brand">Markdown编辑器</span>
+      <span class="brand" data-i18n="brand">DoWhereMarkdown</span>
       <input type="text" id="filename" value="未命名文档.md" data-i18n-title="filenameTitle" title="文件名">
       <div class="spacer"></div>
       <div class="top-actions">
@@ -1556,8 +1587,7 @@
           <div class="menu-item" onclick="setLayoutMode('edit');closeAppMenus()"><span data-i18n="viewEdit">仅编辑</span></div>
           <div class="menu-item" onclick="setLayoutMode('preview');closeAppMenus()"><span data-i18n="viewPreview">仅预览</span></div>
           <div class="menu-sep"></div>
-          <div class="menu-item" onclick="togglePageFullscreen();closeAppMenus()"><span data-i18n="pageFullscreen">页面全屏</span></div>
-          <div class="menu-item" onclick="toggleFullscreen();closeAppMenus()"><span data-i18n="systemFullscreen">系统全屏</span></div>
+          <div class="menu-item" onclick="toggleFullscreen();closeAppMenus()"><span data-i18n="toggleFullscreen">切换全屏</span><span class="menu-shortcut">F11</span></div>
           <div class="menu-sep"></div>
           <div class="menu-item" id="outline-toggle-item" onclick="toggleOutline();closeAppMenus()"><span data-i18n="viewOutline">大纲面板</span></div>
         </div>
@@ -1571,7 +1601,9 @@
       <div class="menu" data-menu="help">
         <button type="button" class="menu-label" onclick="toggleAppMenu('help')" data-i18n="help">帮助</button>
         <div class="menu-dropdown">
-          <div class="menu-item" onclick="openHelp();closeAppMenus()"><span data-i18n="help">帮助文档</span></div>
+          <div class="menu-item" onclick="openHelp();closeAppMenus()"><span data-i18n="helpDoc">使用帮助</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" onclick="openAbout();closeAppMenus()"><span data-i18n="menuAbout">关于</span></div>
         </div>
       </div>
     </div>
@@ -1616,7 +1648,6 @@
             <div class="table-size-label" id="table-size-label">0 行 × 0 列</div>
           </div>
         </div>
-        <button onclick="openFindModal()" data-i18n-title="find" title="查找替换 Ctrl+F"><svg class="icon"><use href="#icon-search"></use></svg> <span data-i18n="find">查找</span></button>
         <button onclick="openMermaidModal()" data-i18n-title="mermaid" title="插入 Mermaid 图表"><svg class="icon"><use href="#icon-mermaid"></use></svg> <span data-i18n="mermaid">Mermaid</span></button>
       </div>
     </div>
@@ -1633,7 +1664,6 @@
       <div class="pane editor-pane">
         <div class="pane-header">
           <span class="pane-title" data-i18n="editorPaneTitle">编辑</span>
-          <span data-i18n="editorPaneHint">支持 Markdown 语法</span>
           <button class="collapse-btn" id="editor-collapse-btn" onclick="togglePane('editor')" title="收起编辑区"><svg class="icon icon-sm"><use href="#icon-chevron-left"></use></svg></button>
         </div>
         <textarea id="editor" data-i18n-placeholder="editorPlaceholder" placeholder="开始输入 Markdown..." spellcheck="false"></textarea>
@@ -1643,10 +1673,6 @@
         <div class="pane-header">
           <button class="collapse-btn" id="preview-collapse-btn" onclick="togglePane('preview')" title="收起预览区"><svg class="icon icon-sm"><use href="#icon-chevron-right"></use></svg></button>
           <span class="pane-title" data-i18n="previewPaneTitle">实时预览</span>
-          <div class="preview-toggle">
-            <button class="toggle-btn active" data-mode="preview" onclick="setPreviewMode('preview')" data-i18n="previewTab">预览</button>
-            <button class="toggle-btn" data-mode="source" onclick="setPreviewMode('source')" data-i18n="sourceTab">源码</button>
-          </div>
           <span id="word-count">0 字</span>
         </div>
         <div class="preview-content" id="preview"></div>
@@ -1673,61 +1699,102 @@
 
   <!-- 使用帮助模态框 -->
   <div class="modal-overlay" id="help-modal">
-    <div class="modal">
+    <div class="modal modal-help">
       <div class="modal-header">
         <h3><svg class="icon icon-lg"><use href="#icon-book"></use></svg> <span data-i18n="helpTitle">使用帮助</span></h3>
         <button onclick="closeHelp()"><svg class="icon"><use href="#icon-close"></use></svg></button>
       </div>
       <div class="modal-body" id="help-body">
-        <p>这是一个即开即用的浏览器 Markdown 编辑器：左侧写作，右侧实时预览。内容会自动保存在浏览器本地，下次打开自动恢复。</p>
+        <p>DoWhereMarkdown 是一款 Markdown 编辑器：左侧写作，右侧实时预览，内容自动保存。</p>
 
-        <p><b>开始写作</b></p>
-        <ul>
-          <li>在左侧输入 Markdown，右侧同步渲染。</li>
-          <li>用工具栏按钮快速插入标题、加粗、列表、引用、代码、链接、图片、表格等。</li>
-          <li>选中文字再点格式按钮，可自动包裹或替换选区。</li>
-        </ul>
+        <section class="help-section">
+          <h4>快速上手</h4>
+          <ul>
+            <li>在左侧编辑区输入 Markdown，右侧预览区同步渲染。</li>
+            <li>选中文字后点击工具栏按钮，可自动包裹格式；未选文字时插入模板。</li>
+            <li>拖动面板间的分隔线调整宽度，点击面板标题旁的箭头收起面板。</li>
+          </ul>
+        </section>
 
-        <p><b>调整视图</b></p>
-        <ul>
-          <li>拖动中间分隔线调整左右宽度；点击标题栏的折叠按钮收起或展开区域。</li>
-          <li>工具栏「视图」可切换“编辑 + 预览 / 仅编辑 / 仅预览”。</li>
-          <li>右侧顶部的「源码」标签可直接改源码，切回「预览」看效果。</li>
-        </ul>
+        <section class="help-section">
+          <h4>格式与插入</h4>
+          <ul>
+            <li>支持标题、加粗、斜体、下划线、删除线、上下标、引用、列表、任务列表、行内代码与代码块。</li>
+            <li>支持链接、图片、表格，以及 Mermaid 图表（流程图、时序图、甘特图等 12 种）。</li>
+            <li>代码块自动语法高亮，支持数学公式（<code>$...$</code> 行内、<code>$$...$$</code> 块级）。</li>
+          </ul>
+        </section>
 
-        <p><b>保存、导入与导出</b></p>
-        <ul>
-          <li>按 <code>Ctrl+S</code> 或点「保存」按钮；编辑器每 500ms 自动保存一次。</li>
-          <li>点「导入」导入本地 .md / .txt，或直接把文件拖进窗口。</li>
-          <li>点「导出」导出 Markdown、HTML、Word、PDF（打印另存为）或图片。</li>
-        </ul>
+        <section class="help-section">
+          <h4>大纲导航</h4>
+          <ul>
+            <li>文档标题按层级自动显示在左侧大纲中，点击即可跳转到对应位置。</li>
+            <li>点击标题前的三角箭头可折叠或展开其子标题。</li>
+          </ul>
+        </section>
 
-        <p><b>图片与公式</b></p>
-        <ul>
-          <li>工具栏「图片」支持链接插入或本地上传；本地图片会转为 Base64 嵌入文档，方便离线使用。</li>
-          <li>支持 <code>$...$</code> 行内公式和 <code>$$...$$</code> 块级公式。</li>
-        </ul>
+        <section class="help-section">
+          <h4>文件、导入与导出</h4>
+          <ul>
+            <li>可新建、打开、保存、另存为文件；支持 UTF-8、GBK、GB18030、Big5 编码。</li>
+            <li>「导入」支持 Markdown、TXT、HTML、DOCX（DOCX 自动转换为 Markdown）。</li>
+            <li>「导出为」支持 Markdown、Word、PDF、HTML、PNG 图片。</li>
+            <li>也可以直接把文件拖入窗口打开。</li>
+          </ul>
+        </section>
 
-        <p><b>代码高亮</b></p>
-        <ul>
-          <li>使用三个反引号包裹的代码块会自动按语言进行语法高亮（基于 highlight.js，支持 190+ 种语言）。</li>
-          <li>每个代码块顶部会显示语言标签和行数，右上角「复制」按钮可一键复制原始代码。</li>
-          <li>未指定语言时不进行高亮，保持纯文本样式。</li>
-        </ul>
+        <section class="help-section">
+          <h4>网页转 Markdown</h4>
+          <ul>
+            <li>在「工具 → 网页转 MD」中输入网址，可自动抓取网页并提取正文为 Markdown。</li>
+          </ul>
+        </section>
 
-        <p><b>网页转 Markdown</b></p>
-        <ul>
-          <li>点「网页转 MD」输入网页链接，可自动提取正文。</li>
-          <li>知乎、微信公众号等建议勾选「使用本地代理」，先运行同目录的 <code>web-to-md-proxy.py</code>。</li>
-          <li>需要登录的页面，可运行 <code>python web-to-md-proxy.py --bookmark</code> 生成书签小工具提取。</li>
-        </ul>
-
-        <p><b>常用快捷键</b>：<code>Ctrl+S</code> 保存，<code>Ctrl+Z</code> 撤销，<code>Ctrl+Y / Ctrl+Shift+Z</code> 重做，<code>Ctrl+B</code> 加粗，<code>Ctrl+I</code> 斜体，<code>Ctrl+U</code> 下划线，<code>Ctrl+K</code> 链接，<code>Ctrl+Shift+K</code> 图片，<code>Ctrl+F</code> 查找，<code>Ctrl+H</code> 替换，<code>Tab</code> 插入 4 空格缩进。</p>
-
-        <p style="color:var(--text-muted);font-size:12px;">本编辑器由「沃垠AI」主理人冷逸开发，功能建议请联系微信：lengcp2013</p>
+        <section class="help-section">
+          <h4>快捷键</h4>
+          <div class="help-keys">
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>N</kbd><span>新建</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>O</kbd><span>打开</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>S</kbd><span>保存</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd><span>另存为</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>Z</kbd><span>撤销</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>Y</kbd><span>重做</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>B</kbd><span>加粗</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>I</kbd><span>斜体</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>U</kbd><span>下划线</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>K</kbd><span>插入链接</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>F</kbd><span>查找</span></div>
+            <div class="hk"><kbd>Ctrl</kbd>+<kbd>H</kbd><span>替换</span></div>
+            <div class="hk"><kbd>F11</kbd><span>切换全屏</span></div>
+            <div class="hk"><kbd>Tab</kbd><span>缩进</span></div>
+          </div>
+        </section>
       </div>
       <div class="modal-footer">
         <button onclick="closeHelp()" class="primary" data-i18n="helpOk">知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 关于模态框 -->
+  <div class="modal-overlay" id="about-modal">
+    <div class="modal modal-about">
+      <div class="modal-header">
+        <h3><span data-i18n="menuAbout">关于</span></h3>
+        <button onclick="closeAbout()"><svg class="icon"><use href="#icon-close"></use></svg></button>
+      </div>
+      <div class="modal-body about-body">
+        <img src="logo.png" class="about-logo" alt="DoWhereMarkdown">
+        <div class="about-name">DoWhereMarkdown</div>
+        <div class="about-version"><span data-i18n="aboutVersion">版本</span> <span id="about-version-num">v0.1.0</span></div>
+        <p class="about-desc" data-i18n="aboutDesc">一款简洁高效的 Markdown 编辑器，支持实时预览、大纲导航、格式转换与多格式导入导出。</p>
+        <div class="about-row">
+          <span data-i18n="aboutBlog">作者技术博客</span>
+          <a href="https://www.dowhere.com" onclick="openExternalUrl(this.href);return false;">https://www.dowhere.com</a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeAbout()" class="primary" data-i18n="aboutOk">确定</button>
       </div>
     </div>
   </div>
@@ -1910,7 +1977,6 @@
 
     // 把 let 声明全部提前到顶部，避免 HTML 中 onclick="..." 在 let 到达前触发产生 TDZ 错误
     const LAYOUT_MODE_KEY = 'md_editor_layout_mode';
-    const PAGE_FULLSCREEN_KEY = 'md_editor_page_fullscreen';
     const MAX_HISTORY = 100;
     let historyStack = [];
     let historyIndex = -1;
@@ -2751,6 +2817,10 @@
     });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') hideContextMenu();
+      if (e.key === 'F11') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
     });
     window.addEventListener('scroll', hideContextMenu, true);
     window.addEventListener('resize', hideContextMenu);
@@ -2835,12 +2905,6 @@
         setLayoutMode('both');
       }
       updateViewMenuLabel();
-
-      // 恢复页面全屏
-      if (localStorage.getItem(PAGE_FULLSCREEN_KEY) === 'true') {
-        document.querySelector('.app').classList.add('page-fullscreen');
-        document.body.classList.add('page-fullscreen-active');
-      }
 
       if (!localStorage.getItem(HELP_SHOWN_KEY)) {
         openHelp();
@@ -4657,15 +4721,6 @@ ${css}
       if (btn) btn.innerHTML = (labels[mode] || t('view')) + ' ▾';
     }
 
-    function togglePageFullscreen() {
-      const app = document.querySelector('.app');
-      app.classList.toggle('page-fullscreen');
-      const isActive = app.classList.contains('page-fullscreen');
-      document.body.classList.toggle('page-fullscreen-active', isActive);
-      localStorage.setItem(PAGE_FULLSCREEN_KEY, isActive);
-      showToast(isActive ? t('toastPageFullscreenOn') : t('toastPageFullscreenOff'));
-    }
-
     function toggleFullscreen() {
       if (!document.fullscreenEnabled && !document.webkitFullscreenEnabled) {
         showToast(t('toastNoFullscreenApi'));
@@ -4698,6 +4753,34 @@ ${css}
       el.classList.remove('show');
       setTimeout(() => { if (!el.classList.contains('show')) el.style.display = 'none'; }, 200);
       localStorage.setItem(HELP_SHOWN_KEY, 'true');
+    }
+
+    // 版本号兜底（与 tauri.conf.json version 保持一致）
+    const APP_VERSION = '0.1.0';
+    async function getAppVersion() {
+      try {
+        if (window.__TAURI__ && window.__TAURI__.app && window.__TAURI__.app.getVersion) {
+          const v = await window.__TAURI__.app.getVersion();
+          if (v) return v;
+        }
+      } catch (err) { }
+      return APP_VERSION;
+    }
+
+    // 关于模态框
+    function openAbout() {
+      const el = document.getElementById('about-modal');
+      el.style.display = 'flex';
+      void el.offsetWidth;
+      el.classList.add('show');
+      getAppVersion().then((v) => {
+        document.getElementById('about-version-num').textContent = 'v' + v;
+      });
+    }
+    function closeAbout() {
+      const el = document.getElementById('about-modal');
+      el.classList.remove('show');
+      setTimeout(() => { if (!el.classList.contains('show')) el.style.display = 'none'; }, 200);
     }
 
     // 网页转 Markdown 模态框
