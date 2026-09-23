@@ -344,6 +344,25 @@
     .recent-text { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
     .recent-path { font-size: 11px; color: var(--text-muted); font-weight: 400;
       max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* 自定义右键菜单（容器自带样式，内部复用 .menu-item/.menu-sep） */
+    .ctx-menu {
+      display: none;
+      position: fixed;
+      min-width: 180px;
+      max-width: 300px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 4px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      z-index: 10000;
+      user-select: none;
+    }
+    .ctx-menu.show { display: block; }
+    .ctx-menu .menu-item { gap: 18px; }
+    .ctx-menu .menu-item.disabled { opacity: 0.4; pointer-events: none; }
     /* 纯图标按钮（top-bar 主题切换） */
     .icon-only-btn {
       display: inline-flex;
@@ -533,16 +552,15 @@
       padding: 6px 6px 14px;
     }
     .outline-item {
-      display: block;
-      padding: 5px 8px 5px calc(8px + var(--indent));
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 4px 8px 4px calc(8px + var(--indent));
       font-size: 13px;
       line-height: 1.4;
       color: var(--text-secondary);
       border-radius: var(--radius-sm);
       cursor: pointer;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       user-select: none;
     }
     .outline-item:hover { background: var(--surface); color: var(--text); }
@@ -551,6 +569,35 @@
       color: var(--accent);
       font-weight: 600;
     }
+    /* 树状折叠：三角箭头（展开朝下 rotate90，折叠朝右 0deg） */
+    .outline-twinkle {
+      flex: 0 0 14px;
+      width: 14px;
+      height: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .outline-twinkle svg {
+      width: 10px;
+      height: 10px;
+      transition: transform 0.12s ease;
+      transform: rotate(90deg);
+    }
+    .outline-item.collapsed .outline-twinkle svg { transform: rotate(0deg); }
+    .outline-twinkle.leaf { visibility: hidden; cursor: default; }
+    .outline-twinkle:not(.leaf):hover { background: var(--border); color: var(--text); }
+    .outline-text {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .outline-item.tree-hidden { display: none; }
     .outline-empty {
       padding: 18px 12px;
       font-size: 13px;
@@ -1394,7 +1441,7 @@
       <div class="spacer"></div>
       <div class="top-actions">
         <input type="file" id="importFile" accept=".md,.markdown,.txt" onchange="importFile(this)">
-        <input type="file" id="importHtmlFile" accept=".html,.htm" onchange="importHtmlFile(this)">
+        <input type="file" id="importAnyFile" accept=".md,.markdown,.txt,.html,.htm,.docx" onchange="importAnyFile(this)">
         <button type="button" class="icon-only-btn" onclick="toggleTheme()" data-i18n-title="theme" title="切换主题"><svg class="icon"><use href="#icon-sun"></use></svg></button>
         <div class="dropdown" id="lang-dropdown">
           <button onclick="toggleLangMenu()" data-i18n-title="langLabel"><svg class="icon"><use href="#icon-globe"></use></svg> <span data-i18n="langLabel">语言</span></button>
@@ -1420,7 +1467,7 @@
         <div class="menu-dropdown">
           <div class="menu-item" onclick="clearDoc();closeAppMenus()"><span data-i18n="menuNew">新建</span><span class="menu-shortcut">Ctrl+N</span></div>
           <div class="menu-item" onclick="triggerImport();closeAppMenus()"><span data-i18n="menuOpen">打开…</span><span class="menu-shortcut">Ctrl+O</span></div>
-          <div class="menu-item" onclick="triggerImportHtml();closeAppMenus()"><span data-i18n="menuImport">导入 HTML…</span></div>
+          <div class="menu-item" onclick="triggerImportAny();closeAppMenus()"><span data-i18n="menuImport">导入…</span></div>
           <div class="menu-item has-submenu env-only" id="recent-menu-item">
             <span data-i18n="menuRecent">最近打开</span>
             <span class="menu-caret">▸</span>
@@ -1429,18 +1476,6 @@
           <div class="menu-sep"></div>
           <div class="menu-item" onclick="saveToLocal();closeAppMenus()"><span data-i18n="save">保存</span><span class="menu-shortcut">Ctrl+S</span></div>
           <div class="menu-item" onclick="saveAs();closeAppMenus()"><span data-i18n="menuSaveAs">另存为…</span><span class="menu-shortcut">Ctrl+Shift+S</span></div>
-          <div class="menu-sep"></div>
-          <div class="menu-item has-submenu">
-            <span data-i18n="menuEncoding">编码</span>
-            <span class="menu-caret">▸</span>
-            <div class="menu-submenu" id="encoding-submenu">
-              <div class="menu-item encoding-item" data-encoding="utf-8" onclick="setEncoding('utf-8');"><span data-i18n="encodingUtf8">UTF-8</span></div>
-              <div class="menu-item encoding-item" data-encoding="gbk" onclick="setEncoding('gbk');"><span data-i18n="encodingGbk">GBK</span></div>
-              <div class="menu-item encoding-item" data-encoding="gb18030" onclick="setEncoding('gb18030');"><span data-i18n="encodingGb18030">GB18030</span></div>
-              <div class="menu-item encoding-item" data-encoding="big5" onclick="setEncoding('big5');"><span data-i18n="encodingBig5">Big5</span></div>
-            </div>
-          </div>
-          <div class="menu-item env-only" onclick="openFileLocation();closeAppMenus()"><span data-i18n="menuFileLocation">打开文件位置</span></div>
           <div class="menu-sep"></div>
           <div class="menu-item has-submenu">
             <span data-i18n="menuExportAs">导出为</span>
@@ -1453,6 +1488,18 @@
               <div class="menu-item" onclick="openExportImageModal();closeAppMenus()"><span data-i18n="exportImage">图片 (.png)</span></div>
             </div>
           </div>
+          <div class="menu-sep"></div>
+          <div class="menu-item has-submenu">
+            <span data-i18n="menuEncoding">编码</span>
+            <span class="menu-caret">▸</span>
+            <div class="menu-submenu" id="encoding-submenu">
+              <div class="menu-item encoding-item" data-encoding="utf-8" onclick="setEncoding('utf-8');"><span data-i18n="encodingUtf8">UTF-8</span></div>
+              <div class="menu-item encoding-item" data-encoding="gbk" onclick="setEncoding('gbk');"><span data-i18n="encodingGbk">GBK</span></div>
+              <div class="menu-item encoding-item" data-encoding="gb18030" onclick="setEncoding('gb18030');"><span data-i18n="encodingGb18030">GB18030</span></div>
+              <div class="menu-item encoding-item" data-encoding="big5" onclick="setEncoding('big5');"><span data-i18n="encodingBig5">Big5</span></div>
+            </div>
+          </div>
+          <div class="menu-item env-only" onclick="openFileLocation();closeAppMenus()"><span data-i18n="menuFileLocation">打开文件位置</span></div>
           <div class="menu-sep"></div>
           <div class="menu-item" onclick="exitApp();closeAppMenus()"><span data-i18n="menuExit">退出</span><span class="menu-shortcut">Alt+F4</span></div>
         </div>
@@ -1620,6 +1667,9 @@
   </div>
 
   <div class="toast" id="toast"></div>
+
+  <!-- 自定义右键菜单（内容按右键目标动态生成） -->
+  <div class="ctx-menu" id="context-menu"></div>
 
   <!-- 使用帮助模态框 -->
   <div class="modal-overlay" id="help-modal">
@@ -1847,6 +1897,7 @@
   <script src="vendor/katex.min.js"></script>
   <script src="vendor/auto-render.min.js"></script>
   <script src="vendor/mermaid.min.js"></script>
+  <script src="vendor/mammoth.browser.min.js"></script>
   <script src="vendor/i18n.js"></script>
   <script>
     const editor = document.getElementById('editor');
@@ -1891,6 +1942,8 @@
     let activeOutline = -1;
     let outlineTimer = null;
     let outlineSignature = '';
+    // 树状折叠：被折叠标题在 outlineData 中的索引集合
+    let collapsedOutlineItems = new Set();
 
     function t(key, ...args) {
       const dict = i18n[currentLang] || i18n['zh-CN'];
@@ -2109,6 +2162,16 @@
     });
     editor.addEventListener('scroll', updateActiveOutline);
 
+    // Tauri 内左键点预览外链会让整个 webview 直接导航走、应用界面丢失：
+    // 拦截外链点击改为系统浏览器打开（页内 #锚点 保持默认跳转）
+    preview.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      if ((a.getAttribute('href') || '').charAt(0) === '#') return;
+      e.preventDefault();
+      openExternalUrl(a.href);
+    });
+
     // ========== 左侧大纲面板 ==========
     const outlinePane = document.getElementById('outline-pane');
     const outlineList = document.getElementById('outline-list');
@@ -2183,6 +2246,8 @@
       }
       outlineSignature = signature;
       outlineData = headings;
+      // 标题结构已变（新增/删除/改名标题），旧折叠索引失效
+      collapsedOutlineItems.clear();
 
       if (!headings.length) {
         outlineList.innerHTML = '<div class="outline-empty"></div>';
@@ -2196,8 +2261,25 @@
         const item = document.createElement('div');
         item.className = 'outline-item';
         item.style.setProperty('--indent', (h.level - 1) * 12 + 'px');
-        item.textContent = h.text;
         item.title = h.text;
+
+        // 三角箭头：仅当后面紧跟更深层级标题时该项才有子节点
+        const hasChildren = i + 1 < headings.length && headings[i + 1].level > h.level;
+        const twinkle = document.createElement('span');
+        twinkle.className = 'outline-twinkle' + (hasChildren ? '' : ' leaf');
+        if (hasChildren) {
+          twinkle.innerHTML = '<svg class="icon"><use href="#icon-chevron-right"></use></svg>';
+          twinkle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleOutlineItem(i);
+          });
+        }
+        const textEl = document.createElement('span');
+        textEl.className = 'outline-text';
+        textEl.textContent = h.text;
+
+        item.appendChild(twinkle);
+        item.appendChild(textEl);
         item.addEventListener('click', () => jumpToOutline(i));
         frag.appendChild(item);
       });
@@ -2205,6 +2287,56 @@
       outlineList.appendChild(frag);
       activeOutline = -1;
       updateActiveOutline();
+    }
+
+    // 折叠/展开某个大纲标题的子树
+    function toggleOutlineItem(i) {
+      if (collapsedOutlineItems.has(i)) collapsedOutlineItems.delete(i);
+      else collapsedOutlineItems.add(i);
+      applyOutlineTreeVisibility();
+      // 折叠后若当前高亮项落在被隐藏的子树中，高亮移到该项本身
+      if (collapsedOutlineItems.has(i) && isOutlineDescendant(i, activeOutline)) {
+        setActiveOutline(i);
+      }
+    }
+
+    // 判断 j 是否为 i 的子孙标题（i<j，中间不存在 level<=i 的项）
+    function isOutlineDescendant(i, j) {
+      if (j <= i) return false;
+      const lv = outlineData[i].level;
+      for (let k = i + 1; k <= j; k++) {
+        if (outlineData[k].level <= lv) return false;
+      }
+      return true;
+    }
+
+    // 根据折叠集合更新每项可见性与箭头方向（祖先栈一次遍历）
+    function applyOutlineTreeVisibility() {
+      const items = outlineList.querySelectorAll('.outline-item');
+      const stack = [];   // { level, collapsed }
+      items.forEach((el, i) => {
+        const lv = outlineData[i].level;
+        while (stack.length && stack[stack.length - 1].level >= lv) stack.pop();
+        const hidden = stack.some((a) => a.collapsed);
+        el.classList.toggle('tree-hidden', hidden);
+        el.classList.toggle('collapsed', collapsedOutlineItems.has(i));
+        stack.push({ level: lv, collapsed: collapsedOutlineItems.has(i) });
+      });
+    }
+
+    // 大纲：全部展开 / 全部折叠（右键菜单用）
+    function expandAllOutlineItems() {
+      collapsedOutlineItems.clear();
+      applyOutlineTreeVisibility();
+    }
+    function collapseAllOutlineItems() {
+      collapsedOutlineItems.clear();
+      outlineData.forEach((h, i) => {
+        if (i + 1 < outlineData.length && outlineData[i + 1].level > h.level) {
+          collapsedOutlineItems.add(i);
+        }
+      });
+      applyOutlineTreeVisibility();
     }
 
     // 点击大纲项：编辑器光标与预览同时跳到该标题
@@ -2254,7 +2386,14 @@
         if (outlineData[i].el && outlineData[i].el.offsetTop - pad <= pos) current = i;
         else break;
       }
-      if (current !== -1 && current !== activeOutline) setActiveOutline(current);
+      if (current !== -1) {
+        // current 可能位于被折叠隐藏的子树中，向前回退到最近可见祖先
+        const itemEls = outlineList.querySelectorAll('.outline-item');
+        while (current > 0 && itemEls[current] && itemEls[current].classList.contains('tree-hidden')) {
+          current--;
+        }
+        if (current !== activeOutline) setActiveOutline(current);
+      }
     }
 
     // 折叠 / 展开大纲
@@ -2302,9 +2441,10 @@
       else document.getElementById('importFile').click();
     }
 
-    // 导入 HTML 文件（转 Markdown）
-    function triggerImportHtml() {
-      document.getElementById('importHtmlFile').click();
+    // 触发"导入…"：两环境同路径，走统一隐藏 input
+    // （支持 docx/txt/html；不经 dialog.open，导入内容不绑定磁盘路径）
+    function triggerImportAny() {
+      document.getElementById('importAnyFile').click();
     }
 
     // ========== 顶部菜单栏 ==========
@@ -2345,6 +2485,275 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeAppMenus();
     });
+
+    // ========== 自定义右键菜单 ==========
+    const ctxMenu = document.getElementById('context-menu');
+
+    function hideContextMenu() {
+      ctxMenu.classList.remove('show');
+      ctxMenu.innerHTML = '';
+    }
+
+    // 菜单项工厂（label/动作；disabled 时灰显不可点）
+    function ctxItem(label, onClick, disabled) {
+      const item = document.createElement('div');
+      item.className = 'menu-item' + (disabled ? ' disabled' : '');
+      const text = document.createElement('span');
+      text.textContent = label;
+      item.appendChild(text);
+      if (!disabled) {
+        item.addEventListener('click', () => {
+          hideContextMenu();
+          try { onClick(); } catch (err) { console.error(err); }
+        });
+      }
+      return item;
+    }
+
+    function ctxSep() {
+      const s = document.createElement('div');
+      s.className = 'menu-sep';
+      return s;
+    }
+
+    // 先渲染再按视口边界翻转定位
+    function showContextMenuAt(e) {
+      ctxMenu.classList.add('show');
+      const w = ctxMenu.offsetWidth;
+      const h = ctxMenu.offsetHeight;
+      let x = e.clientX;
+      let y = e.clientY;
+      if (x + w > window.innerWidth) x = Math.max(0, e.clientX - w);
+      if (y + h > window.innerHeight) y = Math.max(0, e.clientY - h);
+      ctxMenu.style.left = x + 'px';
+      ctxMenu.style.top = y + 'px';
+    }
+
+    // 复制文本到剪贴板：navigator.clipboard → Tauri 插件 → execCommand 兜底
+    async function copyText(text) {
+      if (!text) return false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (err) { }
+      try {
+        const cb = window.__TAURI__ && (window.__TAURI__.clipboardManager || window.__TAURI__.clipboard);
+        if (inTauriApp() && cb) {
+          await cb.writeText(text);
+          return true;
+        }
+      } catch (err) { }
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    // 在系统默认浏览器中打开地址
+    function openExternalUrl(url) {
+      try {
+        if (inTauriApp() && window.__TAURI__ && window.__TAURI__.opener
+            && window.__TAURI__.opener.openUrl) {
+          window.__TAURI__.opener.openUrl(url).catch((err) => {
+            console.error(err);
+            window.open(url, '_blank');
+          });
+        } else {
+          window.open(url, '_blank');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 输入框（textarea/input）是否有选中文本
+    function hasInputSelection(el) {
+      return el.selectionStart !== el.selectionEnd;
+    }
+
+    function ctxCut(el) {
+      const text = el.value.slice(el.selectionStart, el.selectionEnd);
+      copyText(text).then((ok) => {
+        if (!ok) { showToast(t('toastCopyFailed')); return; }
+        el.setRangeText('');
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        showToast(t('toastCopied'));
+      });
+    }
+
+    function ctxCopy(el) {
+      const text = el.value.slice(el.selectionStart, el.selectionEnd);
+      copyText(text).then((ok) => {
+        showToast(ok ? t('toastCopied') : t('toastCopyFailed'));
+      });
+    }
+
+    // 粘贴：Tauri 走 clipboard 插件读文本后写入选区；浏览器尝试 execCommand
+    async function ctxPaste(el) {
+      el.focus();
+      const cb = window.__TAURI__ && (window.__TAURI__.clipboardManager || window.__TAURI__.clipboard);
+      if (inTauriApp() && cb) {
+        try {
+          const text = await cb.readText();
+          if (text) {
+            el.setRangeText(text, el.selectionStart, el.selectionEnd, 'end');
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          return;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      let ok = false;
+      try { ok = document.execCommand('paste'); } catch (err) { }
+      if (!ok) showToast(t('toastPasteFailed'));
+    }
+
+    function ctxSelectAll(el) {
+      if (el === preview) {
+        const range = document.createRange();
+        range.selectNodeContents(preview);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else {
+        el.focus();
+        el.select();
+      }
+    }
+
+    // 编辑器：撤销/重做 + 剪切/复制/粘贴/全选
+    function renderEditorCtx(e, el) {
+      el.focus();
+      const hasSel = hasInputSelection(el);
+      ctxMenu.appendChild(ctxItem(t('menuUndo'), undo));
+      ctxMenu.appendChild(ctxItem(t('menuRedo'), redo));
+      ctxMenu.appendChild(ctxSep());
+      ctxMenu.appendChild(ctxItem(t('ctxCut'), () => ctxCut(el), !hasSel));
+      ctxMenu.appendChild(ctxItem(t('ctxCopy'), () => ctxCopy(el), !hasSel));
+      ctxMenu.appendChild(ctxItem(t('ctxPaste'), () => ctxPaste(el)));
+      ctxMenu.appendChild(ctxSep());
+      ctxMenu.appendChild(ctxItem(t('ctxSelectAll'), () => ctxSelectAll(el)));
+      showContextMenuAt(e);
+    }
+
+    // 普通文本输入框（文件名、模态框输入等）：剪切/复制/粘贴/全选
+    function renderInputCtx(e, el) {
+      el.focus();
+      const readOnly = el.readOnly;
+      const hasSel = hasInputSelection(el);
+      ctxMenu.appendChild(ctxItem(t('ctxCut'), () => ctxCut(el), readOnly || !hasSel));
+      ctxMenu.appendChild(ctxItem(t('ctxCopy'), () => ctxCopy(el), !hasSel));
+      ctxMenu.appendChild(ctxItem(t('ctxPaste'), () => ctxPaste(el), readOnly));
+      ctxMenu.appendChild(ctxSep());
+      ctxMenu.appendChild(ctxItem(t('ctxSelectAll'), () => ctxSelectAll(el)));
+      showContextMenuAt(e);
+    }
+
+    // 预览区：链接/图片专属项 + 复制选区/全选
+    function renderPreviewCtx(e, target) {
+      const anchor = target.closest('a[href]');
+      const image = target.closest('img');
+      if (anchor) {
+        ctxMenu.appendChild(ctxItem(t('ctxCopyLink'),
+          () => { copyText(anchor.href).then((ok) => showToast(ok ? t('toastCopied') : t('toastCopyFailed'))); }));
+        ctxMenu.appendChild(ctxItem(t('ctxOpenLink'), () => openExternalUrl(anchor.href)));
+      }
+      if (image) {
+        ctxMenu.appendChild(ctxItem(t('ctxCopyImage'),
+          () => { copyText(image.src).then((ok) => showToast(ok ? t('toastCopied') : t('toastCopyFailed'))); }));
+        if (/^https?:/i.test(image.src)) {
+          ctxMenu.appendChild(ctxItem(t('ctxOpenImage'), () => openExternalUrl(image.src)));
+        }
+      }
+      if (anchor || image) ctxMenu.appendChild(ctxSep());
+      const selText = String(window.getSelection() || '');
+      ctxMenu.appendChild(ctxItem(t('ctxCopy'),
+        () => { copyText(selText).then((ok) => showToast(ok ? t('toastCopied') : t('toastCopyFailed'))); },
+        !selText));
+      ctxMenu.appendChild(ctxItem(t('ctxSelectAll'), () => ctxSelectAll(preview)));
+      showContextMenuAt(e);
+    }
+
+    // 大纲：全部展开 / 全部折叠
+    function renderOutlineCtx(e) {
+      ctxMenu.appendChild(ctxItem(t('ctxExpandAll'), expandAllOutlineItems));
+      ctxMenu.appendChild(ctxItem(t('ctxCollapseAll'), collapseAllOutlineItems));
+      showContextMenuAt(e);
+    }
+
+    // 空白区域：常用文件操作
+    function renderGlobalCtx(e) {
+      ctxMenu.appendChild(ctxItem(t('menuNew'), clearDoc));
+      ctxMenu.appendChild(ctxItem(t('menuOpen'), triggerImport));
+      ctxMenu.appendChild(ctxItem(t('menuImport'), triggerImportAny));
+      ctxMenu.appendChild(ctxSep());
+      ctxMenu.appendChild(ctxItem(t('save'), saveToLocal));
+      ctxMenu.appendChild(ctxItem(t('menuSaveAs'), saveAs));
+      ctxMenu.appendChild(ctxSep());
+      ctxMenu.appendChild(ctxItem(t('menuExit'), exitApp));
+      showContextMenuAt(e);
+    }
+
+    document.addEventListener('contextmenu', (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      // 顶部菜单栏不接管（保留菜单按钮自身行为）
+      if (target.closest('.menu-bar')) return;
+
+      closeAppMenus();
+
+      if (target.closest('#outline-list')) {
+        if (!outlineData.length) return;
+        e.preventDefault();
+        renderOutlineCtx(e);
+        return;
+      }
+      if (target.closest('#editor')) {
+        e.preventDefault();
+        renderEditorCtx(e, document.getElementById('editor'));
+        return;
+      }
+      if (target.closest('#preview')) {
+        e.preventDefault();
+        renderPreviewCtx(e, target);
+        return;
+      }
+      const input = target.closest(
+        'input[type="text"], input[type="search"], input:not([type]), textarea'
+      );
+      if (input && !input.disabled) {
+        e.preventDefault();
+        renderInputCtx(e, input);
+        return;
+      }
+      // 模态框内非输入区域不接管
+      if (target.closest('.modal')) return;
+
+      e.preventDefault();
+      renderGlobalCtx(e);
+    });
+
+    // 关闭时机：点击外部（mousedown，菜单项自身的 click 不受影响）、Esc、滚动、缩放
+    document.addEventListener('mousedown', (e) => {
+      if (!e.target.closest('#context-menu')) hideContextMenu();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hideContextMenu();
+    });
+    window.addEventListener('scroll', hideContextMenu, true);
+    window.addEventListener('resize', hideContextMenu);
 
     // 初始化：恢复内容、文件名、主题
     function init() {
@@ -3344,10 +3753,11 @@ ${css}
     }
 
     // 统一载入内容（打开文件 / Tauri 原生打开 / 导入 HTML / 最近打开共用）
-    function loadContent(text, name, path) {
+    function loadContent(text, name, path, keepExtension) {
       editor.value = text;
       if (name) {
-        if (!name.toLowerCase().endsWith('.md') && !name.toLowerCase().endsWith('.markdown')) {
+        // 导入 txt 直读时保留原扩展名；其余统一补 .md
+        if (!keepExtension && !name.toLowerCase().endsWith('.md') && !name.toLowerCase().endsWith('.markdown')) {
           name += '.md';
         }
         filenameInput.value = name;
@@ -3407,10 +3817,28 @@ ${css}
     }
 
     // ===== 导入 HTML 文件 → Markdown =====
-    function importHtmlFile(input) {
+    // "导入…"统一入口：按扩展名分流（md/txt 直读；html 转 MD；docx 走 mammoth）
+    function importAnyFile(input) {
       const file = input.files[0];
       input.value = '';
       if (!file) return;
+      const lower = file.name.toLowerCase();
+      if (lower.endsWith('.docx')) {
+        importDocxFile(file);
+      } else if (lower.endsWith('.html') || lower.endsWith('.htm')) {
+        importHtmlAsMd(file);
+      } else if (lower.endsWith('.txt')) {
+        // txt 直读并保留 .txt 文件名（md/markdown 走常规 loadFile）
+        const reader = new FileReader();
+        reader.onload = (e) => loadContent(e.target.result, file.name, null, true);
+        reader.readAsText(file, fileEncoding);
+      } else {
+        loadFile(file);
+      }
+    }
+
+    // 本地 HTML 文件 → Markdown（完整网页：先提取主体）
+    function importHtmlAsMd(file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
@@ -3427,6 +3855,31 @@ ${css}
         }
       };
       reader.readAsText(file);
+    }
+
+    // docx → Markdown：mammoth 转 HTML 片段 → 复用 DOM→MD 转换器
+    async function importDocxFile(file) {
+      try {
+        if (typeof mammoth === 'undefined') {
+          showToast(t('toastDocxLibMissing'));
+          return;
+        }
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+        // mammoth 输出无 <html>/<head> 的片段（图片为 data URI），
+        // 不做 extractMainContent；直接包 body 解析
+        const htmlDoc = new DOMParser().parseFromString(
+          '<body>' + result.value + '</body>', 'text/html'
+        );
+        const cleaned = stripUnwantedElements(htmlDoc.body.cloneNode(true));
+        const md = htmlToMarkdown(cleaned, { baseUrl: null })
+          .replace(/\n{3,}/g, '\n\n').trim();
+        const name = file.name.replace(/\.docx$/i, '') + '.md';
+        loadContent(md, name, null);
+      } catch (err) {
+        console.error(err);
+        showToast(t('toastSaveFailed', String(err && err.message || err)));
+      }
     }
 
     // ===== 另存为 =====
@@ -4824,6 +5277,14 @@ ${css}
       const ext = file.name.split('.').pop().toLowerCase();
 
       const allowedText = ['md', 'markdown', 'txt'];
+      if (ext === 'docx') {
+        importDocxFile(file);
+        return;
+      }
+      if (ext === 'html' || ext === 'htm') {
+        importHtmlAsMd(file);
+        return;
+      }
       if (allowedText.includes(ext)) {
         loadFile(file);
         return;

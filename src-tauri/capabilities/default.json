@@ -8,6 +8,8 @@
     "opener:default",
     "dialog:allow-save",
     "dialog:allow-open",
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-write-text",
     "core:window:allow-close",
     "core:window:allow-set-title"
   ]
