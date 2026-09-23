@@ -4,18 +4,35 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::Duration;
 
+use encoding_rs::{Encoding, UTF_8};
 use serde::Serialize;
 
-// 将文本内容写入指定路径（导出 .md / .doc / .html）
+// 按指定编码（IANA 标签，None 或无法识别时为 UTF-8）将文本写入文件
+// 注：encoding_rs 对目标编码无法表示的字符会输出 ASCII 数字字符实体（&#..;），不丢内容
 #[tauri::command]
-fn save_text_file(path: &str, contents: &str) -> Result<(), String> {
-    fs::write(Path::new(path), contents).map_err(|e| e.to_string())
+fn save_text_file(path: &str, contents: &str, encoding: Option<String>) -> Result<(), String> {
+    let enc = encoding
+        .as_deref()
+        .and_then(|label| Encoding::for_label(label.as_bytes()))
+        .unwrap_or(UTF_8);
+    let (bytes, _enc, _had_errors) = enc.encode(contents);
+    fs::write(Path::new(path), &bytes).map_err(|e| e.to_string())
 }
 
 // 将二进制内容写入指定路径（导出 .png）
 #[tauri::command]
 fn save_binary_file(path: &str, bytes: Vec<u8>) -> Result<(), String> {
     fs::write(Path::new(path), &bytes).map_err(|e| e.to_string())
+}
+
+// 按指定编码读取文本文件（打开/最近打开；None 或无法识别时为 UTF-8）
+#[tauri::command]
+fn read_text_file(path: String, encoding: Option<String>) -> Result<String, String> {
+    let bytes = fs::read(Path::new(&path)).map_err(|e| format!("读取文件失败: {e}"))?;
+    let enc = encoding
+        .and_then(|label| Encoding::for_label(label.as_bytes()))
+        .unwrap_or(UTF_8);
+    Ok(enc.decode(&bytes).0.into_owned())
 }
 
 // 网页抓取结果：html 为页面源码，final_url 为重定向后的最终地址（用于解析相对链接）
@@ -208,6 +225,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             save_text_file,
             save_binary_file,
+            read_text_file,
             fetch_web_page,
             html_to_pdf
         ])

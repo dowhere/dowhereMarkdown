@@ -317,6 +317,33 @@
     .menu-item:hover .menu-shortcut { color: var(--accent); }
     .menu-sep { height: 1px; background: var(--border); margin: 4px 6px; }
     .menu-item.checked > span:first-child::before { content: '✓ '; color: var(--accent); font-weight: 700; }
+    /* 级联子菜单（导出为 / 编码 / 最近打开） */
+    .menu-caret { color: var(--text-muted); font-size: 11px; margin-left: 18px; }
+    .menu-item.has-submenu { position: relative; }
+    .menu-submenu {
+      display: none;
+      position: absolute;
+      top: -5px;
+      left: 100%;
+      min-width: 200px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 4px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      z-index: 1001;
+    }
+    .menu-item.has-submenu:hover .menu-submenu,
+    .menu-item.has-submenu.submenu-open .menu-submenu { display: block; }
+    .menu-item.disabled { color: var(--text-muted); pointer-events: none; }
+    /* 仅桌面（Tauri）环境可用的菜单项：最近打开 / 打开文件位置 */
+    body:not(.in-tauri) .env-only { display: none; }
+    /* 最近文件子菜单：路径作为第二行小字 */
+    .recent-text { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+    .recent-path { font-size: 11px; color: var(--text-muted); font-weight: 400;
+      max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     /* 纯图标按钮（top-bar 主题切换） */
     .icon-only-btn {
       display: inline-flex;
@@ -803,6 +830,26 @@
       max-width: 100%;
       height: auto;
     }
+    /* Mermaid 模态框内实时预览 */
+    .mermaid-preview {
+      min-height: 170px;
+      max-height: 300px;
+      overflow: auto;
+      margin-top: 10px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      text-align: center;
+    }
+    .mermaid-preview:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .mermaid-preview .mermaid svg { max-width: 100%; height: auto; }
+    .mermaid-preview .mermaid-error { color: #d33f49; font-size: 12px;
+      text-align: left; white-space: pre-wrap; font-family: var(--font-mono); }
     .preview-content th, .preview-content td {
       border: 1px solid var(--border);
       padding: 10px 14px;
@@ -1347,6 +1394,7 @@
       <div class="spacer"></div>
       <div class="top-actions">
         <input type="file" id="importFile" accept=".md,.markdown,.txt" onchange="importFile(this)">
+        <input type="file" id="importHtmlFile" accept=".html,.htm" onchange="importHtmlFile(this)">
         <button type="button" class="icon-only-btn" onclick="toggleTheme()" data-i18n-title="theme" title="切换主题"><svg class="icon"><use href="#icon-sun"></use></svg></button>
         <div class="dropdown" id="lang-dropdown">
           <button onclick="toggleLangMenu()" data-i18n-title="langLabel"><svg class="icon"><use href="#icon-globe"></use></svg> <span data-i18n="langLabel">语言</span></button>
@@ -1372,13 +1420,41 @@
         <div class="menu-dropdown">
           <div class="menu-item" onclick="clearDoc();closeAppMenus()"><span data-i18n="menuNew">新建</span><span class="menu-shortcut">Ctrl+N</span></div>
           <div class="menu-item" onclick="triggerImport();closeAppMenus()"><span data-i18n="menuOpen">打开…</span><span class="menu-shortcut">Ctrl+O</span></div>
-          <div class="menu-item" onclick="saveToLocal();closeAppMenus()"><span data-i18n="save">保存</span><span class="menu-shortcut">Ctrl+S</span></div>
+          <div class="menu-item" onclick="triggerImportHtml();closeAppMenus()"><span data-i18n="menuImport">导入 HTML…</span></div>
+          <div class="menu-item has-submenu env-only" id="recent-menu-item">
+            <span data-i18n="menuRecent">最近打开</span>
+            <span class="menu-caret">▸</span>
+            <div class="menu-submenu" id="recent-submenu"></div>
+          </div>
           <div class="menu-sep"></div>
-          <div class="menu-item" onclick="exportFile();closeAppMenus()"><span data-i18n="exportMd">导出 Markdown</span></div>
-          <div class="menu-item" onclick="exportWord();closeAppMenus()"><span data-i18n="exportWord">导出 Word</span></div>
-          <div class="menu-item" onclick="exportPDF();closeAppMenus()"><span data-i18n="exportPdf">导出 PDF</span></div>
-          <div class="menu-item" onclick="exportHTML();closeAppMenus()"><span data-i18n="exportHtml">导出 HTML</span></div>
-          <div class="menu-item" onclick="openExportImageModal();closeAppMenus()"><span data-i18n="exportImage">导出图片</span></div>
+          <div class="menu-item" onclick="saveToLocal();closeAppMenus()"><span data-i18n="save">保存</span><span class="menu-shortcut">Ctrl+S</span></div>
+          <div class="menu-item" onclick="saveAs();closeAppMenus()"><span data-i18n="menuSaveAs">另存为…</span><span class="menu-shortcut">Ctrl+Shift+S</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item has-submenu">
+            <span data-i18n="menuEncoding">编码</span>
+            <span class="menu-caret">▸</span>
+            <div class="menu-submenu" id="encoding-submenu">
+              <div class="menu-item encoding-item" data-encoding="utf-8" onclick="setEncoding('utf-8');"><span data-i18n="encodingUtf8">UTF-8</span></div>
+              <div class="menu-item encoding-item" data-encoding="gbk" onclick="setEncoding('gbk');"><span data-i18n="encodingGbk">GBK</span></div>
+              <div class="menu-item encoding-item" data-encoding="gb18030" onclick="setEncoding('gb18030');"><span data-i18n="encodingGb18030">GB18030</span></div>
+              <div class="menu-item encoding-item" data-encoding="big5" onclick="setEncoding('big5');"><span data-i18n="encodingBig5">Big5</span></div>
+            </div>
+          </div>
+          <div class="menu-item env-only" onclick="openFileLocation();closeAppMenus()"><span data-i18n="menuFileLocation">打开文件位置</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item has-submenu">
+            <span data-i18n="menuExportAs">导出为</span>
+            <span class="menu-caret">▸</span>
+            <div class="menu-submenu">
+              <div class="menu-item" onclick="exportFile();closeAppMenus()"><span data-i18n="exportMd">Markdown (.md)</span></div>
+              <div class="menu-item" onclick="exportWord();closeAppMenus()"><span data-i18n="exportWord">Word (.doc)</span></div>
+              <div class="menu-item" onclick="exportPDF();closeAppMenus()"><span data-i18n="exportPdf">PDF (.pdf)</span></div>
+              <div class="menu-item" onclick="exportHTML();closeAppMenus()"><span data-i18n="exportHtml">HTML (.html)</span></div>
+              <div class="menu-item" onclick="openExportImageModal();closeAppMenus()"><span data-i18n="exportImage">图片 (.png)</span></div>
+            </div>
+          </div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" onclick="exitApp();closeAppMenus()"><span data-i18n="menuExit">退出</span><span class="menu-shortcut">Alt+F4</span></div>
         </div>
       </div>
       <div class="menu" data-menu="edit">
@@ -1501,8 +1577,8 @@
     <div class="main">
       <div class="pane outline-pane" id="outline-pane">
         <div class="pane-header">
-          <span class="pane-title" data-i18n="outlineTitle">大纲</span>
           <button type="button" class="collapse-btn" id="outline-collapse-btn" onclick="toggleOutline()" data-i18n-title="collapseOutline" title="收起大纲"><svg class="icon icon-sm"><use href="#icon-chevron-left"></use></svg></button>
+          <span class="pane-title" data-i18n="outlineTitle">大纲</span>
         </div>
         <div class="outline-list" id="outline-list"></div>
       </div>
@@ -1732,7 +1808,7 @@
 
   <!-- 插入 Mermaid 模态框 -->
   <div class="modal-overlay" id="mermaid-modal">
-    <div class="modal" style="max-width: 560px;">
+    <div class="modal" style="max-width: 720px;">
       <div class="modal-header">
         <h3><svg class="icon icon-lg"><use href="#icon-mermaid"></use></svg> <span data-i18n="mermaidTitle">插入 Mermaid 图表</span></h3>
         <button onclick="closeMermaidModal()"><svg class="icon"><use href="#icon-close"></use></svg></button>
@@ -1740,11 +1816,23 @@
       <div class="modal-body">
         <label for="mermaid-type" data-i18n="mermaidTypeLabel">图表类型</label>
         <select id="mermaid-type" onchange="updateMermaidTemplate()">
-          <option value="mindmap" data-i18n="mermaidTypeMindmap">思维导图</option>
           <option value="flowchart" data-i18n="mermaidTypeFlowchart">流程图</option>
+          <option value="sequence" data-i18n="mermaidTypeSequence">时序图</option>
+          <option value="class" data-i18n="mermaidTypeClass">类图</option>
+          <option value="state" data-i18n="mermaidTypeState">状态图</option>
+          <option value="er" data-i18n="mermaidTypeEr">ER 图</option>
+          <option value="journey" data-i18n="mermaidTypeJourney">用户旅程图</option>
+          <option value="gantt" data-i18n="mermaidTypeGantt">甘特图</option>
+          <option value="pie" data-i18n="mermaidTypePie">饼图</option>
+          <option value="mindmap" data-i18n="mermaidTypeMindmap">思维导图</option>
+          <option value="timeline" data-i18n="mermaidTypeTimeline">时间线</option>
+          <option value="gitGraph" data-i18n="mermaidTypeGitGraph">Git 图</option>
+          <option value="quadrant" data-i18n="mermaidTypeQuadrant">象限图</option>
         </select>
         <label for="mermaid-code" data-i18n="mermaidCodeLabel">Mermaid 源码</label>
-        <textarea id="mermaid-code" rows="10" data-i18n-placeholder="mermaidCodePlaceholder" placeholder="mindmap\n  root((主题))\n    子主题 A\n    子主题 B"></textarea>
+        <textarea id="mermaid-code" rows="8" oninput="scheduleMermaidPreview()" data-i18n-placeholder="mermaidCodePlaceholder" placeholder="flowchart TD\n  A --> B"></textarea>
+        <label data-i18n="mermaidPreview">预览</label>
+        <div class="mermaid-preview" id="mermaid-preview"></div>
         <p class="hint" data-i18n="mermaidHint">支持 Mermaid 语法，插入后将在预览区自动渲染。</p>
       </div>
       <div class="modal-footer">
@@ -1789,9 +1877,15 @@
     const LANG_KEY = 'md_editor_language';
     const OUTLINE_COLLAPSED_KEY = 'md_editor_outline_collapsed';
     const OUTLINE_WIDTH_KEY = 'md_editor_outline_width';
+    const CURRENT_PATH_KEY = 'md_editor_current_path';
+    const RECENT_FILES_KEY = 'md_editor_recent_files';
+    const ENCODING_KEY = 'md_editor_encoding';
 
     let previewMode = 'preview';
     let currentLang = 'zh-CN';
+    let currentPath = null;           // 当前文件在磁盘上的绝对路径（仅 Tauri）
+    let recentFiles = [];             // [{ name, path, time }]
+    let fileEncoding = 'utf-8';       // 打开读取 / MD 另存写盘使用的编码
     let outlineCollapsed = false;
     let outlineData = [];           // 大纲项：{ level, text, line, offset, el }
     let activeOutline = -1;
@@ -2202,9 +2296,15 @@
       if (width) localStorage.setItem(OUTLINE_WIDTH_KEY, width);
     });
 
-    // 从菜单触发文件导入
+    // 从菜单触发文件打开：Tauri 用原生对话框（能拿到绝对路径），浏览器用隐藏 input
     function triggerImport() {
-      document.getElementById('importFile').click();
+      if (inTauriApp()) openFileTauri();
+      else document.getElementById('importFile').click();
+    }
+
+    // 导入 HTML 文件（转 Markdown）
+    function triggerImportHtml() {
+      document.getElementById('importHtmlFile').click();
     }
 
     // ========== 顶部菜单栏 ==========
@@ -2212,11 +2312,15 @@
       const menu = document.querySelector('.menu[data-menu="' + name + '"]');
       const willOpen = !menu.classList.contains('open');
       closeAppMenus();
-      if (willOpen) menu.classList.add('open');
+      if (willOpen) {
+        if (name === 'file') renderRecentMenu();
+        menu.classList.add('open');
+      }
     }
 
     function closeAppMenus() {
       document.querySelectorAll('.menu.open').forEach((m) => m.classList.remove('open'));
+      document.querySelectorAll('.submenu-open').forEach((m) => m.classList.remove('submenu-open'));
     }
 
     // 桌面标准行为：已有菜单打开时，hover 其他菜单自动切换
@@ -2230,6 +2334,12 @@
     });
 
     document.addEventListener('click', (e) => {
+      // 点击带 ▸ 的父菜单项（且不是点子菜单内部）：只展开/收起子菜单，不关整个菜单
+      const submenuItem = e.target.closest('.menu-item.has-submenu');
+      if (submenuItem && !e.target.closest('.menu-submenu')) {
+        submenuItem.classList.toggle('submenu-open');
+        return;
+      }
       if (!e.target.closest('.menu')) closeAppMenus();
     });
     document.addEventListener('keydown', (e) => {
@@ -2240,6 +2350,21 @@
     function init() {
       const savedLang = localStorage.getItem(LANG_KEY);
       if (savedLang && i18n[savedLang]) currentLang = savedLang;
+
+      // 环境标记：控制"最近打开/打开文件位置"等仅桌面菜单项显示
+      // inTauriApp 依赖 window.isTauri（Tauri 注入），此时已可用
+      if (inTauriApp()) document.body.classList.add('in-tauri');
+
+      // 恢复编码、最近文件、当前文件路径
+      const savedEncoding = localStorage.getItem(ENCODING_KEY);
+      if (savedEncoding && ['utf-8', 'gbk', 'gb18030', 'big5'].includes(savedEncoding)) {
+        fileEncoding = savedEncoding;
+      }
+      try {
+        const savedRecent = JSON.parse(localStorage.getItem(RECENT_FILES_KEY) || '[]');
+        if (Array.isArray(savedRecent)) recentFiles = savedRecent;
+      } catch (e) { }
+      currentPath = localStorage.getItem(CURRENT_PATH_KEY);
 
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved !== null) {
@@ -2278,6 +2403,11 @@
       }
       applyOutlineState();
 
+      // 同步编码子菜单勾选
+      document.querySelectorAll('.encoding-item').forEach((item) => {
+        item.classList.toggle('checked', item.dataset.encoding === fileEncoding);
+      });
+
       updatePreview();
       updateCount();
       applyPaneStates();
@@ -2307,6 +2437,7 @@
         openHelp();
       }
       applyLanguage();
+      updateWindowTitle();
     }
 
     // 渲染预览
@@ -2537,8 +2668,24 @@
       setTimeout(() => saveHint.classList.remove('show'), 1500);
     }
 
-    // 手动保存
-    function saveToLocal() {
+    // 手动保存（Ctrl+S）
+    async function saveToLocal() {
+      // Tauri 且已有磁盘文件：直接写回原路径，不弹对话框
+      if (inTauriApp() && currentPath) {
+        try {
+          await window.__TAURI__.core.invoke('save_text_file', {
+            path: currentPath, contents: editor.value, encoding: fileEncoding
+          });
+        } catch (err) {
+          console.error(err);
+          showToast(t('toastSaveFailed', String(err && err.message || err)));
+          return;
+        }
+      } else if (inTauriApp()) {
+        // Tauri 下还没有文件路径：转入"另存为"选路径
+        saveAs();
+        return;
+      }
       localStorage.setItem(STORAGE_KEY, editor.value);
       localStorage.setItem(FILENAME_KEY, filenameInput.value);
       showSaveHint();
@@ -2553,14 +2700,16 @@
         && !!(window.__TAURI__ && window.__TAURI__.dialog && window.__TAURI__.core);
     }
 
-    // 弹系统保存对话框写入文本；true=已保存，false=用户取消
-    async function tauriSaveText(defaultName, extensions, contents) {
+    // 弹系统保存对话框写入文本；encoding 为 IANA 标签（null=UTF-8）；true=已保存，false=用户取消
+    async function tauriSaveText(defaultName, extensions, contents, encoding) {
       const path = await window.__TAURI__.dialog.save({
         defaultPath: defaultName,
         filters: [{ name: 'Document', extensions: extensions }]
       });
       if (typeof path !== 'string') return false;
-      await window.__TAURI__.core.invoke('save_text_file', { path: path, contents: contents });
+      await window.__TAURI__.core.invoke('save_text_file', {
+        path: path, contents: contents, encoding: encoding || null
+      });
       return true;
     }
 
@@ -2603,7 +2752,7 @@
       }
       if (inTauriApp()) {
         handleTauriSave(
-          tauriSaveText(name, ['md', 'markdown'], editor.value),
+          tauriSaveText(name, ['md', 'markdown'], editor.value, fileEncoding),
           t('toastExported')
         );
         return;
@@ -3194,22 +3343,31 @@ ${css}
       showToast(t('toastImageDownloaded'));
     }
 
-    // 加载文件内容到编辑器（文件输入与拖放共用）
-    function loadFile(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        editor.value = e.target.result;
-        let name = file.name;
+    // 统一载入内容（打开文件 / Tauri 原生打开 / 导入 HTML / 最近打开共用）
+    function loadContent(text, name, path) {
+      editor.value = text;
+      if (name) {
         if (!name.toLowerCase().endsWith('.md') && !name.toLowerCase().endsWith('.markdown')) {
           name += '.md';
         }
         filenameInput.value = name;
-        updatePreview();
-        updateCount();
-        saveToLocal();
-        showToast(t('toastFileImported'));
-      };
-      reader.readAsText(file);
+      }
+      currentPath = path;
+      if (path) localStorage.setItem(CURRENT_PATH_KEY, path);
+      else localStorage.removeItem(CURRENT_PATH_KEY);
+      if (path) pushRecent(name, path);
+      updatePreview();
+      updateCount();
+      saveToLocal();
+      updateWindowTitle();
+      showToast(t('toastFileImported'));
+    }
+
+    // 加载文件内容到编辑器（浏览器 file input 与拖放共用；按当前编码读取）
+    function loadFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => loadContent(e.target.result, file.name, null);
+      reader.readAsText(file, fileEncoding);
     }
 
     // 导入文件
@@ -3217,6 +3375,187 @@ ${css}
       const file = input.files[0];
       if (file) loadFile(file);
       input.value = '';
+    }
+
+    // ===== Tauri：原生打开对话框（能拿到绝对路径，支持打开文件位置/最近打开） =====
+    async function openFileTauri() {
+      try {
+        const path = await window.__TAURI__.dialog.open({
+          multiple: false,
+          filters: [{ name: 'Markdown / Text', extensions: ['md', 'markdown', 'txt'] }]
+        });
+        if (typeof path !== 'string') return;
+        const text = await window.__TAURI__.core.invoke('read_text_file', {
+          path: path, encoding: fileEncoding
+        });
+        const name = basenameWithMd(path);
+        loadContent(text, name, path);
+      } catch (err) {
+        console.error(err);
+        showToast(t('toastSaveFailed', String(err && err.message || err)));
+      }
+    }
+
+    // 取路径的文件名部分并补 .md
+    function basenameWithMd(path) {
+      const parts = String(path).split(/[\\/]/);
+      let name = parts[parts.length - 1] || '未命名文档.md';
+      if (!name.toLowerCase().endsWith('.md') && !name.toLowerCase().endsWith('.markdown')) {
+        name = name.replace(/\.[^.]+$/, '') + '.md';
+      }
+      return name;
+    }
+
+    // ===== 导入 HTML 文件 → Markdown =====
+    function importHtmlFile(input) {
+      const file = input.files[0];
+      input.value = '';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const htmlDoc = new DOMParser().parseFromString(e.target.result, 'text/html');
+          const main = extractMainContent(htmlDoc);
+          const cleaned = stripUnwantedElements(main.cloneNode(true));
+          const md = htmlToMarkdown(cleaned, { baseUrl: null })
+            .replace(/\n{3,}/g, '\n\n').trim();
+          const name = file.name.replace(/\.(html?|htm)$/i, '') + '.md';
+          loadContent(md, name, null);
+        } catch (err) {
+          console.error(err);
+          showToast(t('toastSaveFailed', String(err && err.message || err)));
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ===== 另存为 =====
+    async function saveAs() {
+      if (!inTauriApp()) { exportFile(); return; }
+      try {
+        let defaultName = filenameInput.value.trim() || t('filenameDefault');
+        if (!/\.md$|\.markdown$/i.test(defaultName)) defaultName += '.md';
+        const path = await window.__TAURI__.dialog.save({
+          defaultPath: defaultName,
+          filters: [{ name: 'Markdown', extensions: ['md', 'markdown'] }]
+        });
+        if (typeof path !== 'string') return;
+        await window.__TAURI__.core.invoke('save_text_file', {
+          path: path, contents: editor.value, encoding: fileEncoding
+        });
+        const name = basenameWithMd(path);
+        filenameInput.value = name;
+        currentPath = path;
+        localStorage.setItem(CURRENT_PATH_KEY, path);
+        pushRecent(name, path);
+        localStorage.setItem(STORAGE_KEY, editor.value);
+        localStorage.setItem(FILENAME_KEY, name);
+        updateWindowTitle();
+        showToast(t('toastSaveAsDone'));
+      } catch (err) {
+        console.error(err);
+        showToast(t('toastSaveFailed', String(err && err.message || err)));
+      }
+    }
+
+    // ===== 文件编码 =====
+    function setEncoding(label) {
+      fileEncoding = label;
+      localStorage.setItem(ENCODING_KEY, label);
+      document.querySelectorAll('.encoding-item').forEach((item) => {
+        item.classList.toggle('checked', item.dataset.encoding === label);
+      });
+      const labelName = t({
+        'utf-8': 'encodingUtf8', gbk: 'encodingGbk',
+        gb18030: 'encodingGb18030', big5: 'encodingBig5'
+      }[label]);
+      showToast(t('toastEncodingSet', labelName));
+    }
+
+    // ===== 在文件管理器中定位当前文件 =====
+    async function openFileLocation() {
+      if (!currentPath) {
+        showToast(t('toastLocationUnavailable'));
+        return;
+      }
+      try {
+        await window.__TAURI__.opener.revealItemInDir(currentPath);
+      } catch (err) {
+        console.error(err);
+        showToast(t('toastSaveFailed', String(err && err.message || err)));
+      }
+    }
+
+    // ===== 最近打开 =====
+    function pushRecent(name, path) {
+      recentFiles = recentFiles.filter((f) => f.path !== path);
+      recentFiles.unshift({ name: name, path: path, time: Date.now() });
+      recentFiles = recentFiles.slice(0, 8);
+      localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(recentFiles));
+      if (document.querySelector('.menu[data-menu="file"].open')) renderRecentMenu();
+    }
+
+    function renderRecentMenu() {
+      const submenu = document.getElementById('recent-submenu');
+      if (!submenu) return;
+      if (!recentFiles.length) {
+        submenu.innerHTML = '<div class="menu-item disabled"><span data-i18n="recentEmpty">（暂无）</span></div>';
+        return;
+      }
+      submenu.innerHTML = '';
+      recentFiles.forEach((f) => {
+        const item = document.createElement('div');
+        item.className = 'menu-item';
+        item.onclick = () => openRecent(f.path);
+        const text = document.createElement('span');
+        text.className = 'recent-text';
+        const top = document.createElement('span');
+        top.textContent = f.name;
+        const pathLine = document.createElement('span');
+        pathLine.className = 'recent-path';
+        pathLine.textContent = f.path;
+        text.appendChild(top);
+        text.appendChild(pathLine);
+        item.appendChild(text);
+        submenu.appendChild(item);
+      });
+    }
+
+    async function openRecent(path) {
+      closeAppMenus();
+      try {
+        const text = await window.__TAURI__.core.invoke('read_text_file', {
+          path: path, encoding: fileEncoding
+        });
+        const record = recentFiles.find((f) => f.path === path);
+        const name = record ? record.name : basenameWithMd(path);
+        loadContent(text, name, path);
+      } catch (err) {
+        console.error(err);
+        recentFiles = recentFiles.filter((f) => f.path !== path);
+        localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(recentFiles));
+        renderRecentMenu();
+        showToast(t('toastFileNotFound'));
+      }
+    }
+
+    // ===== 退出 =====
+    async function exitApp() {
+      if (inTauriApp()) {
+        try { await window.__TAURI__.window.getCurrentWindow().close(); } catch (e) { }
+      } else {
+        window.close();
+      }
+    }
+
+    // ===== 文件名联动窗口标题 =====
+    function updateWindowTitle() {
+      const name = filenameInput.value.trim() || t('filenameDefault');
+      const title = name + ' - ' + t('brand');
+      document.title = title;
+      if (inTauriApp()) {
+        window.__TAURI__.window.getCurrentWindow().setTitle(title).catch(() => {});
+      }
     }
 
     // 切换主题
@@ -3238,9 +3577,12 @@ ${css}
     function clearDoc() {
       if (confirm(t('confirmClear'))) {
         editor.value = '';
+        currentPath = null;
+        localStorage.removeItem(CURRENT_PATH_KEY);
         updatePreview();
         updateCount();
         saveToLocal();
+        updateWindowTitle();
       }
     }
 
@@ -3622,19 +3964,119 @@ ${css}
       closeImageModal();
     }
 
-    // Mermaid 图表
+    // Mermaid 图表模板（12 种常见图表，均为 mermaid 10 官方支持语法）
     const MERMAID_TEMPLATES = {
-      mindmap: `mindmap\n  root((主题))\n    子主题 A\n      子节点 A1\n      子节点 A2\n    子主题 B\n      子节点 B1`,
-      flowchart: `flowchart TD\n    A[开始] --> B{判断}\n    B -->|是| C[执行]\n    B -->|否| D[结束]`
+      flowchart: `flowchart TD
+    A[开始] --> B{是否满足?}
+    B -->|是| C[执行操作]
+    B -->|否| D[结束]
+    C --> D`,
+      sequence: `sequenceDiagram
+    participant U as 用户
+    participant S as 服务器
+    U->>S: 发送请求
+    S-->>U: 返回响应
+    U->>S: 再次请求
+    S-->>U: 返回数据`,
+      class: `classDiagram
+    class Animal {
+      +String name
+      +eat()
+      +sleep()
+    }
+    class Dog {
+      +bark()
+    }
+    Animal <|-- Dog`,
+      state: `stateDiagram-v2
+    [*] --> Idle
+    Idle --> Running: 启动
+    Running --> Idle: 停止
+    Running --> Error: 异常
+    Error --> Idle: 修复
+    Idle --> [*]: 关机`,
+      er: `erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ ORDER_ITEM : contains
+    CUSTOMER {
+      string name
+      string phone
+    }
+    ORDER {
+      int id
+      datetime created_at
+    }`,
+      journey: `journey
+    title 用户购物旅程
+    section 浏览
+      打开首页: 5: 用户
+      搜索商品: 4: 用户
+    section 购买
+      加入购物车: 3: 用户
+      提交订单: 2: 用户, 系统
+      完成支付: 5: 用户`,
+      gantt: `gantt
+    title 项目计划
+    dateFormat YYYY-MM-DD
+    section 设计
+    需求分析 :a1, 2026-09-01, 5d
+    原型设计 :a2, after a1, 4d
+    section 开发
+    前端开发 :b1, after a2, 7d
+    后端开发 :b2, after a2, 7d
+    section 测试
+    集成测试 :c1, after b1, 3d`,
+      pie: `pie title 浏览器市场份额
+    "Chrome" : 65
+    "Edge" : 15
+    "Safari" : 12
+    "其他" : 8`,
+      mindmap: `mindmap
+  root((主题))
+    子主题 A
+      子节点 A1
+      子节点 A2
+    子主题 B
+      子节点 B1`,
+      timeline: `timeline
+    title 产品发布历程
+    2024 : 1.0 发布
+    2025 : 2.0 发布
+         : 移动端上线
+    2026 : 3.0 发布`,
+      gitGraph: `gitGraph
+    commit
+    commit
+    branch develop
+    checkout develop
+    commit
+    commit
+    checkout main
+    merge develop
+    commit`,
+      // 注：quadrantChart 的轴标签与象限标题只接受 ASCII，点名称支持引号内中文
+      quadrant: `quadrantChart
+    title Task Priority Matrix
+    x-axis Low Value --> High Value
+    y-axis Low Urgency --> High Urgency
+    quadrant-1 Do Now
+    quadrant-2 Schedule
+    quadrant-3 Eliminate
+    quadrant-4 Delegate
+    "修复线上故障": [0.8, 0.9]
+    "季度规划": [0.75, 0.4]
+    "整理旧文件": [0.25, 0.3]
+    "日常回复": [0.3, 0.75]`
     };
 
     function openMermaidModal() {
-      document.getElementById('mermaid-type').value = 'mindmap';
+      document.getElementById('mermaid-type').value = 'flowchart';
       updateMermaidTemplate();
       const el = document.getElementById('mermaid-modal');
       el.style.display = 'flex';
       void el.offsetWidth;
       el.classList.add('show');
+      scheduleMermaidPreview();
     }
 
     function closeMermaidModal() {
@@ -3645,7 +4087,50 @@ ${css}
 
     function updateMermaidTemplate() {
       const type = document.getElementById('mermaid-type').value;
-      document.getElementById('mermaid-code').value = MERMAID_TEMPLATES[type] || MERMAID_TEMPLATES.mindmap;
+      document.getElementById('mermaid-code').value = MERMAID_TEMPLATES[type] || MERMAID_TEMPLATES.flowchart;
+      scheduleMermaidPreview();
+    }
+
+    // ===== Mermaid 模态框实时预览 =====
+    let mermaidPreviewTimer = null;
+    function scheduleMermaidPreview() {
+      clearTimeout(mermaidPreviewTimer);
+      mermaidPreviewTimer = setTimeout(renderMermaidPreview, 400);
+    }
+
+    async function renderMermaidPreview() {
+      const box = document.getElementById('mermaid-preview');
+      if (!box) return;
+      box.dataset.placeholder = t('mermaidPreviewEmpty');
+      const code = document.getElementById('mermaid-code').value.trim();
+      box.innerHTML = '';
+      if (!code) return;
+      const el = document.createElement('div');
+      el.className = 'mermaid';
+      el.textContent = code;
+      box.appendChild(el);
+      let renderThrew = null;
+      try {
+        // mermaid 10：nodes 指定本次渲染的节点
+        await mermaid.run({ nodes: [el] });
+      } catch (err) {
+        console.error('Mermaid preview error:', err);
+        renderThrew = err;
+      }
+      // mermaid 10 对语法错误默认不抛异常，而是渲染一张错误 SVG：
+      // aria-roledescription="error"，内含 .error-icon/.error-text
+      const svg = el.querySelector('svg');
+      const isErrorSvg = svg && (svg.getAttribute('aria-roledescription') === 'error'
+        || !!svg.querySelector('.error-text, .error-icon'));
+      if (renderThrew || !svg || isErrorSvg) {
+        box.innerHTML = '';
+        const e = document.createElement('div');
+        e.className = 'mermaid-error';
+        const svgErrorText = svg?.querySelector('.error-text')?.textContent?.trim();
+        const threwText = renderThrew && (renderThrew.message || String(renderThrew));
+        e.textContent = (svgErrorText || threwText || code).trim();
+        box.appendChild(e);
+      }
     }
 
     function confirmMermaidInsert() {
@@ -4297,6 +4782,7 @@ ${css}
       autoSave();
     });
     filenameInput.addEventListener('input', autoSave);
+    filenameInput.addEventListener('input', updateWindowTitle);
 
     // 拖放文件打开
     const dropOverlay = document.getElementById('drop-overlay');
@@ -4389,7 +4875,8 @@ ${css}
       if (e.ctrlKey || e.metaKey) {
         if (e.key === 's') {
           e.preventDefault();
-          saveToLocal();
+          if (e.shiftKey) saveAs();
+          else saveToLocal();
         } else if (e.key === 'n') {
           e.preventDefault();
           clearDoc();
