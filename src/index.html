@@ -2450,8 +2450,9 @@ ${'</scr' + 'ipt>'}
 <meta charset="UTF-8">
 <style>
 @page { size: A4; margin: 15mm 14mm; }
-html, body { margin: 0; padding: 0; }
-body { background: #fff; }
+/* html 必须也是白底：body 高度只包住内容，其下方会露出 html 的画布背景色（#f7f8fa）形成大灰块；
+   !important 用于压过收集来的页面样式中后出现的 html 背景规则 */
+html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
 .preview-content { max-width: none; padding: 0; overflow: visible; }
 </style>
 <style>
