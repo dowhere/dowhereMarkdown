@@ -27,7 +27,7 @@ const i18n = {
 <p><b>网页转 Markdown</b></p>
 <ul>
   <li>点「网页转 MD」输入网页链接，可自动提取正文。</li>
-  <li>知乎、微信公众号等建议勾选「使用本地代理」，先运行同目录的 <code>web-to-md-proxy.py</code>。</li>
+  <li>桌面版直接输入链接即可抓取，无需代理；浏览器版遇到知乎、微信公众号等可勾选「使用本地代理」并运行同目录的 <code>web-to-md-proxy.py</code>。</li>
   <li>需要登录的页面，可运行 <code>python web-to-md-proxy.py --bookmark</code> 生成书签小工具提取。</li>
 </ul>
 <p><b>常用快捷键</b>：<code>Ctrl+S</code> 保存，<code>Ctrl+Z</code> 撤销，<code>Ctrl+Y / Ctrl+Shift+Z</code> 重做，<code>Ctrl+B</code> 加粗，<code>Ctrl+I</code> 斜体，<code>Ctrl+U</code> 下划线，<code>Ctrl+K</code> 链接，<code>Ctrl+Shift+K</code> 图片，<code>Ctrl+F</code> 查找，<code>Ctrl+H</code> 替换，<code>Tab</code> 插入 4 空格缩进。</p>
@@ -179,6 +179,8 @@ const i18n = {
     urlStatusEmptyUrl: '请输入网页地址',
     urlStatusLocalFailed: '× 本地代理获取失败：{0}',
     urlStatusPublicFailed: '× 自动获取失败（{0}），请手动粘贴网页 HTML 源码，或勾选「使用本地代理」',
+    urlStatusBuiltinSuccess: '✓ 内置抓取成功（无需代理），点击「转换并插入」即可导入',
+    urlStatusBuiltinFailed: '× 抓取失败：{0}。可重试，或手动粘贴网页 HTML 源码',
     tableSizeLabel: '{0} 行 × {1} 列',
     imageLargeWarning: '图片较大（{0}MB），嵌入 Base64 会显著增大文档体积，是否继续？',
     mermaid: 'Mermaid',
@@ -230,7 +232,7 @@ const i18n = {
 <p><b>網頁轉 Markdown</b></p>
 <ul>
   <li>點「網頁轉 MD」輸入網頁連結，可自動提取正文。</li>
-  <li>知乎、微信公眾號等建議勾選「使用本機代理」，先執行同目錄的 <code>web-to-md-proxy.py</code>。</li>
+  <li>桌面版直接輸入連結即可抓取，無需代理；瀏覽器版遇到知乎、微信公眾號等可勾選「使用本機代理」並執行同目錄的 <code>web-to-md-proxy.py</code>。</li>
   <li>需要登入的頁面，可執行 <code>python web-to-md-proxy.py --bookmark</code> 生成書籤小工具提取。</li>
 </ul>
 <p><b>常用快捷鍵</b>：<code>Ctrl+S</code> 儲存，<code>Ctrl+Z</code> 復原，<code>Ctrl+Y / Ctrl+Shift+Z</code> 重做，<code>Ctrl+B</code> 粗體，<code>Ctrl+I</code> 斜體，<code>Ctrl+U</code> 底線，<code>Ctrl+K</code> 連結，<code>Ctrl+Shift+K</code> 圖片，<code>Ctrl+F</code> 尋找，<code>Ctrl+H</code> 取代，<code>Tab</code> 插入 4 空格縮排。</p>
@@ -382,6 +384,8 @@ const i18n = {
     urlStatusEmptyUrl: '請輸入網頁地址',
     urlStatusLocalFailed: '× 本機代理取得失敗：{0}',
     urlStatusPublicFailed: '× 自動取得失敗（{0}），請手動貼上網頁 HTML 原始碼，或勾選「使用本機代理」',
+    urlStatusBuiltinSuccess: '✓ 內建抓取成功（無需代理），點擊「轉換並插入」即可匯入',
+    urlStatusBuiltinFailed: '× 抓取失敗：{0}。可重試，或手動貼上網頁 HTML 原始碼',
     tableSizeLabel: '{0} 行 × {1} 列',
     imageLargeWarning: '圖片較大（{0}MB），嵌入 Base64 會顯著增大文件體積，是否繼續？',
     mermaid: 'Mermaid',
@@ -433,7 +437,7 @@ const i18n = {
 <p><b>Web to Markdown</b></p>
 <ul>
   <li>Click “Web → MD” and enter a URL to extract the article body.</li>
-  <li>For Zhihu, WeChat articles, etc., enable “Use local proxy” and run <code>web-to-md-proxy.py</code> in the same folder first.</li>
+  <li>On desktop, just paste the link to fetch directly — no proxy needed. In a browser, enable “Use local proxy” and run <code>web-to-md-proxy.py</code> for Zhihu/WeChat articles.</li>
   <li>For pages that require login, run <code>python web-to-md-proxy.py --bookmark</code> to generate a bookmarklet.</li>
 </ul>
 <p><b>Common shortcuts</b>: <code>Ctrl+S</code> Save, <code>Ctrl+Z</code> Undo, <code>Ctrl+Y / Ctrl+Shift+Z</code> Redo, <code>Ctrl+B</code> Bold, <code>Ctrl+I</code> Italic, <code>Ctrl+U</code> Underline, <code>Ctrl+K</code> Link, <code>Ctrl+Shift+K</code> Image, <code>Ctrl+F</code> Find, <code>Ctrl+H</code> Replace, <code>Tab</code> insert 4-space indent.</p>
@@ -585,6 +589,8 @@ const i18n = {
     urlStatusEmptyUrl: 'Please enter a web address',
     urlStatusLocalFailed: '× Local proxy failed: {0}',
     urlStatusPublicFailed: '× Auto fetch failed ({0}). Paste page HTML manually or enable local proxy',
+    urlStatusBuiltinSuccess: '✓ Fetched via built-in client (no proxy needed), click “Convert & Insert” to import',
+    urlStatusBuiltinFailed: '× Fetch failed: {0}. Retry, or paste the page HTML manually',
     tableSizeLabel: '{0} rows × {1} cols',
     imageLargeWarning: 'The image is large ({0}MB). Embedding it as Base64 will significantly increase document size. Continue?',
     mermaid: 'Mermaid',
@@ -636,7 +642,7 @@ const i18n = {
 <p><b>Web を Markdown に</b></p>
 <ul>
   <li>🌐 をクリックして Web ページのリンクを入力すると、本文を自動抽出します。</li>
-  <li>知乎、微信公众号などは「ローカルプロキシを使用」にチェックし、同じフォルダの <code>web-to-md-proxy.py</code> を事前に実行してください。</li>
+  <li>デスクトップ版はリンクを入力するだけで直接取得でき、プロキシは不要です。ブラウザ版で知乎・微信公众号などを取得する場合は「ローカルプロキシを使用」にチェックし、同じフォルダの <code>web-to-md-proxy.py</code> を実行してください。</li>
   <li>ログインが必要なページは、<code>python web-to-md-proxy.py --bookmark</code> を実行してブックマークレットを生成して抽出します。</li>
 </ul>
 <p><b>よく使うショートカット</b>：<code>Ctrl+S</code> 保存、<code>Ctrl+Z</code> 元に戻す、<code>Ctrl+Y / Ctrl+Shift+Z</code> やり直す、<code>Ctrl+B</code> 太字、<code>Ctrl+I</code> 斜体、<code>Ctrl+U</code> 下線、<code>Ctrl+K</code> リンク、<code>Ctrl+Shift+K</code> 画像、<code>Ctrl+F</code> 検索、<code>Ctrl+H</code> 置換、<code>Tab</code> 4 スペース字下げ。</p>
@@ -788,6 +794,8 @@ const i18n = {
     urlStatusEmptyUrl: 'Web アドレスを入力してください',
     urlStatusLocalFailed: '× ローカルプロキシの取得に失敗しました：{0}',
     urlStatusPublicFailed: '× 自動取得に失敗しました（{0}）。Web HTML ソースを手動で貼り付けるか、ローカルプロキシを有効にしてください',
+    urlStatusBuiltinSuccess: '✓ 内蔵クライアントで取得成功（プロキシ不要）。「変換して挿入」をクリックでインポート',
+    urlStatusBuiltinFailed: '× 取得失敗：{0}。再試行するか、Web HTML ソースを手動で貼り付けてください',
     tableSizeLabel: '{0} 行 × {1} 列',
     imageLargeWarning: '画像が大きいです（{0}MB）。Base64 で埋め込むと文書が大きくなります。続行しますか？',
     mermaid: 'Mermaid',
@@ -839,7 +847,7 @@ const i18n = {
 <p><b>Web을 Markdown으로</b></p>
 <ul>
   <li>🌐을 클릭하고 웹 페이지 링크를 입력하면 본문을 자동으로 추출합니다.</li>
-  <li>知乎, 微信公众号 등은「로컬 프록시 사용」을 체크하고 같은 폴더의 <code>web-to-md-proxy.py</code>를 미리 실행하세요.</li>
+  <li>데스크톱 버전은 링크만 입력하면 바로 가져올 수 있어 프록시가 필요 없습니다. 브라우저 버전에서 지후·위채 공중계정 등을 가져올 때는「로컬 프록시 사용」을 체크하고 같은 폴더의 <code>web-to-md-proxy.py</code>를 실행하세요.</li>
   <li>로그인이 필요한 페이지는 <code>python web-to-md-proxy.py --bookmark</code>를 실행해 북마크릿을 생성해 추출하세요.</li>
 </ul>
 <p><b>자주 사용하는 단축키</b>: <code>Ctrl+S</code> 저장, <code>Ctrl+Z</code> 실행 취소, <code>Ctrl+Y / Ctrl+Shift+Z</code> 다시 실행, <code>Ctrl+B</code> 굵게, <code>Ctrl+I</code> 기울임, <code>Ctrl+U</code> 밑줄, <code>Ctrl+K</code> 링크, <code>Ctrl+Shift+K</code> 이미지, <code>Ctrl+F</code> 찾기, <code>Ctrl+H</code> 바꾸기, <code>Tab</code> 4칸 들여쓰기.</p>
@@ -991,6 +999,8 @@ const i18n = {
     urlStatusEmptyUrl: '웹 주소를 입력하세요',
     urlStatusLocalFailed: '× 로컬 프록시 가져오기 실패: {0}',
     urlStatusPublicFailed: '× 자동 가져오기 실패 ({0}). 웹 HTML 소스를 수동으로 붙여넣거나 로컬 프록시를 사용하세요',
+    urlStatusBuiltinSuccess: '✓ 내장 클라이언트로 가져오기 성공(프록시 불필요). "변환 후 삽입"을 클릭해 가져오세요',
+    urlStatusBuiltinFailed: '× 가져오기 실패: {0}. 다시 시도하거나 웹 HTML 소스를 수동으로 붙여넣으세요',
     tableSizeLabel: '{0} 행 × {1} 열',
     imageLargeWarning: '이미지가 큽니다 ({0}MB). Base64로 포함하면 문서 크기가 크게 늘어납니다. 계속하시겠습니까?',
     mermaid: 'Mermaid',
@@ -1042,7 +1052,7 @@ const i18n = {
 <p><b>Web a Markdown</b></p>
 <ul>
   <li>Haz clic en 🌐 e introduce una URL para extraer el cuerpo del artículo.</li>
-  <li>Para Zhihu, artículos de WeChat, etc., activa “Usar proxy local” y ejecuta <code>web-to-md-proxy.py</code> en la misma carpeta primero.</li>
+  <li>En el escritorio basta con pegar el enlace para obtener la página directamente, sin proxy. En el navegador, activa «Usar proxy local» y ejecuta <code>web-to-md-proxy.py</code> para artículos de Zhihu/WeChat.</li>
   <li>Para páginas que requieren inicio de sesión, ejecuta <code>python web-to-md-proxy.py --bookmark</code> para generar un bookmarklet.</li>
 </ul>
 <p><b>Atajos comunes</b>: <code>Ctrl+S</code> Guardar, <code>Ctrl+Z</code> Deshacer, <code>Ctrl+Y / Ctrl+Shift+Z</code> Rehacer, <code>Ctrl+B</code> Negrita, <code>Ctrl+I</code> Cursiva, <code>Ctrl+U</code> Subrayado, <code>Ctrl+K</code> Enlace, <code>Ctrl+Shift+K</code> Imagen, <code>Ctrl+F</code> Buscar, <code>Ctrl+H</code> Reemplazar, <code>Tab</code> insertar sangría de 4 espacios.</p>
@@ -1164,6 +1174,7 @@ const i18n = {
     toastImageGenFailed: 'Error al generar la imagen: {0}',
     toastGeneratePreviewFirst: 'Genera una vista previa primero',
     toastImageDownloaded: 'Imagen descargada',
+    toastSaveFailed: 'Error al guardar: {0}',
     toastFileImported: 'Archivo importado',
     toastImageInserted: 'Imagen insertada',
     toastUndone: 'Deshcho',
@@ -1193,6 +1204,8 @@ const i18n = {
     urlStatusEmptyUrl: 'Introduce una dirección web',
     urlStatusLocalFailed: '× Fallo del proxy local: {0}',
     urlStatusPublicFailed: '× Fallo al obtener automáticamente ({0}). Pega el HTML manualmente o habilita el proxy local',
+    urlStatusBuiltinSuccess: '✓ Obtenido con el cliente integrado (no requiere proxy), haz clic en «Convertir e insertar» para importar',
+    urlStatusBuiltinFailed: '× Error al obtener: {0}. Reinténtalo o pega el HTML manualmente',
     tableSizeLabel: '{0} filas × {1} columnas',
     imageLargeWarning: 'La imagen es grande ({0} MB). Incrustarla como Base64 aumentará mucho el tamaño del documento. ¿Continuar?',
     mermaid: 'Mermaid',
@@ -1244,7 +1257,7 @@ const i18n = {
 <p><b>Web vers Markdown</b></p>
 <ul>
   <li>Cliquez sur 🌐 et saisissez une URL pour extraire le corps de l’article.</li>
-  <li>Pour Zhihu, les articles WeChat, etc., activez « Utiliser le proxy local » et exécutez d’abord <code>web-to-md-proxy.py</code> dans le même dossier.</li>
+  <li>Sur ordinateur, collez simplement le lien pour récupérer la page directement, sans proxy. Dans un navigateur, activez « Utiliser le proxy local » et exécutez <code>web-to-md-proxy.py</code> pour les articles Zhihu/WeChat.</li>
   <li>Pour les pages nécessitant une connexion, exécutez <code>python web-to-md-proxy.py --bookmark</code> pour générer un bookmarklet.</li>
 </ul>
 <p><b>Raccourcis courants</b> : <code>Ctrl+S</code> Enregistrer, <code>Ctrl+Z</code> Annuler, <code>Ctrl+Y / Ctrl+Shift+Z</code> Rétablir, <code>Ctrl+B</code> Gras, <code>Ctrl+I</code> Italique, <code>Ctrl+U</code> Souligné, <code>Ctrl+K</code> Lien, <code>Ctrl+Shift+K</code> Image, <code>Ctrl+F</code> Rechercher, <code>Ctrl+H</code> Remplacer, <code>Tab</code> insérer une indentation de 4 espaces.</p>
@@ -1366,6 +1379,7 @@ const i18n = {
     toastImageGenFailed: 'Échec de la génération d’image : {0}',
     toastGeneratePreviewFirst: 'Générez d’abord un aperçu',
     toastImageDownloaded: 'Image téléchargée',
+    toastSaveFailed: 'Échec de l’enregistrement : {0}',
     toastFileImported: 'Fichier importé',
     toastImageInserted: 'Image insérée',
     toastUndone: 'Annulé',
@@ -1395,6 +1409,8 @@ const i18n = {
     urlStatusEmptyUrl: 'Veuillez saisir une adresse web',
     urlStatusLocalFailed: '× Échec du proxy local : {0}',
     urlStatusPublicFailed: '× Échec de la récupération automatique ({0}). Collez le HTML manuellement ou activez le proxy local',
+    urlStatusBuiltinSuccess: '✓ Récupéré via le client intégré (proxy inutile), cliquez sur « Convertir et insérer » pour importer',
+    urlStatusBuiltinFailed: '× Échec de la récupération : {0}. Réessayez ou collez le HTML manuellement',
     tableSizeLabel: '{0} lignes × {1} colonnes',
     imageLargeWarning: 'L’image est grande ({0} Mo). L’intégrer en Base64 augmentera considérablement la taille du document. Continuer ?',
     mermaid: 'Mermaid',
@@ -1446,7 +1462,7 @@ const i18n = {
 <p><b>Web zu Markdown</b></p>
 <ul>
   <li>Klicke auf 🌐 und gib eine URL ein, um den Artikeltext zu extrahieren.</li>
-  <li>Für Zhihu, WeChat-Artikel usw. aktiviere „Lokalen Proxy verwenden“ und führe zuerst <code>web-to-md-proxy.py</code> im selben Ordner aus.</li>
+  <li>Auf dem Desktop reicht es, den Link einzufügen — die Seite wird direkt ohne Proxy abgerufen. Im Browser aktiviere „Lokalen Proxy verwenden“ und führe <code>web-to-md-proxy.py</code> für Zhihu-/WeChat-Artikel aus.</li>
   <li>Für Seiten mit Anmeldung führe <code>python web-to-md-proxy.py --bookmark</code> aus, um ein Bookmarklet zu erzeugen.</li>
 </ul>
 <p><b>Häufige Tastenkürzel</b>: <code>Ctrl+S</code> Speichern, <code>Ctrl+Z</code> Rückgängig, <code>Ctrl+Y / Ctrl+Shift+Z</code> Wiederherstellen, <code>Ctrl+B</code> Fett, <code>Ctrl+I</code> Kursiv, <code>Ctrl+U</code> Unterstrichen, <code>Ctrl+K</code> Link, <code>Ctrl+Shift+K</code> Bild, <code>Ctrl+F</code> Suchen, <code>Ctrl+H</code> Ersetzen, <code>Tab</code> 4 Leerzeichen Einzug einfügen.</p>
@@ -1568,6 +1584,7 @@ const i18n = {
     toastImageGenFailed: 'Bilderstellung fehlgeschlagen: {0}',
     toastGeneratePreviewFirst: 'Bitte zuerst eine Vorschau erstellen',
     toastImageDownloaded: 'Bild heruntergeladen',
+    toastSaveFailed: 'Speichern fehlgeschlagen: {0}',
     toastFileImported: 'Datei importiert',
     toastImageInserted: 'Bild eingefügt',
     toastUndone: 'Rückgängig gemacht',
@@ -1597,6 +1614,8 @@ const i18n = {
     urlStatusEmptyUrl: 'Bitte Web-Adresse eingeben',
     urlStatusLocalFailed: '× Lokaler Proxy-Fehler: {0}',
     urlStatusPublicFailed: '× Automatisches Abrufen fehlgeschlagen ({0}). Füge den HTML-Quelltext manuell ein oder aktiviere den lokalen Proxy',
+    urlStatusBuiltinSuccess: '✓ Über den integrierten Client abgerufen (kein Proxy nötig), auf „Umwandeln & Einfügen“ klicken zum Importieren',
+    urlStatusBuiltinFailed: '× Abruf fehlgeschlagen: {0}. Erneut versuchen oder HTML manuell einfügen',
     tableSizeLabel: '{0} Zeilen × {1} Spalten',
     imageLargeWarning: 'Das Bild ist groß ({0} MB). Als Base64 eingebettet wird das Dokument deutlich größer. Fortfahren?',
     mermaid: 'Mermaid',
@@ -1648,7 +1667,7 @@ const i18n = {
 <p><b>Web в Markdown</b></p>
 <ul>
   <li>Кликните 🌐 и введите URL, чтобы извлечь тело статьи.</li>
-  <li>Для Zhihu, статей WeChat и т. п. включите «Использовать локальный прокси» и заранее запустите <code>web-to-md-proxy.py</code> из той же папки.</li>
+  <li>В настольной версии достаточно вставить ссылку — страница загружается напрямую, без прокси. В браузере для статей Zhihu/WeChat включите «Использовать локальный прокси» и запустите <code>web-to-md-proxy.py</code>.</li>
   <li>Для страниц, требующих входа, запустите <code>python web-to-md-proxy.py --bookmark</code>, чтобы создать букмарклет.</li>
 </ul>
 <p><b>Частые горячие клавиши</b>: <code>Ctrl+S</code> Сохранить, <code>Ctrl+Z</code> Отменить, <code>Ctrl+Y / Ctrl+Shift+Z</code> Повторить, <code>Ctrl+B</code> Жирный, <code>Ctrl+I</code> Курсив, <code>Ctrl+U</code> Подчеркнутый, <code>Ctrl+K</code> Ссылка, <code>Ctrl+Shift+K</code> Изображение, <code>Ctrl+F</code> Найти, <code>Ctrl+H</code> Заменить, <code>Tab</code> вставить отступ в 4 пробела.</p>
@@ -1770,6 +1789,7 @@ const i18n = {
     toastImageGenFailed: 'Ошибка создания изображения: {0}',
     toastGeneratePreviewFirst: 'Сначала создайте предпросмотр',
     toastImageDownloaded: 'Изображение скачано',
+    toastSaveFailed: 'Ошибка сохранения: {0}',
     toastFileImported: 'Файл импортирован',
     toastImageInserted: 'Изображение вставлено',
     toastUndone: 'Отменено',
@@ -1799,6 +1819,8 @@ const i18n = {
     urlStatusEmptyUrl: 'Введите адрес страницы',
     urlStatusLocalFailed: '× Ошибка локального прокси: {0}',
     urlStatusPublicFailed: '× Ошибка автоматического получения ({0}). Вставьте HTML вручную или включите локальный прокси',
+    urlStatusBuiltinSuccess: '✓ Получено встроенным клиентом (прокси не нужен), нажмите «Преобразовать и вставить» для импорта',
+    urlStatusBuiltinFailed: '× Ошибка получения: {0}. Повторите или вставьте HTML вручную',
     tableSizeLabel: '{0} строк × {1} столбцов',
     imageLargeWarning: 'Изображение большое ({0} МБ). Встраивание как Base64 существенно увеличит документ. Продолжить?',
     mermaid: 'Mermaid',
@@ -1850,7 +1872,7 @@ const i18n = {
 <p><b>Web para Markdown</b></p>
 <ul>
   <li>Clique em 🌐 e insira uma URL para extrair o corpo do artigo.</li>
-  <li>Para Zhihu, artigos do WeChat etc., ative “Usar proxy local” e execute <code>web-to-md-proxy.py</code> na mesma pasta primeiro.</li>
+  <li>Na área de trabalho, basta colar o link para obter a página diretamente, sem proxy. No navegador, ative “Usar proxy local” e execute <code>web-to-md-proxy.py</code> para artigos de Zhihu/WeChat.</li>
   <li>Para páginas que exigem login, execute <code>python web-to-md-proxy.py --bookmark</code> para gerar um bookmarklet.</li>
 </ul>
 <p><b>Atalhos comuns</b>: <code>Ctrl+S</code> Salvar, <code>Ctrl+Z</code> Desfazer, <code>Ctrl+Y / Ctrl+Shift+Z</code> Refazer, <code>Ctrl+B</code> Negrito, <code>Ctrl+I</code> Itálico, <code>Ctrl+U</code> Sublinhado, <code>Ctrl+K</code> Link, <code>Ctrl+Shift+K</code> Imagem, <code>Ctrl+F</code> Localizar, <code>Ctrl+H</code> Substituir, <code>Tab</code> inserir recuo de 4 espaços.</p>
@@ -1972,6 +1994,7 @@ const i18n = {
     toastImageGenFailed: 'Falha ao gerar imagem: {0}',
     toastGeneratePreviewFirst: 'Gere uma pré-visualização primeiro',
     toastImageDownloaded: 'Imagem baixada',
+    toastSaveFailed: 'Falha ao salvar: {0}',
     toastFileImported: 'Arquivo importado',
     toastImageInserted: 'Imagem inserida',
     toastUndone: 'Desfeito',
@@ -2001,6 +2024,8 @@ const i18n = {
     urlStatusEmptyUrl: 'Insira um endereço web',
     urlStatusLocalFailed: '× Falha no proxy local: {0}',
     urlStatusPublicFailed: '× Falha ao obter automaticamente ({0}). Cole o HTML manualmente ou ative o proxy local',
+    urlStatusBuiltinSuccess: '✓ Obtido pelo cliente integrado (sem proxy), clique em “Converter e Inserir” para importar',
+    urlStatusBuiltinFailed: '× Falha ao obter: {0}. Tente novamente ou cole o HTML manualmente',
     tableSizeLabel: '{0} linhas × {1} colunas',
     imageLargeWarning: 'A imagem é grande ({0} MB). Incorporá-la como Base64 aumentará muito o tamanho do documento. Continuar?',
     mermaid: 'Mermaid',

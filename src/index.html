@@ -1419,11 +1419,13 @@
       <div class="modal-body">
         <label for="url-input" data-i18n="urlLabel">网页地址</label>
         <input type="url" id="url-input" data-i18n-placeholder="urlPlaceholder" placeholder="https://example.com/article">
-        <div style="display:flex;align-items:center;gap:8px;margin:8px 0 10px;">
-          <input type="checkbox" id="use-local-proxy" style="width:auto;margin:0;" onchange="toggleProxyInput()">
-          <label for="use-local-proxy" style="display:inline;margin:0;font-weight:normal;cursor:pointer;" data-i18n="useProxy">使用本地代理（推荐，可解决知乎/微信公众号）</label>
+        <div id="proxy-options">
+          <div style="display:flex;align-items:center;gap:8px;margin:8px 0 10px;">
+            <input type="checkbox" id="use-local-proxy" style="width:auto;margin:0;" onchange="toggleProxyInput()">
+            <label for="use-local-proxy" style="display:inline;margin:0;font-weight:normal;cursor:pointer;" data-i18n="useProxy">使用本地代理（推荐，可解决知乎/微信公众号）</label>
+          </div>
+          <input type="url" id="proxy-url" value="http://localhost:8765/fetch" data-i18n-placeholder="proxyPlaceholder" placeholder="本地代理地址" style="display:none;margin-bottom:10px;">
         </div>
-        <input type="url" id="proxy-url" value="http://localhost:8765/fetch" data-i18n-placeholder="proxyPlaceholder" placeholder="本地代理地址" style="display:none;margin-bottom:10px;">
         <button onclick="fetchUrl()" class="primary" data-i18n="fetchBtn">尝试获取</button>
         <div id="url-status" style="margin-top:10px;font-size:13px;color:var(--text-muted);"></div>
         <div id="manual-area" style="display:none;margin-top:14px;">
@@ -1660,6 +1662,7 @@
       document.getElementById('lang-menu').classList.remove('show');
     }
     let fetchedHtml = '';
+    let fetchedBaseUrl = '';
     let editorCollapsed = false;
     let previewCollapsed = false;
     let editorRatio = 0.5;
@@ -3232,13 +3235,17 @@ ${'</scr' + 'ipt>'}
       document.getElementById('manual-html').value = '';
       document.getElementById('use-local-proxy').checked = false;
       document.getElementById('proxy-url').style.display = 'none';
+      // 桌面端内置直接抓取，无需代理选项；浏览器环境保持原有代理方式
+      document.getElementById('proxy-options').style.display = inTauriApp() ? 'none' : 'block';
       fetchedHtml = '';
+      fetchedBaseUrl = '';
     }
     function closeUrlModal() {
       const el = document.getElementById('url-modal');
       el.classList.remove('show');
       setTimeout(() => { if (!el.classList.contains('show')) el.style.display = 'none'; }, 200);
       fetchedHtml = '';
+      fetchedBaseUrl = '';
     }
 
     // 查找与替换
@@ -3347,7 +3354,14 @@ ${'</scr' + 'ipt>'}
       document.getElementById('proxy-url').style.display = checked ? 'block' : 'none';
     }
 
-    // 尝试通过本地代理或公共 CORS 代理获取网页
+    // 补全协议：用户未输入 http(s):// 时默认 https://
+    function normalizeUrl(raw) {
+      let u = raw.trim();
+      if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+      return u;
+    }
+
+    // 获取网页：Tauri 下由 Rust 直接抓取；浏览器下走本地/公共代理
     async function fetchUrl() {
       const urlInput = document.getElementById('url-input');
       const status = document.getElementById('url-status');
@@ -3365,6 +3379,33 @@ ${'</scr' + 'ipt>'}
       status.textContent = t('urlStatusFetching');
       status.style.color = 'var(--text-muted)';
       fetchedHtml = '';
+      fetchedBaseUrl = '';
+
+      // Tauri 桌面环境：Rust 端直接 HTTP 请求，无 CORS、无需代理
+      if (inTauriApp()) {
+        let fullUrl;
+        try {
+          fullUrl = normalizeUrl(url);
+          new URL(fullUrl); // 校验合法性
+        } catch (e) {
+          status.textContent = t('urlStatusBuiltinFailed', e.message);
+          status.style.color = 'var(--danger)';
+          return;
+        }
+        try {
+          const result = await window.__TAURI__.core.invoke('fetch_web_page', { url: fullUrl });
+          fetchedHtml = result.html;
+          fetchedBaseUrl = result.finalUrl || fullUrl;
+          status.textContent = t('urlStatusBuiltinSuccess');
+          status.style.color = 'var(--accent)';
+          manualArea.style.display = 'none';
+        } catch (err) {
+          status.textContent = t('urlStatusBuiltinFailed', String(err));
+          status.style.color = 'var(--danger)';
+          manualArea.style.display = 'block';
+        }
+        return;
+      }
 
       // 优先使用本地代理（可绕过 CORS 和大部分反爬）
       if (useLocalProxy) {
@@ -3459,76 +3500,180 @@ ${'</scr' + 'ipt>'}
       return doc.body;
     }
 
-    // 清理无关元素
+    // 清理无关元素（注意：保留 img，图片由转换器输出为 Markdown 图片语法）
     function stripUnwantedElements(root) {
-      const selectors = 'script, style, nav, aside, header, footer, form, iframe, img, svg, video, audio, canvas, .ad, .ads, .advertisement, .sidebar, .comments, .comment, #comments, [class*="ad-"], [class*="ads-"], [id*="ad-"], [class*="comment"], [id*="comment"]';
+      const selectors = 'script, style, noscript, template, nav, aside, header, footer, form, iframe, svg, video, audio, canvas, .ad, .ads, .advertisement, .sidebar, .comments, .comment, #comments, [class*="ad-"], [class*="ads-"], [id*="ad-"], [class*="comment"], [id*="comment"], [aria-hidden="true"]';
       root.querySelectorAll(selectors).forEach(el => el.remove());
+      // 删除隐藏的统计像素（1px 且无 alt 的图片）
+      root.querySelectorAll('img').forEach((img) => {
+        const w = parseInt(img.getAttribute('width') || '', 10);
+        const h = parseInt(img.getAttribute('height') || '', 10);
+        if ((w === 0 || h === 0 || w === 1 || h === 1) && !img.getAttribute('alt')) img.remove();
+      });
       return root;
     }
 
+    // 相对 URL 转绝对；data/blob 等原样保留
+    function absoluteUrl(raw, baseUrl) {
+      if (!raw) return '';
+      raw = raw.trim();
+      if (!raw) return '';
+      if (/^(https?:|data:|blob:)/i.test(raw)) return raw;
+      if (/^(javascript:|#)/i.test(raw)) return '';
+      if (baseUrl) {
+        try { return new URL(raw, baseUrl).href; } catch (e) {}
+      }
+      return raw;
+    }
+
+    // 提取图片地址：兼容常见的懒加载属性与 srcset
+    function pickImgSrc(node) {
+      const attrs = ['src', 'data-src', 'data-original', 'data-actualsrc', 'data-lazy-src', 'data-echo', 'data-loading'];
+      for (const a of attrs) {
+        const v = node.getAttribute(a);
+        if (v) return v;
+      }
+      const srcset = node.getAttribute('srcset') || node.getAttribute('data-srcset');
+      if (srcset) return srcset.split(',')[0].trim().split(/\s+/)[0];
+      return '';
+    }
+
     // 将提取的 HTML 转为 Markdown
-    function htmlToMarkdown(node) {
+    // ctx: { baseUrl: 用于解析相对链接的基地址 }
+    function htmlToMarkdown(node, ctx) {
+      ctx = ctx || {};
       if (node.nodeType === Node.TEXT_NODE) {
-        return node.textContent.replace(/\s+/g, ' ');
+        // 标签之间的纯空白（HTML 源码缩进）直接丢弃，避免块级行前出现空格
+        if (!node.textContent.trim()) return '';
+        return node.textContent.replace(/[ \t\r\n]+/g, ' ');
       }
       if (node.nodeType !== Node.ELEMENT_NODE) return '';
       const tag = node.tagName.toLowerCase();
-      const children = Array.from(node.childNodes).map(htmlToMarkdown).join('');
+
+      if (tag === 'input') return ''; // 任务列表 checkbox 在列表转换时单独处理
+
+      if (tag === 'img') {
+        const src = absoluteUrl(pickImgSrc(node), ctx.baseUrl);
+        if (!src) return '';
+        const alt = (node.getAttribute('alt') || '').replace(/[\[\]]/g, '');
+        return '![' + alt + '](' + src + ')\n\n';
+      }
+
+      // 代码块：保留原始缩进与换行，不做空白折叠
+      if (tag === 'pre') {
+        const codeEl = node.querySelector('code');
+        let text, lang = '';
+        if (codeEl) {
+          text = codeEl.textContent;
+          const m = (codeEl.className || '').match(/language-([\w-]+)/);
+          if (m) lang = m[1];
+        } else {
+          text = node.textContent;
+        }
+        text = text.replace(/^\n+/, '').replace(/\s+$/, '');
+        return '```' + lang + '\n' + text + '\n```\n\n';
+      }
+
+      const children = Array.from(node.childNodes).map((n) => htmlToMarkdown(n, ctx)).join('');
+      const inline = (s) => s.replace(/[ \t\r\n]+/g, ' ').trim();
+
       switch (tag) {
-        case 'h1': return '# ' + children.trim() + '\n\n';
-        case 'h2': return '## ' + children.trim() + '\n\n';
-        case 'h3': return '### ' + children.trim() + '\n\n';
-        case 'h4': return '#### ' + children.trim() + '\n\n';
-        case 'h5': return '##### ' + children.trim() + '\n\n';
-        case 'h6': return '###### ' + children.trim() + '\n\n';
-        case 'p': return children.trim() + '\n\n';
-        case 'br': return '\n';
-        case 'a':
-          const href = node.getAttribute('href') || '';
-          return '[' + children + '](' + href + ')';
-        case 'strong':
-        case 'b': return '**' + children + '**';
-        case 'em':
-        case 'i': return '*' + children + '*';
-        case 'code': return '`' + children + '`';
-        case 'pre':
-          const code = node.querySelector('code');
-          if (code) {
-            let lang = '';
-            const cls = code.className || '';
-            const m = cls.match(/language-(\w+)/);
-            if (m) lang = m[1];
-            return '\n```' + lang + '\n' + code.textContent.trim() + '\n```\n\n';
-          }
-          return '\n```\n' + children.trim() + '\n```\n\n';
-        case 'ul':
-          return Array.from(node.children).map(li => '- ' + htmlToMarkdown(li).trim()).join('\n') + '\n\n';
-        case 'ol':
-          return Array.from(node.children).map((li, idx) => (idx + 1) + '. ' + htmlToMarkdown(li).trim()).join('\n') + '\n\n';
-        case 'li': return children.trim();
-        case 'blockquote':
-          return '> ' + children.trim().replace(/\n/g, '\n> ') + '\n\n';
+        case 'h1': case 'h2': case 'h3': case 'h4': case 'h5': case 'h6': {
+          const level = Number(tag[1]);
+          return '#'.repeat(level) + ' ' + inline(children) + '\n\n';
+        }
+        case 'p': {
+          const t2 = inline(children);
+          return t2 ? t2 + '\n\n' : '';
+        }
+        case 'br': return '  \n';
+        case 'a': {
+          const href = absoluteUrl(node.getAttribute('href'), ctx.baseUrl);
+          const inner = inline(children);
+          if (!href || !inner) return inner;
+          return '[' + inner + '](' + href + ')';
+        }
+        case 'strong': case 'b': {
+          const t2 = inline(children);
+          return t2 ? '**' + t2 + '**' : '';
+        }
+        case 'em': case 'i': {
+          const t2 = inline(children);
+          return t2 ? '*' + t2 + '*' : '';
+        }
+        case 'code': {
+          const t2 = inline(children);
+          return t2 ? '`' + t2 + '`' : '';
+        }
+        case 'blockquote': {
+          const t2 = children.trim().replace(/\n{2,}/g, '\n\n');
+          return t2 ? '> ' + t2.replace(/\n/g, '\n> ') + '\n\n' : '';
+        }
         case 'hr': return '---\n\n';
-        case 'table': return convertTable(node);
-        case 'div': return children.trim() + '\n\n';
-        case 'figure': return children.trim() + '\n\n';
-        case 'section': return children.trim() + '\n\n';
+        case 'ul': return convertList(node, ctx, false);
+        case 'ol': return convertList(node, ctx, true);
+        case 'li': return children.trim();
+        case 'table': return convertTable(node, ctx);
+        case 'figcaption': {
+          const t2 = inline(children);
+          return t2 ? '*' + t2 + '*\n\n' : '';
+        }
+        case 'div': case 'section': case 'article': case 'main': case 'figure': {
+          const t2 = children.trim();
+          return t2 ? t2 + '\n\n' : '';
+        }
         default: return children;
       }
     }
 
-    function convertTable(table) {
+    // 列表转换：支持嵌套列表与 GFM 任务列表
+    function convertList(listNode, ctx, ordered) {
+      const items = Array.from(listNode.children).filter((c) => c.tagName === 'LI');
+      const lines = items.map((li, idx) => {
+        const nested = Array.from(li.children).filter((c) => c.tagName === 'UL' || c.tagName === 'OL');
+        const checkbox = li.querySelector('input[type="checkbox"]');
+        const checked = checkbox ? (checkbox.hasAttribute('checked') || checkbox.checked) : null;
+
+        // 列表项主体：排除嵌套列表与 checkbox
+        const mainParts = Array.from(li.childNodes)
+          .filter((n) => {
+            if (n.nodeType !== Node.ELEMENT_NODE) return true;
+            if (n.tagName === 'UL' || n.tagName === 'OL') return false;
+            if (n.tagName === 'INPUT' && n.getAttribute('type') === 'checkbox') return false;
+            return true;
+          })
+          .map((n) => htmlToMarkdown(n, ctx))
+          .join('')
+          .replace(/\n+$/, '')
+          .trim();
+
+        const head = checked !== null
+          ? (checked ? '- [x] ' : '- [ ] ')
+          : (ordered ? (idx + 1) + '. ' : '- ');
+        const pad = ' '.repeat(head.length);
+        let line = head + mainParts.split('\n').map((l, i) => (i === 0 ? l : pad + l)).join('\n');
+
+        nested.forEach((sub) => {
+          const subMd = convertList(sub, ctx, sub.tagName === 'OL').replace(/\n+$/, '');
+          line += '\n' + subMd.split('\n').map((l) => '  ' + l).join('\n');
+        });
+        return line;
+      });
+      return lines.join('\n') + '\n\n';
+    }
+
+    function convertTable(table, ctx) {
       const rows = Array.from(table.querySelectorAll('tr'));
       if (!rows.length) return '';
-      let md = '\n';
+      let md = '';
       rows.forEach((tr, i) => {
-        const cells = Array.from(tr.querySelectorAll('td, th')).map(td => {
-          return htmlToMarkdown(td).trim().replace(/\|/g, '\\|');
+        const cells = Array.from(tr.querySelectorAll('td, th')).map((td) => {
+          return htmlToMarkdown(td, ctx).trim().replace(/\s+/g, ' ').replace(/\|/g, '\\|');
         });
         if (cells.length) {
           md += '| ' + cells.join(' | ') + ' |\n';
           if (i === 0) {
-            md += '|' + cells.map(() => '---').join('|') + '|\n';
+            md += '| ' + cells.map(() => '---').join(' | ') + ' |\n';
           }
         }
       });
@@ -3548,7 +3693,8 @@ ${'</scr' + 'ipt>'}
         const meta = extractMeta(doc);
         const main = extractMainContent(doc);
         const cleaned = stripUnwantedElements(main.cloneNode(true));
-        let bodyMd = htmlToMarkdown(cleaned).replace(/\n{3,}/g, '\n\n').trim();
+        const ctx = { baseUrl: fetchedBaseUrl || url };
+        let bodyMd = htmlToMarkdown(cleaned, ctx).replace(/\n{3,}/g, '\n\n').trim();
 
         // 避免 bodyMd 以 h1 开头与标题重复
         if (meta.title && bodyMd.toLowerCase().startsWith('# ' + meta.title.toLowerCase())) {
