@@ -2394,7 +2394,93 @@ ${'</scr' + 'ipt>'}
       showToast(t('toastHtmlExported'));
     }
 
-    function exportPDF() {
+    // 将 ArrayBuffer 转 base64（分块避免调用栈溢出）
+    function bufferToBase64(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let bin = '';
+      const CHUNK = 0x8000;
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+      }
+      return btoa(bin);
+    }
+
+    // 把 katex.min.css 中相对引用的字体全部内联为 data: URL，
+    // 这样临时 HTML 文件在任何目录（包括打包后）都能正确排版公式
+    async function inlineKaTeXPixel(css) {
+      // 只需内联 woff2：Edge headless 与现代浏览器均支持，且在 src 列表首位会被优先采用
+      const re = /url\(fonts\/([^)]+\.woff2)\)/g;
+      const names = new Set();
+      css.replace(re, (_whole, name) => names.add(name));
+      const replacements = new Map();
+      await Promise.all([...names].map(async (name) => {
+        try {
+          const resp = await fetch('vendor/fonts/' + name);
+          if (!resp.ok) return;
+          const buffer = await resp.arrayBuffer();
+          // 校验 woff2 魔数 "wOF2"：dev server 可能把不存在的路径回退成 HTML 页面
+          const sig = new Uint8Array(buffer.slice(0, 4));
+          const isWoff2 = sig[0] === 0x77 && sig[1] === 0x4f && sig[2] === 0x46 && sig[3] === 0x32;
+          if (!isWoff2) return;
+          replacements.set(name, `url(data:font/woff2;base64,${bufferToBase64(buffer)})`);
+        } catch (e) { /* 保留原 url，渲染端回退到后备字体 */ }
+      }));
+      return css.replace(re, (_whole, name) => replacements.get(name) || _whole);
+    }
+
+    // 构造用于生成 PDF 的自包含 HTML：收集页面全部样式，body 只放预览内容
+    async function buildPdfDocumentHtml() {
+      let css = '';
+      document.querySelectorAll('style').forEach((s) => { css += s.textContent + '\n'; });
+      const extra = await Promise.all(
+        ['vendor/katex.min.css', 'vendor/highlight-atom-one-dark.min.css']
+          .map((p) => fetch(p).then((r) => r.text()).catch(() => ''))
+      );
+      css += extra.join('\n');
+      css = await inlineKaTeXPixel(css);
+
+      const content = document.createElement('div');
+      content.className = 'preview-content';
+      content.innerHTML = preview.innerHTML;
+      content.querySelectorAll('.code-header, .code-copy').forEach((el) => el.remove());
+
+      return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+@page { size: A4; margin: 15mm 14mm; }
+html, body { margin: 0; padding: 0; }
+body { background: #fff; }
+.preview-content { max-width: none; padding: 0; overflow: visible; }
+</style>
+<style>
+${css}
+</style>
+</head>
+<body>${content.outerHTML}</body>
+</html>`;
+    }
+
+    // Tauri：保存对话框选路径 → Edge headless 输出真正的 PDF；true=已保存，false=用户取消
+    async function exportPDFTauri() {
+      let name = filenameInput.value.trim();
+      if (!name) name = '未命名文档.md';
+      name = name.replace(/\.(md|markdown|txt|html|doc)$/i, '') + '.pdf';
+
+      const outPath = await window.__TAURI__.dialog.save({
+        defaultPath: name,
+        filters: [{ name: 'PDF', extensions: ['pdf'] }]
+      });
+      if (typeof outPath !== 'string') return false; // 用户取消
+
+      const html = await buildPdfDocumentHtml();
+      await window.__TAURI__.core.invoke('html_to_pdf', { html: html, outPath: outPath });
+      return true;
+    }
+
+    // 浏览器环境的回退：系统打印，用户选「另存为 PDF」
+    function exportPDFViaPrint() {
       const wasSource = previewMode === 'source';
       if (wasSource) {
         setPreviewMode('preview');
@@ -2404,6 +2490,26 @@ ${'</scr' + 'ipt>'}
         window.print();
         if (wasSource) setPreviewMode('source');
       }, 500);
+    }
+
+    function exportPDF() {
+      if (inTauriApp()) {
+        exportPDFTauri()
+          .then((saved) => { if (saved) showToast(t('toastPdfExported')); })
+          .catch((err) => {
+            console.error(err);
+            const msg = String(err);
+            // Edge 不可用时回退到打印方式
+            if (msg.includes('Edge')) {
+              showToast(t('toastPdfFallbackPrint'));
+              setTimeout(exportPDFViaPrint, 300);
+            } else {
+              showToast(t('toastPdfFailed', msg));
+            }
+          });
+        return;
+      }
+      exportPDFViaPrint();
     }
 
     function toggleExportMenu() {
