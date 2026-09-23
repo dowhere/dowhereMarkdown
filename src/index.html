@@ -260,6 +260,71 @@
       justify-content: center;
       min-width: 15px;
     }
+    /* 顶部经典菜单栏 */
+    .menu-bar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 10px;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      z-index: 9;
+    }
+    .menu { position: relative; }
+    .menu-label {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+      cursor: default;
+      user-select: none;
+    }
+    .menu-label:hover,
+    .menu.open .menu-label { background: var(--surface); }
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 3px);
+      left: 0;
+      min-width: 190px;
+      padding: 4px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+    }
+    .menu.open .menu-dropdown { display: block; }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: default;
+      white-space: nowrap;
+    }
+    .menu-item:hover { background: var(--accent-soft); color: var(--accent); }
+    .menu-shortcut { color: var(--text-muted); font-size: 12px; }
+    .menu-item:hover .menu-shortcut { color: var(--accent); }
+    .menu-sep { height: 1px; background: var(--border); margin: 4px 6px; }
+    .menu-item.checked > span:first-child::before { content: '✓ '; color: var(--accent); font-weight: 700; }
+    /* 纯图标按钮（top-bar 主题切换） */
+    .icon-only-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px;
+    }
+    .icon-only-btn .icon { width: 17px; height: 17px; }
     /* 表格选择器 */
     .table-selector-menu {
       padding: 12px;
@@ -402,6 +467,68 @@
     .resizing .pane,
     .resizing .resizer {
       transition: none !important;
+    }
+    /* 左侧大纲面板（独立折叠规则，不使用 .pane.collapsed 的 44px 竖条） */
+    .outline-pane {
+      flex: 0 0 var(--outline-width, 220px);
+      background: var(--panel-bg);
+      border-right: 1px solid var(--border);
+      transition: flex-basis 0.22s ease, opacity 0.22s ease;
+    }
+    /* 折叠后保留 32px 竖条：展开按钮必须始终可见，否则折叠后无法再展开 */
+    .outline-pane.collapsed {
+      flex: 0 0 32px !important;
+      min-width: 0 !important;
+      max-width: 32px !important;
+      opacity: 1;
+    }
+    .outline-pane.collapsed .outline-list { display: none; }
+    .outline-pane.collapsed .pane-header {
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100%;
+      padding: 8px 0;
+      border-bottom: none;
+    }
+    /* 折叠时 « 按钮转为竖排、箭头转向，充当展开入口 */
+    .outline-pane.collapsed .pane-title { display: none; }
+    .outline-pane.collapsed .collapse-btn { margin: 0 auto; }
+    .outline-pane.collapsed .collapse-btn svg { transform: rotate(180deg); }
+    .outline-resizer {
+      flex: 0 0 6px;
+      width: 6px;
+    }
+    .outline-list {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 6px 6px 14px;
+    }
+    .outline-item {
+      display: block;
+      padding: 5px 8px 5px calc(8px + var(--indent));
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      user-select: none;
+    }
+    .outline-item:hover { background: var(--surface); color: var(--text); }
+    .outline-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .outline-empty {
+      padding: 18px 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
     }
     .editor-pane textarea {
       flex: 1;
@@ -857,6 +984,7 @@
         writing-mode: horizontal-tb;
       }
       .resizer { display: none; }
+      .outline-pane, .outline-resizer { display: none; }
       .preview-content .markdown-body { padding: 20px 24px; }
     }
     /* 加载提示 */
@@ -1091,7 +1219,8 @@
     }
     /* 打印 / 导出 PDF */
     @media print {
-      .top-bar, .editor-toolbar, .statusbar, .editor-pane, .resizer, .preview-pane .pane-header,
+      .top-bar, .menu-bar, .editor-toolbar, .statusbar, .editor-pane, .resizer,
+      .outline-pane, .outline-resizer, .preview-pane .pane-header,
       .preview-source, .modal-overlay, .toast, .icon-sprite {
         display: none !important;
       }
@@ -1217,22 +1346,8 @@
       <input type="text" id="filename" value="未命名文档.md" data-i18n-title="filenameTitle" title="文件名">
       <div class="spacer"></div>
       <div class="top-actions">
-        <button onclick="saveToLocal()" class="primary" data-i18n-title="save"><svg class="icon"><use href="#icon-save"></use></svg> <span data-i18n="save">保存</span></button>
-        <label for="importFile"><svg class="icon"><use href="#icon-upload"></use></svg> <span data-i18n="importBtn">导入</span></label>
         <input type="file" id="importFile" accept=".md,.markdown,.txt" onchange="importFile(this)">
-        <div class="dropdown" id="export-dropdown">
-          <button onclick="toggleExportMenu()" data-i18n-title="exportBtn"><svg class="icon"><use href="#icon-download"></use></svg> <span data-i18n="exportBtn">导出</span></button>
-          <div class="dropdown-menu" id="export-menu">
-            <div class="dropdown-item" onclick="exportFile(); closeExportMenu();" data-i18n="exportMd">导出 Markdown (.md)</div>
-            <div class="dropdown-item" onclick="exportWord(); closeExportMenu();" data-i18n="exportWord">导出 Word (.doc)</div>
-            <div class="dropdown-item" onclick="exportPDF(); closeExportMenu();" data-i18n="exportPdf">导出 PDF (.pdf)</div>
-            <div class="dropdown-item" onclick="exportHTML(); closeExportMenu();" data-i18n="exportHtml">导出 HTML (.html)</div>
-            <div class="dropdown-item" onclick="openExportImageModal(); closeExportMenu();" data-i18n="exportImage">导出图片 (.png)</div>
-          </div>
-        </div>
-        <button onclick="openUrlModal()" data-i18n-title="urlTitle"><svg class="icon"><use href="#icon-globe"></use></svg> <span data-i18n="webToMd">网页转MD</span></button>
-        <button onclick="openHelp()" data-i18n-title="helpTitle"><svg class="icon"><use href="#icon-help"></use></svg> <span data-i18n="help">帮助</span></button>
-        <button onclick="clearDoc()" data-i18n-title="clear"><svg class="icon"><use href="#icon-trash"></use></svg> <span data-i18n="clear">清空</span></button>
+        <button type="button" class="icon-only-btn" onclick="toggleTheme()" data-i18n-title="theme" title="切换主题"><svg class="icon"><use href="#icon-sun"></use></svg></button>
         <div class="dropdown" id="lang-dropdown">
           <button onclick="toggleLangMenu()" data-i18n-title="langLabel"><svg class="icon"><use href="#icon-globe"></use></svg> <span data-i18n="langLabel">语言</span></button>
           <div class="dropdown-menu" id="lang-menu">
@@ -1247,6 +1362,93 @@
             <div class="dropdown-item" onclick="setLanguage('ru'); closeLangMenu();">Русский</div>
             <div class="dropdown-item" onclick="setLanguage('pt'); closeLangMenu();">Português</div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-bar">
+      <div class="menu" data-menu="file">
+        <button type="button" class="menu-label" onclick="toggleAppMenu('file')" data-i18n="menuFile">文件</button>
+        <div class="menu-dropdown">
+          <div class="menu-item" onclick="clearDoc();closeAppMenus()"><span data-i18n="menuNew">新建</span><span class="menu-shortcut">Ctrl+N</span></div>
+          <div class="menu-item" onclick="triggerImport();closeAppMenus()"><span data-i18n="menuOpen">打开…</span><span class="menu-shortcut">Ctrl+O</span></div>
+          <div class="menu-item" onclick="saveToLocal();closeAppMenus()"><span data-i18n="save">保存</span><span class="menu-shortcut">Ctrl+S</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" onclick="exportFile();closeAppMenus()"><span data-i18n="exportMd">导出 Markdown</span></div>
+          <div class="menu-item" onclick="exportWord();closeAppMenus()"><span data-i18n="exportWord">导出 Word</span></div>
+          <div class="menu-item" onclick="exportPDF();closeAppMenus()"><span data-i18n="exportPdf">导出 PDF</span></div>
+          <div class="menu-item" onclick="exportHTML();closeAppMenus()"><span data-i18n="exportHtml">导出 HTML</span></div>
+          <div class="menu-item" onclick="openExportImageModal();closeAppMenus()"><span data-i18n="exportImage">导出图片</span></div>
+        </div>
+      </div>
+      <div class="menu" data-menu="edit">
+        <button type="button" class="menu-label" onclick="toggleAppMenu('edit')" data-i18n="menuEdit">编辑</button>
+        <div class="menu-dropdown">
+          <div class="menu-item" onclick="undo();closeAppMenus()"><span data-i18n="menuUndo">撤销</span><span class="menu-shortcut">Ctrl+Z</span></div>
+          <div class="menu-item" onclick="redo();closeAppMenus()"><span data-i18n="menuRedo">重做</span><span class="menu-shortcut">Ctrl+Y</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" onclick="openFindModal();closeAppMenus()"><span data-i18n="find">查找</span><span class="menu-shortcut">Ctrl+F</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" onclick="clearDoc();closeAppMenus()"><span data-i18n="clear">清空</span></div>
+        </div>
+      </div>
+      <div class="menu" data-menu="insert">
+        <button type="button" class="menu-label" onclick="toggleAppMenu('insert')" data-i18n="menuInsert">插入</button>
+        <div class="menu-dropdown">
+          <div class="menu-item" onclick="insertCode();closeAppMenus()"><span data-i18n="codeBlock">代码块</span></div>
+          <div class="menu-item" onclick="insertLink();closeAppMenus()"><span data-i18n="link">链接</span><span class="menu-shortcut">Ctrl+K</span></div>
+          <div class="menu-item" onclick="openImageModal();closeAppMenus()"><span data-i18n="image">图片</span></div>
+          <div class="menu-item" onclick="insertTable(3,3);closeAppMenus()"><span data-i18n="table">表格</span></div>
+          <div class="menu-item" onclick="openMermaidModal();closeAppMenus()"><span data-i18n="mermaid">Mermaid</span></div>
+          <div class="menu-item" onclick="formatTaskList();closeAppMenus()"><span data-i18n="task">任务列表</span></div>
+        </div>
+      </div>
+      <div class="menu" data-menu="format">
+        <button type="button" class="menu-label" onclick="toggleAppMenu('format')" data-i18n="menuFormat">格式</button>
+        <div class="menu-dropdown">
+          <div class="menu-item" onclick="formatBold();closeAppMenus()"><span data-i18n="menuBold">加粗</span><span class="menu-shortcut">Ctrl+B</span></div>
+          <div class="menu-item" onclick="formatItalic();closeAppMenus()"><span data-i18n="menuItalic">斜体</span><span class="menu-shortcut">Ctrl+I</span></div>
+          <div class="menu-item" onclick="formatUnderline();closeAppMenus()"><span data-i18n="menuUnderline">下划线</span><span class="menu-shortcut">Ctrl+U</span></div>
+          <div class="menu-item" onclick="formatStrikethrough();closeAppMenus()"><span data-i18n="strikethroughTitle">删除线</span></div>
+          <div class="menu-item" onclick="formatSuperscript();closeAppMenus()"><span data-i18n="superscriptTitle">上标</span></div>
+          <div class="menu-item" onclick="formatSubscript();closeAppMenus()"><span data-i18n="subscriptTitle">下标</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" onclick="insertHeading(1);closeAppMenus()"><span data-i18n="headingH1">H1 一级标题</span></div>
+          <div class="menu-item" onclick="insertHeading(2);closeAppMenus()"><span data-i18n="headingH2">H2 二级标题</span></div>
+          <div class="menu-item" onclick="insertHeading(3);closeAppMenus()"><span data-i18n="headingH3">H3 三级标题</span></div>
+          <div class="menu-item" onclick="insertHeading(4);closeAppMenus()"><span data-i18n="headingH4">H4 四级标题</span></div>
+          <div class="menu-item" onclick="insertHeading(5);closeAppMenus()"><span data-i18n="headingH5">H5 五级标题</span></div>
+          <div class="menu-item" onclick="insertHeading(6);closeAppMenus()"><span data-i18n="headingH6">H6 六级标题</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" onclick="formatQuote();closeAppMenus()"><span data-i18n="quote">引用</span></div>
+          <div class="menu-item" onclick="formatUnorderedList();closeAppMenus()"><span data-i18n="unordered">无序列表</span></div>
+          <div class="menu-item" onclick="formatOrderedList();closeAppMenus()"><span data-i18n="ordered">有序列表</span></div>
+          <div class="menu-item" onclick="insertCodeRow();closeAppMenus()"><span data-i18n="inlineCode">行内代码</span></div>
+        </div>
+      </div>
+      <div class="menu" data-menu="view">
+        <button type="button" class="menu-label" onclick="toggleAppMenu('view')" data-i18n="menuView">视图</button>
+        <div class="menu-dropdown">
+          <div class="menu-item" onclick="setLayoutMode('both');closeAppMenus()"><span data-i18n="viewBoth">编辑 + 预览</span></div>
+          <div class="menu-item" onclick="setLayoutMode('edit');closeAppMenus()"><span data-i18n="viewEdit">仅编辑</span></div>
+          <div class="menu-item" onclick="setLayoutMode('preview');closeAppMenus()"><span data-i18n="viewPreview">仅预览</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" onclick="togglePageFullscreen();closeAppMenus()"><span data-i18n="pageFullscreen">页面全屏</span></div>
+          <div class="menu-item" onclick="toggleFullscreen();closeAppMenus()"><span data-i18n="systemFullscreen">系统全屏</span></div>
+          <div class="menu-sep"></div>
+          <div class="menu-item" id="outline-toggle-item" onclick="toggleOutline();closeAppMenus()"><span data-i18n="viewOutline">大纲面板</span></div>
+        </div>
+      </div>
+      <div class="menu" data-menu="tools">
+        <button type="button" class="menu-label" onclick="toggleAppMenu('tools')" data-i18n="menuTools">工具</button>
+        <div class="menu-dropdown">
+          <div class="menu-item" onclick="openUrlModal();closeAppMenus()"><span data-i18n="webToMd">网页转MD</span></div>
+        </div>
+      </div>
+      <div class="menu" data-menu="help">
+        <button type="button" class="menu-label" onclick="toggleAppMenu('help')" data-i18n="help">帮助</button>
+        <div class="menu-dropdown">
+          <div class="menu-item" onclick="openHelp();closeAppMenus()"><span data-i18n="help">帮助文档</span></div>
         </div>
       </div>
     </div>
@@ -1294,22 +1496,17 @@
         <button onclick="openFindModal()" data-i18n-title="find" title="查找替换 Ctrl+F"><svg class="icon"><use href="#icon-search"></use></svg> <span data-i18n="find">查找</span></button>
         <button onclick="openMermaidModal()" data-i18n-title="mermaid" title="插入 Mermaid 图表"><svg class="icon"><use href="#icon-mermaid"></use></svg> <span data-i18n="mermaid">Mermaid</span></button>
       </div>
-      <div class="editor-actions">
-        <div class="dropdown" id="view-dropdown">
-          <button onclick="toggleViewMenu()" data-i18n-title="view" title="视图布局"><svg class="icon"><use href="#icon-layout"></use></svg> <span data-i18n="view">视图</span> <svg class="icon icon-sm"><use href="#icon-chevron-down"></use></svg></button>
-          <div class="dropdown-menu" id="view-menu">
-            <div class="dropdown-item" onclick="setLayoutMode('both'); closeViewMenu();" data-i18n="viewBoth">编辑 + 预览</div>
-            <div class="dropdown-item" onclick="setLayoutMode('edit'); closeViewMenu();" data-i18n="viewEdit">仅编辑</div>
-            <div class="dropdown-item" onclick="setLayoutMode('preview'); closeViewMenu();" data-i18n="viewPreview">仅预览</div>
-            <div class="dropdown-item" onclick="togglePageFullscreen(); closeViewMenu();" data-i18n="pageFullscreen">页面全屏</div>
-            <div class="dropdown-item" onclick="toggleFullscreen(); closeViewMenu();" data-i18n="systemFullscreen">系统全屏</div>
-          </div>
-        </div>
-        <button onclick="toggleTheme()" data-i18n-title="theme" title="切换主题"><svg class="icon"><use href="#icon-sun"></use></svg> <span data-i18n="theme">主题</span></button>
-      </div>
     </div>
 
     <div class="main">
+      <div class="pane outline-pane" id="outline-pane">
+        <div class="pane-header">
+          <span class="pane-title" data-i18n="outlineTitle">大纲</span>
+          <button type="button" class="collapse-btn" id="outline-collapse-btn" onclick="toggleOutline()" data-i18n-title="collapseOutline" title="收起大纲"><svg class="icon icon-sm"><use href="#icon-chevron-left"></use></svg></button>
+        </div>
+        <div class="outline-list" id="outline-list"></div>
+      </div>
+      <div class="resizer outline-resizer" id="outline-resizer"></div>
       <div class="pane editor-pane">
         <div class="pane-header">
           <span class="pane-title" data-i18n="editorPaneTitle">编辑</span>
@@ -1590,9 +1787,16 @@
     const PREVIEW_COLLAPSED_KEY = 'md_editor_preview_collapsed';
     const PREVIEW_MODE_KEY = 'md_editor_preview_mode';
     const LANG_KEY = 'md_editor_language';
+    const OUTLINE_COLLAPSED_KEY = 'md_editor_outline_collapsed';
+    const OUTLINE_WIDTH_KEY = 'md_editor_outline_width';
 
     let previewMode = 'preview';
     let currentLang = 'zh-CN';
+    let outlineCollapsed = false;
+    let outlineData = [];           // 大纲项：{ level, text, line, offset, el }
+    let activeOutline = -1;
+    let outlineTimer = null;
+    let outlineSignature = '';
 
     function t(key, ...args) {
       const dict = i18n[currentLang] || i18n['zh-CN'];
@@ -1789,9 +1993,12 @@
 
     // 同步滚动
     let isSyncingScroll = false;
+    // 大纲跳转等"程序化定位"期间不同步：先改编辑器滚动、再改预览滚动，
+    // 编辑器的异步 scroll 事件会在预览定位之后触发并按比例把预览拉走
+    let programmaticScroll = false;
 
     function syncScroll(source, target) {
-      if (isSyncingScroll) return;
+      if (isSyncingScroll || programmaticScroll) return;
       const sourceHeight = source.scrollHeight - source.clientHeight;
       const targetHeight = target.scrollHeight - target.clientHeight;
       if (sourceHeight <= 0 || targetHeight <= 0) return;
@@ -1802,7 +2009,232 @@
     }
 
     editor.addEventListener('scroll', () => syncScroll(editor, preview));
-    preview.addEventListener('scroll', () => syncScroll(preview, editor));
+    preview.addEventListener('scroll', () => {
+      syncScroll(preview, editor);
+      updateActiveOutline();
+    });
+    editor.addEventListener('scroll', updateActiveOutline);
+
+    // ========== 左侧大纲面板 ==========
+    const outlinePane = document.getElementById('outline-pane');
+    const outlineList = document.getElementById('outline-list');
+    const outlineResizer = document.getElementById('outline-resizer');
+
+    // 从 markdown 源码提取标题：围栏代码块内的 # 不算标题
+    function extractHeadings(src) {
+      const lines = src.split('\n');
+      const result = [];
+      let inFence = false;
+      let fenceMarker = '';
+      let offset = 0;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const fenceMatch = /^\s*(`{3,}|~{3,})/.exec(line);
+        if (fenceMatch) {
+          const marker = fenceMatch[1][0];
+          if (!inFence) { inFence = true; fenceMarker = marker; }
+          else if (marker === fenceMarker) { inFence = false; fenceMarker = ''; }
+        }
+
+        if (!inFence) {
+          const atx = /^\s{0,3}(#{1,6})[ \t]+(.+?)[ \t]*$/.exec(line);
+          if (atx) {
+            // 去掉行尾闭合的 # 序列
+            const text = atx[2].replace(/\s+#+\s*$/, '').trim();
+            result.push({ level: atx[1].length, text, line: i, offset, el: null });
+          } else {
+            // Setext 标题：当前行有文字、下一行全为 = 或 -
+            const next = i + 1 < lines.length ? lines[i + 1] : '';
+            if (/\S/.test(line) && !/^\s{0,3}#{1,6}/.test(line)
+                && /^\s{0,3}(=+|-+)[ \t]*$/.test(next)) {
+              result.push({
+                level: next.trim()[0] === '=' ? 1 : 2,
+                text: line.trim(), line: i, offset, el: null
+              });
+            }
+          }
+        }
+
+        offset += line.length + 1;
+      }
+      return result;
+    }
+
+    function scheduleOutlineUpdate() {
+      clearTimeout(outlineTimer);
+      outlineTimer = setTimeout(renderOutline, 200);
+    }
+
+    // 渲染大纲：与预览区 h 元素按顺序配对，显示其 innerText（已解析行内格式）
+    function renderOutline() {
+      const headings = extractHeadings(editor.value);
+      const previewHeadings = preview.querySelectorAll(
+        '.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6'
+      );
+      headings.forEach((h, i) => {
+        const previewEl = previewHeadings[i];
+        if (previewEl) {
+          h.el = previewEl;
+          const rendered = previewEl.innerText.trim();
+          if (rendered) h.text = rendered;
+        }
+      });
+
+      // 标题序列无变化时不重建 DOM（每次击键都会调度）
+      const signature = headings.map((h) => h.level + ':' + h.text).join('|');
+      if (signature === outlineSignature) {
+        outlineData = headings;
+        return;
+      }
+      outlineSignature = signature;
+      outlineData = headings;
+
+      if (!headings.length) {
+        outlineList.innerHTML = '<div class="outline-empty"></div>';
+        outlineList.querySelector('.outline-empty').textContent = t('outlineEmpty');
+        activeOutline = -1;
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      headings.forEach((h, i) => {
+        const item = document.createElement('div');
+        item.className = 'outline-item';
+        item.style.setProperty('--indent', (h.level - 1) * 12 + 'px');
+        item.textContent = h.text;
+        item.title = h.text;
+        item.addEventListener('click', () => jumpToOutline(i));
+        frag.appendChild(item);
+      });
+      outlineList.innerHTML = '';
+      outlineList.appendChild(frag);
+      activeOutline = -1;
+      updateActiveOutline();
+    }
+
+    // 点击大纲项：编辑器光标与预览同时跳到该标题
+    function jumpToOutline(i) {
+      const h = outlineData[i];
+      if (!h) return;
+
+      const editorStyle = getComputedStyle(editor);
+      const lineHeight = parseFloat(editorStyle.lineHeight) || 28.8;
+      const paddingTop = parseFloat(editorStyle.paddingTop) || 0;
+
+      // 两个滚动连续设置，屏蔽它们异步触发的 syncScroll（scroll 事件在当前任务结束后才派发）
+      programmaticScroll = true;
+      editor.focus();
+      editor.setSelectionRange(h.offset, h.offset);
+      editor.scrollTop = Math.max(
+        0, h.line * lineHeight + paddingTop - editor.clientHeight / 3
+      );
+
+      if (h.el) {
+        const previewPad = parseFloat(getComputedStyle(preview).paddingTop) || 0;
+        preview.scrollTop = Math.max(0, h.el.offsetTop - previewPad - 8);
+      }
+      setActiveOutline(i);
+      // 双 rAF 后恢复：scroll 事件在 rAF 之前派发，而 preview→editor→preview 的
+      // 联动事件链跨越多个任务；setTimeout(0) 可能早于该链导致屏蔽失效
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        programmaticScroll = false;
+      }));
+    }
+
+    function setActiveOutline(i) {
+      activeOutline = i;
+      outlineList.querySelectorAll('.outline-item').forEach((el, idx) => {
+        el.classList.toggle('active', idx === i);
+      });
+    }
+
+    // 按预览滚动位置高亮当前标题
+    function updateActiveOutline() {
+      if (programmaticScroll) return; // 大纲跳转以被点击项为准，不随后续滚动事件重算
+      if (!outlineData.length || !outlineList.children.length) return;
+      const pad = parseFloat(getComputedStyle(preview).paddingTop) || 0;
+      const pos = preview.scrollTop + 100;
+      let current = -1;
+      for (let i = 0; i < outlineData.length; i++) {
+        if (outlineData[i].el && outlineData[i].el.offsetTop - pad <= pos) current = i;
+        else break;
+      }
+      if (current !== -1 && current !== activeOutline) setActiveOutline(current);
+    }
+
+    // 折叠 / 展开大纲
+    function toggleOutline() {
+      outlineCollapsed = !outlineCollapsed;
+      applyOutlineState();
+      localStorage.setItem(OUTLINE_COLLAPSED_KEY, String(outlineCollapsed));
+    }
+
+    function applyOutlineState() {
+      outlinePane.classList.toggle('collapsed', outlineCollapsed);
+      outlineResizer.classList.toggle('hidden', outlineCollapsed);
+      const toggleItem = document.getElementById('outline-toggle-item');
+      if (toggleItem) toggleItem.classList.toggle('checked', !outlineCollapsed);
+      const collapseBtn = document.getElementById('outline-collapse-btn');
+      if (collapseBtn) {
+        collapseBtn.title = t(outlineCollapsed ? 'expandOutline' : 'collapseOutline');
+      }
+    }
+
+    // 大纲宽度拖拽（160–360px）
+    let outlineResizing = false;
+    outlineResizer.addEventListener('mousedown', (e) => {
+      outlineResizing = true;
+      outlineResizer.classList.add('dragging');
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!outlineResizing) return;
+      const width = Math.min(360, Math.max(160, e.clientX));
+      document.documentElement.style.setProperty('--outline-width', width + 'px');
+    });
+    window.addEventListener('mouseup', () => {
+      if (!outlineResizing) return;
+      outlineResizing = false;
+      outlineResizer.classList.remove('dragging');
+      const width = getComputedStyle(document.documentElement)
+        .getPropertyValue('--outline-width').trim();
+      if (width) localStorage.setItem(OUTLINE_WIDTH_KEY, width);
+    });
+
+    // 从菜单触发文件导入
+    function triggerImport() {
+      document.getElementById('importFile').click();
+    }
+
+    // ========== 顶部菜单栏 ==========
+    function toggleAppMenu(name) {
+      const menu = document.querySelector('.menu[data-menu="' + name + '"]');
+      const willOpen = !menu.classList.contains('open');
+      closeAppMenus();
+      if (willOpen) menu.classList.add('open');
+    }
+
+    function closeAppMenus() {
+      document.querySelectorAll('.menu.open').forEach((m) => m.classList.remove('open'));
+    }
+
+    // 桌面标准行为：已有菜单打开时，hover 其他菜单自动切换
+    document.querySelectorAll('.menu-label').forEach((label) => {
+      label.addEventListener('mouseenter', () => {
+        if (document.querySelector('.menu.open')) {
+          closeAppMenus();
+          label.closest('.menu').classList.add('open');
+        }
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.menu')) closeAppMenus();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAppMenus();
+    });
 
     // 初始化：恢复内容、文件名、主题
     function init() {
@@ -1837,6 +2269,14 @@
       if (savedPreviewMode === 'preview' || savedPreviewMode === 'source') {
         previewMode = savedPreviewMode;
       }
+
+      // 恢复大纲折叠状态与宽度
+      outlineCollapsed = localStorage.getItem(OUTLINE_COLLAPSED_KEY) === 'true';
+      const savedOutlineWidth = localStorage.getItem(OUTLINE_WIDTH_KEY);
+      if (savedOutlineWidth) {
+        document.documentElement.style.setProperty('--outline-width', savedOutlineWidth);
+      }
+      applyOutlineState();
 
       updatePreview();
       updateCount();
@@ -1906,6 +2346,7 @@
       }
 
       renderMermaidBlocks();
+      scheduleOutlineUpdate();
     }
 
     function protectMath(text) {
@@ -2511,14 +2952,6 @@ ${css}
         return;
       }
       exportPDFViaPrint();
-    }
-
-    function toggleExportMenu() {
-      document.getElementById('export-menu').classList.toggle('show');
-    }
-
-    function closeExportMenu() {
-      document.getElementById('export-menu').classList.remove('show');
     }
 
     // 导出图片
@@ -3929,10 +4362,6 @@ ${css}
 
     // 点击外部关闭下拉菜单
     document.addEventListener('click', (e) => {
-      const exportDropdown = document.getElementById('export-dropdown');
-      if (exportDropdown && !exportDropdown.contains(e.target)) {
-        closeExportMenu();
-      }
       const headingDropdown = document.getElementById('heading-dropdown');
       if (headingDropdown && !headingDropdown.contains(e.target)) {
         closeHeadingMenu();
@@ -3961,6 +4390,12 @@ ${css}
         if (e.key === 's') {
           e.preventDefault();
           saveToLocal();
+        } else if (e.key === 'n') {
+          e.preventDefault();
+          clearDoc();
+        } else if (e.key === 'o') {
+          e.preventDefault();
+          triggerImport();
         } else if (e.key === 'z' && !e.shiftKey) {
           e.preventDefault();
           undo();

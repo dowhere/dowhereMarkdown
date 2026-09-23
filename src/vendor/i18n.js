@@ -1,5 +1,23 @@
 const i18n = {
   'zh-CN': {
+    menuFile: '文件',
+    menuEdit: '编辑',
+    menuInsert: '插入',
+    menuFormat: '格式',
+    menuView: '视图',
+    menuTools: '工具',
+    menuNew: '新建',
+    menuOpen: '打开…',
+    menuUndo: '撤销',
+    menuRedo: '重做',
+    menuBold: '加粗',
+    menuItalic: '斜体',
+    menuUnderline: '下划线',
+    outlineTitle: '大纲',
+    outlineEmpty: '暂无标题',
+    viewOutline: '大纲面板',
+    collapseOutline: '收起大纲',
+    expandOutline: '展开大纲',
     helpHtml: `<p>这是一个即开即用的浏览器 Markdown 编辑器：左侧写作，右侧实时预览。内容会自动保存在浏览器本地，下次打开自动恢复。</p>
 <p><b>开始写作</b></p>
 <ul>
@@ -202,6 +220,24 @@ const i18n = {
     toastCopyFailed: '复制失败，请手动选择并复制'
   },
   'zh-TW': {
+    menuFile: '檔案',
+    menuEdit: '編輯',
+    menuInsert: '插入',
+    menuFormat: '格式',
+    menuView: '視圖',
+    menuTools: '工具',
+    menuNew: '新建',
+    menuOpen: '開啟…',
+    menuUndo: '復原',
+    menuRedo: '重做',
+    menuBold: '粗體',
+    menuItalic: '斜體',
+    menuUnderline: '底線',
+    outlineTitle: '大綱',
+    outlineEmpty: '暫無標題',
+    viewOutline: '大綱面板',
+    collapseOutline: '收起大綱',
+    expandOutline: '展開大綱',
     helpHtml: `<p>這是一款即開即用的瀏覽器 Markdown 編輯器：左側寫作，右側即時預覽。內容會自動儲存在瀏覽器本地，下次開啟自動恢復。</p>
 <p><b>開始寫作</b></p>
 <ul>
@@ -410,6 +446,24 @@ const i18n = {
     toastCopyFailed: '複製失敗，請手動選擇並複製'
   },
   'en': {
+    menuFile: 'File',
+    menuEdit: 'Edit',
+    menuInsert: 'Insert',
+    menuFormat: 'Format',
+    menuView: 'View',
+    menuTools: 'Tools',
+    menuNew: 'New',
+    menuOpen: 'Open…',
+    menuUndo: 'Undo',
+    menuRedo: 'Redo',
+    menuBold: 'Bold',
+    menuItalic: 'Italic',
+    menuUnderline: 'Underline',
+    outlineTitle: 'Outline',
+    outlineEmpty: 'No headings yet',
+    viewOutline: 'Outline panel',
+    collapseOutline: 'Collapse outline',
+    expandOutline: 'Expand outline',
     helpHtml: `<p>This is a ready-to-use browser Markdown editor: write on the left, preview live on the right. Your content is auto-saved in the browser and restored next time.</p>
 <p><b>Start writing</b></p>
 <ul>
@@ -618,6 +672,24 @@ const i18n = {
     toastCopyFailed: 'Copy failed, please select and copy manually'
   },
   'ja': {
+    menuFile: 'ファイル',
+    menuEdit: '編集',
+    menuInsert: '挿入',
+    menuFormat: '書式',
+    menuView: '表示',
+    menuTools: 'ツール',
+    menuNew: '新規',
+    menuOpen: '開く…',
+    menuUndo: '元に戻す',
+    menuRedo: 'やり直し',
+    menuBold: '太字',
+    menuItalic: '斜体',
+    menuUnderline: '下線',
+    outlineTitle: 'アウトライン',
+    outlineEmpty: '見出しがありません',
+    viewOutline: 'アウトラインパネル',
+    collapseOutline: 'アウトラインを折りたたむ',
+    expandOutline: 'アウトラインを展開',
     helpHtml: `<p>これは、すぐに使えるブラウザ Markdown エディタです。左側で書くと、右側にリアルタイムでプレビューが表示されます。内容はブラウザのローカルに自動保存され、次回開いたときに復元されます。</p>
 <p><b>書き始める</b></p>
 <ul>
@@ -826,6 +898,24 @@ const i18n = {
     toastCopyFailed: 'コピーに失敗しました。手動で選択してコピーしてください'
   },
   'ko': {
+    menuFile: '파일',
+    menuEdit: '편집',
+    menuInsert: '삽입',
+    menuFormat: '서식',
+    menuView: '보기',
+    menuTools: '도구',
+    menuNew: '새로 만들기',
+    menuOpen: '열기…',
+    menuUndo: '실행 취소',
+    menuRedo: '다시 실행',
+    menuBold: '굵게',
+    menuItalic: '기울임',
+    menuUnderline: '밑줄',
+    outlineTitle: '개요',
+    outlineEmpty: '제목 없음',
+    viewOutline: '개요 패널',
+    collapseOutline: '개요 접기',
+    expandOutline: '개요 펼치기',
     helpHtml: `<p>이것은 바로 사용할 수 있는 브라우저 Markdown 편집기입니다. 왼쪽에서 작성하면 오른쪽에 실시간으로 미리보기가 표시됩니다. 내용은 브라우저 로컬에 자동 저장되며 다음에 열 때 복원됩니다.</p>
 <p><b>작성 시작</b></p>
 <ul>
@@ -1034,6 +1124,24 @@ const i18n = {
     toastCopyFailed: '복사 실패, 수동으로 선택하여 복사하세요'
   },
   'es': {
+    menuFile: 'Archivo',
+    menuEdit: 'Editar',
+    menuInsert: 'Insertar',
+    menuFormat: 'Formato',
+    menuView: 'Vista',
+    menuTools: 'Herramientas',
+    menuNew: 'Nuevo',
+    menuOpen: 'Abrir…',
+    menuUndo: 'Deshacer',
+    menuRedo: 'Rehacer',
+    menuBold: 'Negrita',
+    menuItalic: 'Cursiva',
+    menuUnderline: 'Subrayado',
+    outlineTitle: 'Esquema',
+    outlineEmpty: 'Sin títulos',
+    viewOutline: 'Panel de esquema',
+    collapseOutline: 'Contraer esquema',
+    expandOutline: 'Expandir esquema',
     helpHtml: `<p>Este es un editor Markdown listo para usar en el navegador: escribe a la izquierda y previsualiza en tiempo real a la derecha. El contenido se guarda automáticamente en el navegador y se restaura la próxima vez.</p>
 <p><b>Empezar a escribir</b></p>
 <ul>
@@ -1242,6 +1350,24 @@ const i18n = {
     toastCopyFailed: 'Error al copiar, selecciona y copia manualmente'
   },
   'fr': {
+    menuFile: 'Fichier',
+    menuEdit: 'Édition',
+    menuInsert: 'Insertion',
+    menuFormat: 'Format',
+    menuView: 'Affichage',
+    menuTools: 'Outils',
+    menuNew: 'Nouveau',
+    menuOpen: 'Ouvrir…',
+    menuUndo: 'Annuler',
+    menuRedo: 'Rétablir',
+    menuBold: 'Gras',
+    menuItalic: 'Italique',
+    menuUnderline: 'Souligné',
+    outlineTitle: 'Plan',
+    outlineEmpty: 'Aucun titre',
+    viewOutline: 'Panneau de plan',
+    collapseOutline: 'Réduire le plan',
+    expandOutline: 'Développer le plan',
     helpHtml: `<p>Ceci est un éditeur Markdown prêt à l’emploi dans le navigateur : écrivez à gauche, prévisualisez en direct à droite. Le contenu est automatiquement sauvegardé dans le navigateur et restauré à la prochaine ouverture.</p>
 <p><b>Commencer à écrire</b></p>
 <ul>
@@ -1450,6 +1576,24 @@ const i18n = {
     toastCopyFailed: 'Échec de la copie, veuillez sélectionner et copier manuellement'
   },
   'de': {
+    menuFile: 'Datei',
+    menuEdit: 'Bearbeiten',
+    menuInsert: 'Einfügen',
+    menuFormat: 'Format',
+    menuView: 'Ansicht',
+    menuTools: 'Werkzeuge',
+    menuNew: 'Neu',
+    menuOpen: 'Öffnen…',
+    menuUndo: 'Rückgängig',
+    menuRedo: 'Wiederherstellen',
+    menuBold: 'Fett',
+    menuItalic: 'Kursiv',
+    menuUnderline: 'Unterstrichen',
+    outlineTitle: 'Gliederung',
+    outlineEmpty: 'Keine Überschriften',
+    viewOutline: 'Gliederungsfeld',
+    collapseOutline: 'Gliederung einklappen',
+    expandOutline: 'Gliederung aufklappen',
     helpHtml: `<p>Dies ist ein sofort einsatzbereiter Markdown-Editor im Browser: links schreiben, rechts live in der Vorschau ansehen. Der Inhalt wird automatisch im Browser lokal gespeichert und beim nächsten Öffnen wiederhergestellt.</p>
 <p><b>Schreiben beginnen</b></p>
 <ul>
@@ -1658,6 +1802,24 @@ const i18n = {
     toastCopyFailed: 'Kopieren fehlgeschlagen, bitte manuell auswählen und kopieren'
   },
   'ru': {
+    menuFile: 'Файл',
+    menuEdit: 'Правка',
+    menuInsert: 'Вставка',
+    menuFormat: 'Формат',
+    menuView: 'Вид',
+    menuTools: 'Инструменты',
+    menuNew: 'Создать',
+    menuOpen: 'Открыть…',
+    menuUndo: 'Отменить',
+    menuRedo: 'Повторить',
+    menuBold: 'Жирный',
+    menuItalic: 'Курсив',
+    menuUnderline: 'Подчёркнутый',
+    outlineTitle: 'Структура',
+    outlineEmpty: 'Нет заголовков',
+    viewOutline: 'Панель структуры',
+    collapseOutline: 'Свернуть структуру',
+    expandOutline: 'Развернуть структуру',
     helpHtml: `<p>Это готовый к использованию редактор Markdown в браузере: пишите слева, а справа видите предпросмотр в реальном времени. Содержимое автоматически сохраняется локально в браузере и восстанавливается при следующем открытии.</p>
 <p><b>Начать писать</b></p>
 <ul>
@@ -1866,6 +2028,24 @@ const i18n = {
     toastCopyFailed: 'Не удалось скопировать, выделите и скопируйте вручную'
   },
   'pt': {
+    menuFile: 'Arquivo',
+    menuEdit: 'Editar',
+    menuInsert: 'Inserir',
+    menuFormat: 'Formato',
+    menuView: 'Exibir',
+    menuTools: 'Ferramentas',
+    menuNew: 'Novo',
+    menuOpen: 'Abrir…',
+    menuUndo: 'Desfazer',
+    menuRedo: 'Refazer',
+    menuBold: 'Negrito',
+    menuItalic: 'Itálico',
+    menuUnderline: 'Sublinhado',
+    outlineTitle: 'Tópicos',
+    outlineEmpty: 'Sem títulos',
+    viewOutline: 'Painel de tópicos',
+    collapseOutline: 'Recolher tópicos',
+    expandOutline: 'Expandir tópicos',
     helpHtml: `<p>Este é um editor Markdown pronto para uso no navegador: escreva à esquerda e visualize em tempo real à direita. O conteúdo é salvo automaticamente no navegador e restaurado na próxima vez.</p>
 <p><b>Começar a escrever</b></p>
 <ul>
