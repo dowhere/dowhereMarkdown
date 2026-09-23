@@ -2101,16 +2101,72 @@
       showToast(t('toastSaved'));
     }
 
+    // ===== Tauri 桌面环境：系统保存对话框直接写盘 =====
+    // 注意：Tauri 运行时自身会注入不可配置的全局 window.isTauri(boolean)，
+    // 这里不能再用 isTauri 这个名字，否则整段脚本会因重复声明而完全不执行。
+    function inTauriApp() {
+      return typeof isTauri !== 'undefined' && isTauri === true
+        && !!(window.__TAURI__ && window.__TAURI__.dialog && window.__TAURI__.core);
+    }
+
+    // 弹系统保存对话框写入文本；true=已保存，false=用户取消
+    async function tauriSaveText(defaultName, extensions, contents) {
+      const path = await window.__TAURI__.dialog.save({
+        defaultPath: defaultName,
+        filters: [{ name: 'Document', extensions: extensions }]
+      });
+      if (typeof path !== 'string') return false;
+      await window.__TAURI__.core.invoke('save_text_file', { path: path, contents: contents });
+      return true;
+    }
+
+    // data URL 转普通字节数组（IPC 需要普通 Array，不能直接传 Uint8Array）
+    function dataUrlToBytes(dataUrl) {
+      const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+      const bin = atob(base64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return Array.from(bytes);
+    }
+
+    async function tauriSaveBinary(defaultName, extensions, dataUrl) {
+      const path = await window.__TAURI__.dialog.save({
+        defaultPath: defaultName,
+        filters: [{ name: 'Image', extensions: extensions }]
+      });
+      if (typeof path !== 'string') return false;
+      const bytes = dataUrlToBytes(dataUrl);
+      await window.__TAURI__.core.invoke('save_binary_file', { path: path, bytes: bytes });
+      return true;
+    }
+
+    // 统一处理 Tauri 保存结果
+    function handleTauriSave(promise, successToast) {
+      promise
+        .then((saved) => { if (saved) showToast(successToast); })
+        .catch((err) => {
+          console.error(err);
+          showToast(t('toastSaveFailed', err && err.message ? err.message : String(err)));
+        });
+    }
+
     // 导出文件
     function exportFile() {
-      const blob = new Blob([editor.value], { type: 'text/markdown;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
       let name = filenameInput.value.trim();
       if (!name) name = '未命名文档.md';
       if (!name.toLowerCase().endsWith('.md') && !name.toLowerCase().endsWith('.markdown')) {
         name += '.md';
       }
+      if (inTauriApp()) {
+        handleTauriSave(
+          tauriSaveText(name, ['md', 'markdown'], editor.value),
+          t('toastExported')
+        );
+        return;
+      }
+      const blob = new Blob([editor.value], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
       a.href = url;
       a.download = name;
       document.body.appendChild(a);
@@ -2179,6 +2235,13 @@ ${bodyHtml}
 </body>
 </html>`;
 
+      if (inTauriApp()) {
+        handleTauriSave(
+          tauriSaveText(name, ['doc'], fullHtml),
+          t('toastWordExported')
+        );
+        return;
+      }
       const blob = new Blob([fullHtml], { type: 'application/msword;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -2309,6 +2372,13 @@ ${'</scr' + 'ipt>'}
 </body>
 </html>`;
 
+      if (inTauriApp()) {
+        handleTauriSave(
+          tauriSaveText(name, ['html'], fullHtml),
+          t('toastHtmlExported')
+        );
+        return;
+      }
       const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -2565,6 +2635,13 @@ ${'</scr' + 'ipt>'}
       if (!name) name = '未命名文档.md';
       name = name.replace(/\.(md|markdown|txt|html|doc)$/i, '') + '.png';
 
+      if (inTauriApp()) {
+        handleTauriSave(
+          tauriSaveBinary(name, ['png'], currentImageDataUrl),
+          t('toastImageDownloaded')
+        );
+        return;
+      }
       const a = document.createElement('a');
       a.href = currentImageDataUrl;
       a.download = name;
