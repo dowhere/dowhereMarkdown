@@ -992,6 +992,23 @@
     }
     /* 关于对话框 */
     .modal-about { max-width: 420px; }
+    .modal-prefs { max-width: 560px; }
+    .pref-section { margin-bottom: 14px; }
+    .pref-section h4 {
+      margin: 0 0 6px; font-size: 13px; font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .pref-dir-row { display: flex; gap: 8px; margin-top: 8px; }
+    .pref-dir-row input { flex: 1; }
+    .pref-dir-row button {
+      flex: none; padding: 0 14px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); background: var(--surface);
+      color: var(--text); cursor: pointer; white-space: nowrap;
+    }
+    .pref-dir-row button:hover { border-color: var(--accent); color: var(--accent); }
+    .pref-hint { margin: 6px 0 0; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .pref-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+    .pref-check input { width: auto; }
     .modal-save-confirm { max-width: 380px; }
     .save-confirm-msg { margin: 0; font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
     .about-body { text-align: center; }
@@ -1510,6 +1527,8 @@
           <div class="menu-item" onclick="saveToLocal();closeAppMenus()"><span data-i18n="save">保存</span><span class="menu-shortcut">Ctrl+S</span></div>
           <div class="menu-item" onclick="saveAs();closeAppMenus()"><span data-i18n="menuSaveAs">另存为…</span><span class="menu-shortcut">Ctrl+Shift+S</span></div>
           <div class="menu-sep"></div>
+          <div class="menu-item" onclick="openPreferences();closeAppMenus()"><span data-i18n="menuPreferences">偏好设置</span></div>
+          <div class="menu-sep"></div>
           <div class="menu-item has-submenu">
             <span data-i18n="menuExportAs">导出为</span>
             <span class="menu-caret">▸</span>
@@ -1801,6 +1820,79 @@
     </div>
   </div>
 
+  <!-- 偏好设置 -->
+  <div class="modal-overlay" id="preferences-modal">
+    <div class="modal modal-prefs">
+      <div class="modal-header">
+        <h3><span data-i18n="prefTitle">偏好设置</span></h3>
+        <button onclick="closePreferences()"><svg class="icon"><use href="#icon-close"></use></svg></button>
+      </div>
+      <div class="modal-body pref-body">
+        <section class="pref-section">
+          <h4 data-i18n="prefLanguage">界面语言</h4>
+          <select id="pref-language">
+            <option value="zh-CN">简体中文</option>
+            <option value="zh-TW">繁體中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">Русский</option>
+            <option value="pt">Português</option>
+          </select>
+        </section>
+        <section class="pref-section">
+          <h4 data-i18n="prefTheme">主题</h4>
+          <select id="pref-theme">
+            <option value="light" data-i18n="prefThemeLight">亮色</option>
+            <option value="dark" data-i18n="prefThemeDark">暗色</option>
+          </select>
+        </section>
+        <section class="pref-section">
+          <h4 data-i18n="prefLayout">默认布局</h4>
+          <select id="pref-layout">
+            <option value="both" data-i18n="prefLayoutBoth">双栏（编辑 + 预览）</option>
+            <option value="edit" data-i18n="prefLayoutEdit">仅编辑</option>
+            <option value="preview" data-i18n="prefLayoutPreview">仅预览</option>
+          </select>
+        </section>
+        <section class="pref-section">
+          <h4 data-i18n="prefEncoding">默认编码</h4>
+          <select id="pref-encoding">
+            <option value="utf-8">UTF-8</option>
+            <option value="gbk">GBK</option>
+            <option value="gb18030">GB18030</option>
+            <option value="big5">Big5</option>
+          </select>
+        </section>
+        <section class="pref-section">
+          <h4 data-i18n="prefImage">图片</h4>
+          <select id="pref-image-mode" onchange="updatePrefImageDirState()">
+            <option value="base64" data-i18n="prefImageModeBase64">Base64 嵌入文档</option>
+            <option value="local" data-i18n="prefImageModeLocal">保存到本地目录</option>
+          </select>
+          <div class="pref-dir-row" id="pref-dir-row">
+            <input type="text" id="pref-image-dir" readonly data-i18n-placeholder="prefImageDirPlaceholder" placeholder="请选择图片存放目录">
+            <button type="button" class="env-only" onclick="choosePrefImageDir()" data-i18n="prefChooseDir">选择…</button>
+          </div>
+          <p class="pref-hint" data-i18n="prefImageHint">图片将以时间戳自动命名（image-时间戳.png），并以绝对路径插入文档。</p>
+        </section>
+        <section class="pref-section">
+          <label class="pref-check">
+            <input type="checkbox" id="pref-close-confirm">
+            <span data-i18n="prefCloseConfirm">关闭窗口时提示保存未保存的更改</span>
+          </label>
+        </section>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closePreferences()" data-i18n="cancel">取消</button>
+        <button onclick="applyPreferences()" class="primary" data-i18n="save">保存</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 关闭前保存确认 -->
   <div class="modal-overlay" id="save-confirm-modal">
     <div class="modal modal-save-confirm">
@@ -1933,7 +2025,7 @@
           <label for="image-upload-alt" data-i18n="imageAltLabel">描述文字</label>
           <input type="text" id="image-upload-alt" data-i18n-placeholder="imageAltPlaceholder" placeholder="图片描述">
         </div>
-        <p class="hint" data-i18n="imageHint">本地图片将以 Base64 嵌入文档，文件过大可能影响性能和保存。</p>
+        <p class="hint" data-i18n="imageHint">图片默认以 Base64 嵌入文档；可在「文件 → 偏好设置」中改为保存到本地目录。</p>
       </div>
       <div class="modal-footer">
         <button onclick="closeImageModal()" data-i18n="cancel">取消</button>
@@ -2016,6 +2108,10 @@
     const CURRENT_PATH_KEY = 'md_editor_current_path';
     const RECENT_FILES_KEY = 'md_editor_recent_files';
     const ENCODING_KEY = 'md_editor_encoding';
+    // 偏好设置
+    const PREF_IMAGE_MODE_KEY = 'md_editor_image_mode';   // 'base64' | 'local'
+    const PREF_IMAGE_DIR_KEY = 'md_editor_image_dir';
+    const PREF_CLOSE_CONFIRM_KEY = 'md_editor_close_confirm';
 
     let previewMode = 'preview';
     let currentLang = 'zh-CN';
@@ -2866,6 +2962,8 @@
         const savedRecent = JSON.parse(localStorage.getItem(RECENT_FILES_KEY) || '[]');
         if (Array.isArray(savedRecent)) recentFiles = savedRecent;
       } catch (e) { }
+      // 恢复“关闭时提示保存”开关（默认开启）
+      closeConfirmEnabled = localStorage.getItem(PREF_CLOSE_CONFIRM_KEY) !== 'false';
       // 启动一律为空白新文档：不恢复上次的内容、文件名与路径
       currentPath = null;
       editor.value = '';
@@ -2956,6 +3054,7 @@
       }
 
       preview.innerHTML = '<div class="markdown-body">' + html + '</div>';
+      resolveLocalImages();
       enhanceCodeBlocks();
       styleTaskLists();
 
@@ -2971,6 +3070,19 @@
 
       renderMermaidBlocks();
       scheduleOutlineUpdate();
+    }
+
+    // 绝对路径本地图片（如 D:/images/xxx.png）改走 Tauri asset 协议加载
+    function resolveLocalImages() {
+      if (!inTauriApp()) return;
+      const convert = window.__TAURI__.core.convertFileSrc;
+      if (typeof convert !== 'function') return;
+      preview.querySelectorAll('img').forEach((img) => {
+        const s = img.getAttribute('src') || '';
+        if (/^[a-zA-Z]:[\\/]/.test(s)) {
+          img.src = convert(s.replace(/\//g, '\\'));
+        }
+      });
     }
 
     function protectMath(text) {
@@ -4105,8 +4217,11 @@ ${css}
     // ===== 关闭窗口前提示保存 =====
     // forceClose=true 表示用户已在确认框做出选择，守卫直接放行（避免 destroy/close 再次被拦）
     let forceClose = false;
+    // 关闭窗口时是否提示保存（偏好设置可关；默认开启）
+    let closeConfirmEnabled = true;
     // 抽成独立函数：窗口关闭请求的统一处理（也便于测试直接驱动）
     function handleCloseRequest(event) {
+      if (!closeConfirmEnabled) return;
       checkDirty();
       if (forceClose || !isDirty) return;
       if (event && event.api && event.api.prevent) event.api.prevent();
@@ -4165,9 +4280,8 @@ ${css}
     }
 
     // 切换主题
-    function toggleTheme() {
-      const current = document.body.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
+    // 应用主题（偏好设置与顶栏切换共用）
+    function applyTheme(next) {
       document.body.setAttribute('data-theme', next);
       localStorage.setItem(THEME_KEY, next);
       if (typeof mermaid !== 'undefined') {
@@ -4177,6 +4291,9 @@ ${css}
         });
       }
       updatePreview();
+    }
+    function toggleTheme() {
+      applyTheme(document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     }
 
     // 清空文档
@@ -4428,6 +4545,32 @@ ${css}
       el.focus();
     }
 
+    // File → data URL
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // 统一图片处理：按偏好设置保存到本地目录（绝对路径）或转 base64
+    async function processImageFile(file) {
+      const mode = localStorage.getItem(PREF_IMAGE_MODE_KEY);
+      const dir = localStorage.getItem(PREF_IMAGE_DIR_KEY);
+      if (mode === 'local' && dir && inTauriApp()) {
+        const bytes = Array.from(new Uint8Array(await file.arrayBuffer()));
+        let ext = (file.type || '').split('/')[1];
+        if (!ext) ext = (file.name || '').split('.').pop();
+        const res = await window.__TAURI__.core.invoke('save_image_file', {
+          dir: dir, ext: ext || 'png', bytes: bytes
+        });
+        return res.path;
+      }
+      return await readFileAsDataURL(file);
+    }
+
     const TABLE_GRID_ROWS = 8;
     const TABLE_GRID_COLS = 8;
 
@@ -4504,9 +4647,11 @@ ${css}
 
     // 图片上传模态框
     let pendingImageDataUrl = '';
+    let pendingImageFile = null;
 
     function openImageModal() {
       pendingImageDataUrl = '';
+      pendingImageFile = null;
       document.getElementById('image-url-input').value = '';
       document.getElementById('image-url-alt').value = '';
       document.getElementById('image-upload-alt').value = '';
@@ -4524,6 +4669,7 @@ ${css}
       el.classList.remove('show');
       setTimeout(() => { if (!el.classList.contains('show')) el.style.display = 'none'; }, 200);
       pendingImageDataUrl = '';
+      pendingImageFile = null;
     }
 
     function switchImageTab(tab) {
@@ -4545,14 +4691,17 @@ ${css}
       if (file.size > 5 * 1024 * 1024) {
         showToast(t('toastImageTooLarge'));
         pendingImageDataUrl = '';
+        pendingImageFile = null;
         return;
       }
       if (file.size > 2 * 1024 * 1024) {
         if (!confirm(t('imageLargeWarning', (file.size / 1024 / 1024).toFixed(1)))) {
           pendingImageDataUrl = '';
+          pendingImageFile = null;
           return;
         }
       }
+      pendingImageFile = file;
       const reader = new FileReader();
       reader.onload = (e) => {
         pendingImageDataUrl = e.target.result;
@@ -4563,7 +4712,7 @@ ${css}
       reader.readAsDataURL(file);
     }
 
-    function confirmImageInsert() {
+    async function confirmImageInsert() {
       const activeTab = document.querySelector('.image-tab.active').dataset.tab;
       let url = '';
       let alt = '';
@@ -4575,12 +4724,14 @@ ${css}
           return;
         }
       } else {
-        url = pendingImageDataUrl;
         alt = document.getElementById('image-upload-alt').value.trim();
-        if (!url) {
+        if (!pendingImageFile) {
           showToast(t('toastSelectImageFirst'));
           return;
         }
+        // 按偏好设置保存到本地目录或转 base64
+        url = await processImageFile(pendingImageFile);
+        if (!alt) alt = (pendingImageFile.name || '').replace(/\.[^.]+$/, '');
       }
       insertImageMarkdown(alt || t('image'), url);
       closeImageModal();
@@ -4886,6 +5037,78 @@ ${css}
       const el = document.getElementById('about-modal');
       el.classList.remove('show');
       setTimeout(() => { if (!el.classList.contains('show')) el.style.display = 'none'; }, 200);
+    }
+
+    // ===== 偏好设置 =====
+    function openPreferences() {
+      fillPreferences();
+      const el = document.getElementById('preferences-modal');
+      el.style.display = 'flex';
+      void el.offsetWidth;
+      el.classList.add('show');
+    }
+    function closePreferences() {
+      const el = document.getElementById('preferences-modal');
+      el.classList.remove('show');
+      setTimeout(() => { if (!el.classList.contains('show')) el.style.display = 'none'; }, 200);
+    }
+    function fillPreferences() {
+      document.getElementById('pref-language').value = currentLang;
+      document.getElementById('pref-theme').value =
+        document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      document.getElementById('pref-layout').value =
+        localStorage.getItem(LAYOUT_MODE_KEY) || 'both';
+      document.getElementById('pref-encoding').value = fileEncoding;
+      document.getElementById('pref-image-mode').value =
+        localStorage.getItem(PREF_IMAGE_MODE_KEY) === 'local' ? 'local' : 'base64';
+      document.getElementById('pref-image-dir').value =
+        localStorage.getItem(PREF_IMAGE_DIR_KEY) || '';
+      document.getElementById('pref-close-confirm').checked = closeConfirmEnabled;
+      updatePrefImageDirState();
+    }
+    // 本地目录模式才启用目录行
+    function updatePrefImageDirState() {
+      const local = document.getElementById('pref-image-mode').value === 'local';
+      document.getElementById('pref-dir-row').style.opacity = local ? '' : '0.4';
+      document.getElementById('pref-image-dir').disabled = !local;
+    }
+    async function choosePrefImageDir() {
+      try {
+        const dir = await window.__TAURI__.dialog.open({
+          directory: true,
+          multiple: false
+        });
+        if (typeof dir === 'string') {
+          document.getElementById('pref-image-dir').value = dir.replace(/\\/g, '/');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    function applyPreferences() {
+      const lang = document.getElementById('pref-language').value;
+      const theme = document.getElementById('pref-theme').value;
+      const layout = document.getElementById('pref-layout').value;
+      const encoding = document.getElementById('pref-encoding').value;
+      const imageMode = document.getElementById('pref-image-mode').value;
+      const imageDir = document.getElementById('pref-image-dir').value.trim();
+
+      if (imageMode === 'local' && !imageDir) {
+        showToast(t('toastImageDirMissing'));
+        return; // 未选目录不允许保存
+      }
+      localStorage.setItem(PREF_IMAGE_MODE_KEY, imageMode);
+      if (imageDir) localStorage.setItem(PREF_IMAGE_DIR_KEY, imageDir);
+      else localStorage.removeItem(PREF_IMAGE_DIR_KEY);
+
+      closeConfirmEnabled = document.getElementById('pref-close-confirm').checked;
+      localStorage.setItem(PREF_CLOSE_CONFIRM_KEY, String(closeConfirmEnabled));
+
+      setEncoding(encoding);
+      setLayoutMode(layout);
+      applyTheme(theme);
+      setLanguage(lang); // 语言切换会重新 applyLanguage
+      closePreferences();
     }
 
     // 网页转 Markdown 模态框
@@ -5425,6 +5648,29 @@ ${css}
     filenameInput.addEventListener('input', autoSave);
     filenameInput.addEventListener('input', updateWindowTitle);
 
+    // 粘贴图片：检测剪贴板中的图片，按偏好设置保存到本地目录或转 base64
+    async function handleImagePaste(e) {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (!file) return;
+          e.preventDefault();
+          try {
+            const url = await processImageFile(file);
+            insertImageMarkdown(t('image'), url);
+          } catch (err) {
+            console.error(err);
+            showToast(t('toastSaveFailed', String(err && err.message || err)));
+          }
+          return;
+        }
+      }
+    }
+    editor.addEventListener('paste', handleImagePaste);
+    previewSource.addEventListener('paste', handleImagePaste);
+
     // 拖放文件打开
     const dropOverlay = document.getElementById('drop-overlay');
     let dragCounter = 0;
@@ -5483,12 +5729,14 @@ ${css}
           showToast(t('toastImageTooLarge'));
           return;
         }
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          insertImageMarkdown(file.name, ev.target.result);
+        const alt = (file.name || '').replace(/\.[^.]+$/, '');
+        processImageFile(file).then((url) => {
+          insertImageMarkdown(alt, url);
           showToast(t('toastImageInserted'));
-        };
-        reader.readAsDataURL(file);
+        }).catch((err) => {
+          console.error(err);
+          showToast(t('toastSaveFailed', String(err && err.message || err)));
+        });
         return;
       }
 

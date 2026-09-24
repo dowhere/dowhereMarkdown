@@ -25,6 +25,42 @@ fn save_binary_file(path: &str, bytes: Vec<u8>) -> Result<(), String> {
     fs::write(Path::new(path), &bytes).map_err(|e| e.to_string())
 }
 
+// 图片保存结果：path 为绝对路径（分隔符统一为 /，便于直接作为 Markdown 链接）
+#[derive(Serialize)]
+struct ImageSaveResult {
+    path: String,
+}
+
+// 按时间戳自动命名保存图片到指定目录：image-{毫秒时间戳}.{ext}，
+// 冲突时追加 -1、-2…；目录不存在自动创建
+#[tauri::command]
+fn save_image_file(dir: &str, ext: &str, bytes: Vec<u8>) -> Result<ImageSaveResult, String> {
+    fs::create_dir_all(dir).map_err(|e| format!("创建图片目录失败: {e}"))?;
+    let millis = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|e| e.to_string())?
+        .as_millis();
+    // 扩展名只保留字母数字，防止路径穿越
+    let safe_ext: String = ext
+        .chars()
+        .take(8)
+        .filter(|c| c.is_ascii_alphanumeric())
+        .collect();
+    let safe_ext = if safe_ext.is_empty() { "png".to_string() } else { safe_ext };
+
+    let base = PathBuf::from(dir);
+    let mut candidate = base.join(format!("image-{millis}.{safe_ext}"));
+    let mut suffix = 1;
+    while candidate.exists() {
+        candidate = base.join(format!("image-{millis}-{suffix}.{safe_ext}"));
+        suffix += 1;
+    }
+    fs::write(&candidate, &bytes).map_err(|e| e.to_string())?;
+    Ok(ImageSaveResult {
+        path: candidate.to_string_lossy().replace('\\', "/"),
+    })
+}
+
 // 按指定编码读取文本文件（打开/最近打开；None 或无法识别时为 UTF-8）
 #[tauri::command]
 fn read_text_file(path: String, encoding: Option<String>) -> Result<String, String> {
@@ -226,6 +262,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             save_text_file,
             save_binary_file,
+            save_image_file,
             read_text_file,
             fetch_web_page,
             html_to_pdf
