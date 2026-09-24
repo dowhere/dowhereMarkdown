@@ -992,6 +992,8 @@
     }
     /* 关于对话框 */
     .modal-about { max-width: 420px; }
+    .modal-save-confirm { max-width: 380px; }
+    .save-confirm-msg { margin: 0; font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
     .about-body { text-align: center; }
     .about-logo { width: 72px; height: 72px; border-radius: 16px; margin: 4px auto 12px; display: block; }
     .about-name { font-size: 20px; font-weight: 700; color: var(--text); }
@@ -1496,7 +1498,7 @@
       <div class="menu" data-menu="file">
         <button type="button" class="menu-label" onclick="toggleAppMenu('file')" data-i18n="menuFile">文件</button>
         <div class="menu-dropdown">
-          <div class="menu-item" onclick="clearDoc();closeAppMenus()"><span data-i18n="menuNew">新建</span><span class="menu-shortcut">Ctrl+N</span></div>
+          <div class="menu-item" onclick="newDoc();closeAppMenus()"><span data-i18n="menuNew">新建</span><span class="menu-shortcut">Ctrl+N</span></div>
           <div class="menu-item" onclick="triggerImport();closeAppMenus()"><span data-i18n="menuOpen">打开…</span><span class="menu-shortcut">Ctrl+O</span></div>
           <div class="menu-item" onclick="triggerImportAny();closeAppMenus()"><span data-i18n="menuImport">导入…</span></div>
           <div class="menu-item has-submenu env-only" id="recent-menu-item">
@@ -1681,7 +1683,7 @@
     </div>
 
     <div class="statusbar">
-      <span id="status-left">自动保存已启用</span>
+      <span id="status-left"></span>
       <span class="save-hint" id="save-hint">✓ 已保存</span>
       <span id="status-right">Ctrl+S 保存 · Ctrl+B 加粗 · Ctrl+I 斜体 · Ctrl+U 下划线 · Ctrl+Z 撤销 · Ctrl+Y 重做</span>
     </div>
@@ -1705,7 +1707,7 @@
         <button onclick="closeHelp()"><svg class="icon"><use href="#icon-close"></use></svg></button>
       </div>
       <div class="modal-body" id="help-body">
-        <p>DoWhereMarkdown 是一款 Markdown 编辑器：左侧写作，右侧实时预览，内容自动保存。</p>
+        <p>DoWhereMarkdown 是一款 Markdown 编辑器：左侧写作，右侧实时预览；关闭窗口时若有未保存的更改会提示保存。</p>
 
         <section class="help-section">
           <h4>快速上手</h4>
@@ -1795,6 +1797,23 @@
       </div>
       <div class="modal-footer">
         <button onclick="closeAbout()" class="primary" data-i18n="aboutOk">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 关闭前保存确认 -->
+  <div class="modal-overlay" id="save-confirm-modal">
+    <div class="modal modal-save-confirm">
+      <div class="modal-header">
+        <h3><span data-i18n="saveConfirmTitle">保存更改</span></h3>
+      </div>
+      <div class="modal-body">
+        <p class="save-confirm-msg"><span data-i18n="saveConfirmMessage">当前文档有未保存的更改，是否保存？</span></p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="confirmSaveOnClose()" class="primary"><span data-i18n="saveConfirmSave">保存</span></button>
+        <button onclick="confirmDontSave()"><span data-i18n="saveConfirmDontSave">不保存</span></button>
+        <button onclick="closeSaveConfirm()"><span data-i18n="saveConfirmCancel">取消</span></button>
       </div>
     </div>
   </div>
@@ -2066,7 +2085,7 @@
       const statusLeft = document.getElementById('status-left');
       const statusRight = document.getElementById('status-right');
       const saveHint = document.getElementById('save-hint');
-      if (statusLeft) statusLeft.textContent = t('autosaveEnabled');
+      if (statusLeft) statusLeft.textContent = isDirty ? '● ' + t('statusUnsaved') : '';
       if (statusRight) statusRight.textContent = t('statusShortcuts');
       if (saveHint) saveHint.textContent = '✓ ' + t('saved');
     }
@@ -2816,7 +2835,11 @@
       if (!e.target.closest('#context-menu')) hideContextMenu();
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') hideContextMenu();
+      if (e.key === 'Escape') {
+        hideContextMenu();
+        const sc = document.getElementById('save-confirm-modal');
+        if (sc && sc.classList.contains('show')) closeSaveConfirm();
+      }
       if (e.key === 'F11') {
         e.preventDefault();
         toggleFullscreen();
@@ -2843,15 +2866,10 @@
         const savedRecent = JSON.parse(localStorage.getItem(RECENT_FILES_KEY) || '[]');
         if (Array.isArray(savedRecent)) recentFiles = savedRecent;
       } catch (e) { }
-      currentPath = localStorage.getItem(CURRENT_PATH_KEY);
-
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved !== null) {
-        editor.value = saved;
-      } else {
-        editor.value = i18n[currentLang].welcomeDoc;
-      }
-      filenameInput.value = localStorage.getItem(FILENAME_KEY) || t('filenameDefault');
+      // 启动一律为空白新文档：不恢复上次的内容、文件名与路径
+      currentPath = null;
+      editor.value = '';
+      filenameInput.value = t('filenameDefault');
       const theme = localStorage.getItem(THEME_KEY) || 'light';
       document.body.setAttribute('data-theme', theme);
 
@@ -2911,6 +2929,8 @@
       }
       applyLanguage();
       updateWindowTitle();
+      markSaved();
+      setupWindowCloseGuard();
     }
 
     // 渲染预览
@@ -3124,15 +3144,29 @@
       }
     }
 
-    // 自动保存
-    let saveTimer;
+    // ===== 未保存更改跟踪 =====
+    // 干净基线 = 最近一次「新建 / 打开 / 成功保存」时的内容、文件名、路径
+    let savedSnapshot = { content: '', name: '', path: null };
+    let isDirty = false;
+    function markSaved() {
+      savedSnapshot = { content: editor.value, name: filenameInput.value, path: currentPath };
+      isDirty = false;
+      updateDirtyUI();
+    }
+    function checkDirty() {
+      isDirty = editor.value !== savedSnapshot.content
+        || filenameInput.value !== savedSnapshot.name
+        || currentPath !== savedSnapshot.path;
+      updateDirtyUI();
+    }
+    function updateDirtyUI() {
+      const statusLeft = document.getElementById('status-left');
+      if (statusLeft) statusLeft.textContent = isDirty ? '● ' + t('statusUnsaved') : '';
+    }
+
+    // 内容变化时仅更新“未保存”状态：不再写入浏览器本地，也不再提示“已保存”
     function autoSave() {
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(() => {
-        localStorage.setItem(STORAGE_KEY, editor.value);
-        localStorage.setItem(FILENAME_KEY, filenameInput.value);
-        showSaveHint();
-      }, 500);
+      checkDirty();
     }
 
     function showSaveHint() {
@@ -3141,10 +3175,10 @@
       setTimeout(() => saveHint.classList.remove('show'), 1500);
     }
 
-    // 手动保存（Ctrl+S）
+    // 手动保存（Ctrl+S）。返回 true=已保存，false=失败或用户取消
     async function saveToLocal() {
-      // Tauri 且已有磁盘文件：直接写回原路径，不弹对话框
       if (inTauriApp() && currentPath) {
+        // Tauri 且已有磁盘文件：直接写回原路径，不弹对话框
         try {
           await window.__TAURI__.core.invoke('save_text_file', {
             path: currentPath, contents: editor.value, encoding: fileEncoding
@@ -3152,17 +3186,19 @@
         } catch (err) {
           console.error(err);
           showToast(t('toastSaveFailed', String(err && err.message || err)));
-          return;
+          return false;
         }
       } else if (inTauriApp()) {
-        // Tauri 下还没有文件路径：转入"另存为"选路径
-        saveAs();
-        return;
+        // Tauri 下还没有文件路径：转入“另存为”选路径
+        return await saveAs();
+      } else {
+        // 浏览器直开：无法写盘，localStorage 兜底
+        localStorage.setItem(STORAGE_KEY, editor.value);
       }
-      localStorage.setItem(STORAGE_KEY, editor.value);
-      localStorage.setItem(FILENAME_KEY, filenameInput.value);
+      markSaved();
       showSaveHint();
       showToast(t('toastSaved'));
+      return true;
     }
 
     // ===== Tauri 桌面环境：系统保存对话框直接写盘 =====
@@ -3832,8 +3868,8 @@ ${css}
       if (path) pushRecent(name, path);
       updatePreview();
       updateCount();
-      saveToLocal();
       updateWindowTitle();
+      markSaved();
       showToast(t('toastFileImported'));
     }
 
@@ -3946,9 +3982,9 @@ ${css}
       }
     }
 
-    // ===== 另存为 =====
+    // ===== 另存为。返回 true=已保存，false=失败或用户取消 =====
     async function saveAs() {
-      if (!inTauriApp()) { exportFile(); return; }
+      if (!inTauriApp()) { exportFile(); return true; }
       try {
         let defaultName = filenameInput.value.trim() || t('filenameDefault');
         if (!/\.md$|\.markdown$/i.test(defaultName)) defaultName += '.md';
@@ -3956,7 +3992,7 @@ ${css}
           defaultPath: defaultName,
           filters: [{ name: 'Markdown', extensions: ['md', 'markdown'] }]
         });
-        if (typeof path !== 'string') return;
+        if (typeof path !== 'string') return false; // 用户取消
         await window.__TAURI__.core.invoke('save_text_file', {
           path: path, contents: editor.value, encoding: fileEncoding
         });
@@ -3965,13 +4001,14 @@ ${css}
         currentPath = path;
         localStorage.setItem(CURRENT_PATH_KEY, path);
         pushRecent(name, path);
-        localStorage.setItem(STORAGE_KEY, editor.value);
-        localStorage.setItem(FILENAME_KEY, name);
         updateWindowTitle();
+        markSaved();
         showToast(t('toastSaveAsDone'));
+        return true;
       } catch (err) {
         console.error(err);
         showToast(t('toastSaveFailed', String(err && err.message || err)));
+        return false;
       }
     }
 
@@ -4065,6 +4102,58 @@ ${css}
       }
     }
 
+    // ===== 关闭窗口前提示保存 =====
+    // forceClose=true 表示用户已在确认框做出选择，守卫直接放行（避免 destroy/close 再次被拦）
+    let forceClose = false;
+    // 抽成独立函数：窗口关闭请求的统一处理（也便于测试直接驱动）
+    function handleCloseRequest(event) {
+      checkDirty();
+      if (forceClose || !isDirty) return;
+      if (event && event.api && event.api.prevent) event.api.prevent();
+      else if (event && event.preventDefault) event.preventDefault();
+      openSaveConfirm();
+    }
+    function setupWindowCloseGuard() {
+      if (!inTauriApp()) return;
+      window.__TAURI__.window.getCurrentWindow().onCloseRequested(handleCloseRequest);
+    }
+    function openSaveConfirm() {
+      const el = document.getElementById('save-confirm-modal');
+      el.style.display = 'flex';
+      void el.offsetWidth;
+      el.classList.add('show');
+    }
+    function closeSaveConfirm() {
+      const el = document.getElementById('save-confirm-modal');
+      el.classList.remove('show');
+      setTimeout(() => { if (!el.classList.contains('show')) el.style.display = 'none'; }, 200);
+    }
+    async function doCloseWindow() {
+      forceClose = true;
+      if (inTauriApp()) {
+        // 用户已在确认框做出选择：直接销毁，不再触发关闭拦截
+        try { await window.__TAURI__.window.getCurrentWindow().destroy(); } catch (e) { }
+      } else {
+        window.close();
+      }
+    }
+    async function confirmSaveOnClose() {
+      // 保存失败或用户在“另存为”中取消：留在应用，不关闭
+      const done = await saveToLocal();
+      if (done) { closeSaveConfirm(); doCloseWindow(); }
+    }
+    function confirmDontSave() {
+      closeSaveConfirm();
+      doCloseWindow();
+    }
+
+    // 浏览器直开（file://）：无法自定义保存流程，使用浏览器原生离开拦截
+    window.addEventListener('beforeunload', (e) => {
+      if (inTauriApp()) return;
+      checkDirty();
+      if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+    });
+
     // ===== 文件名联动窗口标题 =====
     function updateWindowTitle() {
       const name = filenameInput.value.trim() || t('filenameDefault');
@@ -4098,9 +4187,25 @@ ${css}
         localStorage.removeItem(CURRENT_PATH_KEY);
         updatePreview();
         updateCount();
-        saveToLocal();
+        checkDirty();
         updateWindowTitle();
       }
+    }
+
+    // 新建：直接给空白新文档，不弹确认框、不弹另存为
+    function newDoc() {
+      editor.value = '';
+      filenameInput.value = t('filenameDefault');
+      currentPath = null;
+      localStorage.removeItem(CURRENT_PATH_KEY);
+      updatePreview();
+      updateCount();
+      // 重置撤销/重做历史
+      historyStack = [editor.value];
+      historyIndex = 0;
+      lastHistoryText = editor.value;
+      updateWindowTitle();
+      markSaved();
     }
 
     // 历史记录
@@ -5423,7 +5528,7 @@ ${css}
           else saveToLocal();
         } else if (e.key === 'n') {
           e.preventDefault();
-          clearDoc();
+          newDoc();
         } else if (e.key === 'o') {
           e.preventDefault();
           triggerImport();

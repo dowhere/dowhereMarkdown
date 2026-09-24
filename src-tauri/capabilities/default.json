@@ -11,6 +11,7 @@
     "clipboard-manager:allow-read-text",
     "clipboard-manager:allow-write-text",
     "core:window:allow-close",
+    "core:window:allow-destroy",
     "core:window:allow-set-title"
   ]
 }
