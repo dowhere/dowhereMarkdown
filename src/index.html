@@ -371,6 +371,26 @@
       padding: 7px;
     }
     .icon-only-btn .icon { width: 17px; height: 17px; }
+    /* 菜单栏右侧的图标按钮（主题切换 / 语言选择） */
+    .menu-bar .menu-bar-spacer { flex: 1; }
+    .menu-bar > .icon-only-btn,
+    .menu-bar .dropdown > .icon-only-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .menu-bar > .icon-only-btn:hover,
+    .menu-bar .dropdown > .icon-only-btn:hover {
+      background: var(--surface);
+      color: var(--accent);
+    }
+    .menu-bar .dropdown-menu {
+      left: auto;
+      right: 0;
+      top: calc(100% + 6px);
+      margin-top: 0;
+    }
     /* 表格选择器 */
     .table-selector-menu {
       padding: 12px;
@@ -1363,7 +1383,7 @@
     }
     /* 打印 / 导出 PDF */
     @media print {
-      .top-bar, .menu-bar, .editor-toolbar, .statusbar, .editor-pane, .resizer,
+      .menu-bar, .editor-toolbar, .statusbar, .editor-pane, .resizer,
       .outline-pane, .outline-resizer, .preview-pane .pane-header,
       .preview-source, .modal-overlay, .toast, .icon-sprite {
         display: none !important;
@@ -1485,30 +1505,11 @@
     </defs>
   </svg>
   <div class="app">
-    <div class="top-bar">
-      <span class="brand" data-i18n="brand">DoWhereMarkdown</span>
+    <!-- 顶部第一行已移除：文件名显示在窗口标题中；以下隐藏域保留给文件读写逻辑使用 -->
+    <div hidden>
       <input type="text" id="filename" value="未命名文档.md" data-i18n-title="filenameTitle" title="文件名">
-      <div class="spacer"></div>
-      <div class="top-actions">
-        <input type="file" id="importFile" accept=".md,.markdown,.txt" onchange="importFile(this)">
-        <input type="file" id="importAnyFile" accept=".md,.markdown,.txt,.html,.htm,.docx" onchange="importAnyFile(this)">
-        <button type="button" class="icon-only-btn" onclick="toggleTheme()" data-i18n-title="theme" title="切换主题"><svg class="icon"><use href="#icon-sun"></use></svg></button>
-        <div class="dropdown" id="lang-dropdown">
-          <button onclick="toggleLangMenu()" data-i18n-title="langLabel"><svg class="icon"><use href="#icon-globe"></use></svg> <span data-i18n="langLabel">语言</span></button>
-          <div class="dropdown-menu" id="lang-menu">
-            <div class="dropdown-item" onclick="setLanguage('zh-CN'); closeLangMenu();">简体中文</div>
-            <div class="dropdown-item" onclick="setLanguage('zh-TW'); closeLangMenu();">繁體中文</div>
-            <div class="dropdown-item" onclick="setLanguage('en'); closeLangMenu();">English</div>
-            <div class="dropdown-item" onclick="setLanguage('ja'); closeLangMenu();">日本語</div>
-            <div class="dropdown-item" onclick="setLanguage('ko'); closeLangMenu();">한국어</div>
-            <div class="dropdown-item" onclick="setLanguage('es'); closeLangMenu();">Español</div>
-            <div class="dropdown-item" onclick="setLanguage('fr'); closeLangMenu();">Français</div>
-            <div class="dropdown-item" onclick="setLanguage('de'); closeLangMenu();">Deutsch</div>
-            <div class="dropdown-item" onclick="setLanguage('ru'); closeLangMenu();">Русский</div>
-            <div class="dropdown-item" onclick="setLanguage('pt'); closeLangMenu();">Português</div>
-          </div>
-        </div>
-      </div>
+      <input type="file" id="importFile" accept=".md,.markdown,.txt" onchange="importFile(this)">
+      <input type="file" id="importAnyFile" accept=".md,.markdown,.txt,.html,.htm,.docx" onchange="importAnyFile(this)">
     </div>
 
     <div class="menu-bar">
@@ -1625,6 +1626,23 @@
           <div class="menu-item" onclick="openHelp();closeAppMenus()"><span data-i18n="helpDoc">使用帮助</span></div>
           <div class="menu-sep"></div>
           <div class="menu-item" onclick="openAbout();closeAppMenus()"><span data-i18n="menuAbout">关于</span></div>
+        </div>
+      </div>
+      <div class="menu-bar-spacer"></div>
+      <button type="button" class="icon-only-btn" onclick="toggleTheme()" data-i18n-title="theme" title="切换主题"><svg class="icon"><use href="#icon-sun"></use></svg></button>
+      <div class="dropdown" id="lang-dropdown">
+        <button type="button" class="icon-only-btn" onclick="toggleLangMenu()" data-i18n-title="langLabel" title="语言"><svg class="icon"><use href="#icon-globe"></use></svg></button>
+        <div class="dropdown-menu" id="lang-menu">
+          <div class="dropdown-item" onclick="setLanguage('zh-CN'); closeLangMenu();">简体中文</div>
+          <div class="dropdown-item" onclick="setLanguage('zh-TW'); closeLangMenu();">繁體中文</div>
+          <div class="dropdown-item" onclick="setLanguage('en'); closeLangMenu();">English</div>
+          <div class="dropdown-item" onclick="setLanguage('ja'); closeLangMenu();">日本語</div>
+          <div class="dropdown-item" onclick="setLanguage('ko'); closeLangMenu();">한국어</div>
+          <div class="dropdown-item" onclick="setLanguage('es'); closeLangMenu();">Español</div>
+          <div class="dropdown-item" onclick="setLanguage('fr'); closeLangMenu();">Français</div>
+          <div class="dropdown-item" onclick="setLanguage('de'); closeLangMenu();">Deutsch</div>
+          <div class="dropdown-item" onclick="setLanguage('ru'); closeLangMenu();">Русский</div>
+          <div class="dropdown-item" onclick="setLanguage('pt'); closeLangMenu();">Português</div>
         </div>
       </div>
     </div>
